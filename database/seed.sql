@@ -13,11 +13,11 @@ ON DUPLICATE KEY UPDATE id_cliente=id_cliente;
 
 -- 2. USUARIOS DE PRUEBA (Para los 4 Roles: Administrador, Entrenador, Recepcionista, Cliente)
 -- La contraseña en texto plano para todos es: admin123
-INSERT INTO usuarios (nombre_usuario, correo, password, rol, id_cliente, estado) VALUES
-('admin', 'admin@gallolete.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Administrador', NULL, 'activo'),
-('carlos_entrenador', 'carlos@gallolete.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Entrenador', NULL, 'activo'),
-('maria_recep', 'maria@gallolete.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Recepcionista', NULL, 'activo'),
-('juan_cliente', 'juan.perez@gmail.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Cliente', 1, 'activo')
+INSERT INTO usuarios (nombre_usuario, correo, password, rol, id_cliente, id_entrenador, estado) VALUES
+('admin', 'admin@gallolete.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Administrador', NULL, NULL, 'activo'),
+('carlos_entrenador', 'carlos@gallolete.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Entrenador', NULL, 1, 'activo'),
+('maria_recep', 'maria@gallolete.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Recepcionista', NULL, NULL, 'activo'),
+('juan_cliente', 'juan.perez@gmail.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Cliente', 1, NULL, 'activo')
 ON DUPLICATE KEY UPDATE id_usuario=id_usuario;
 
 -- 3. ENTRENADORES DE PRUEBA

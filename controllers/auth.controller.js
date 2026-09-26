@@ -29,6 +29,7 @@ const login = async (req, res, next) => {
     const payload = {
       id_usuario: userObj.id_usuario,
       id_cliente: userObj.id_cliente,
+      id_entrenador: userObj.id_entrenador,
       nombre_usuario: userObj.nombre_usuario,
       correo: userObj.correo,
       rol: userObj.rol

@@ -8,7 +8,7 @@ async function cargarUsuarios() {
     usuariosData = res.usuarios;
     renderizarUsuarios(usuariosData);
   } else {
-    document.getElementById('tableUsuarios').innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">${res.mensaje || 'No tiene permisos para ver esta sección.'}</td></tr>`;
+    document.getElementById('tableUsuarios').innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">${res.mensaje || 'No tiene permisos para ver esta sección.'}</td></tr>`;
   }
 }
 
@@ -17,17 +17,25 @@ function renderizarUsuarios(lista) {
   tbody.innerHTML = '';
 
   if (lista.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay usuarios registrados.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay usuarios registrados.</td></tr>';
     return;
   }
 
   lista.forEach(u => {
+    let vinculoText = '-';
+    if (u.rol === 'Cliente' && u.cliente_nombre) {
+      vinculoText = `👤 Cliente: <strong>${u.cliente_nombre}</strong>`;
+    } else if (u.rol === 'Entrenador' && u.entrenador_nombre) {
+      vinculoText = `🏋️ Entrenador: <strong>${u.entrenador_nombre}</strong>`;
+    }
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>#${u.id_usuario}</td>
       <td><strong>${u.nombre_usuario}</strong></td>
       <td>${u.correo}</td>
       <td><span class="badge" style="background:#e8eaf6; color:#283593;">${u.rol}</span></td>
+      <td>${vinculoText}</td>
       <td><span class="badge badge-${u.estado}">${u.estado}</span></td>
       <td>
         <button class="btn btn-secondary btn-sm" onclick="abrirModalUsuario(${u.id_usuario})">✏️ Editar</button>
@@ -38,9 +46,25 @@ function renderizarUsuarios(lista) {
   });
 }
 
-function abrirModalUsuario(id = null) {
+async function abrirModalUsuario(id = null) {
   const usuario = id ? usuariosData.find(u => u.id_usuario === id) : null;
   const esEdicion = !!usuario;
+
+  const [resClientes, resEntrenadores] = await Promise.all([
+    Auth.fetchApi('/clientes'),
+    Auth.fetchApi('/entrenadores')
+  ]);
+
+  const clientes = resClientes.ok ? resClientes.clientes : [];
+  const entrenadores = resEntrenadores.ok ? resEntrenadores.entrenadores : [];
+
+  const optClientes = clientes.map(c => 
+    `<option value="${c.id_cliente}" ${usuario && usuario.id_cliente === c.id_cliente ? 'selected' : ''}>${c.nombre} ${c.apellido} (Doc: ${c.documento})</option>`
+  ).join('');
+
+  const optEntrenadores = entrenadores.map(e => 
+    `<option value="${e.id_entrenador}" ${usuario && usuario.id_entrenador === e.id_entrenador ? 'selected' : ''}>${e.nombre} ${e.apellido} (Doc: ${e.documento})</option>`
+  ).join('');
 
   document.getElementById('modalTitle').innerText = esEdicion ? 'Editar Usuario' : 'Nuevo Usuario';
   document.getElementById('modalBody').innerHTML = `
@@ -62,12 +86,27 @@ function abrirModalUsuario(id = null) {
         </div>
         <div class="form-group">
           <label>Rol de Usuario *</label>
-          <select id="usrRol" class="form-control" required>
+          <select id="usrRol" class="form-control" onchange="toggleVinculoCampos()" required>
             <option value="Administrador" ${usuario && usuario.rol === 'Administrador' ? 'selected' : ''}>Administrador</option>
             <option value="Entrenador" ${usuario && usuario.rol === 'Entrenador' ? 'selected' : ''}>Entrenador</option>
             <option value="Recepcionista" ${usuario && usuario.rol === 'Recepcionista' ? 'selected' : ''}>Recepcionista</option>
+            <option value="Cliente" ${usuario && usuario.rol === 'Cliente' ? 'selected' : ''}>Cliente</option>
           </select>
         </div>
+      </div>
+      <div class="form-group" id="groupCliente" style="display:none;">
+        <label>Vincular a Perfil de Cliente *</label>
+        <select id="usrCliente" class="form-control">
+          <option value="">Seleccione el cliente correspondiente...</option>
+          ${optClientes}
+        </select>
+      </div>
+      <div class="form-group" id="groupEntrenador" style="display:none;">
+        <label>Vincular a Perfil de Entrenador *</label>
+        <select id="usrEntrenador" class="form-control">
+          <option value="">Seleccione el entrenador correspondiente...</option>
+          ${optEntrenadores}
+        </select>
       </div>
       <div class="form-group">
         <label>Estado</label>
@@ -81,16 +120,41 @@ function abrirModalUsuario(id = null) {
       </button>
     </form>
   `;
+
+  toggleVinculoCampos();
   abrirModal();
+}
+
+function toggleVinculoCampos() {
+  const rol = document.getElementById('usrRol').value;
+  const groupCliente = document.getElementById('groupCliente');
+  const groupEntrenador = document.getElementById('groupEntrenador');
+
+  if (rol === 'Cliente') {
+    groupCliente.style.display = 'block';
+    groupEntrenador.style.display = 'none';
+  } else if (rol === 'Entrenador') {
+    groupCliente.style.display = 'none';
+    groupEntrenador.style.display = 'block';
+  } else {
+    groupCliente.style.display = 'none';
+    groupEntrenador.style.display = 'none';
+  }
 }
 
 async function guardarUsuario(e, id) {
   e.preventDefault();
+  const rol = document.getElementById('usrRol').value;
+  const id_cliente_val = document.getElementById('usrCliente').value;
+  const id_entrenador_val = document.getElementById('usrEntrenador').value;
+
   const datos = {
     nombre_usuario: document.getElementById('usrNombre').value,
     correo: document.getElementById('usrCorreo').value,
     password: document.getElementById('usrPassword').value,
-    rol: document.getElementById('usrRol').value,
+    rol,
+    id_cliente: rol === 'Cliente' && id_cliente_val ? parseInt(id_cliente_val) : null,
+    id_entrenador: rol === 'Entrenador' && id_entrenador_val ? parseInt(id_entrenador_val) : null,
     estado: document.getElementById('usrEstado').value
   };
 

@@ -107,10 +107,12 @@ CREATE TABLE pagos (
 CREATE TABLE usuarios (
   id_usuario INT AUTO_INCREMENT PRIMARY KEY,
   id_cliente INT NULL,
+  id_entrenador INT NULL,
   nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
   correo VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   rol ENUM('Administrador', 'Entrenador', 'Recepcionista', 'Cliente') NOT NULL DEFAULT 'Recepcionista',
   estado ENUM('activo', 'inactivo') DEFAULT 'activo',
-  CONSTRAINT fk_usuarios_cliente FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente) ON DELETE SET NULL
+  CONSTRAINT fk_usuarios_cliente FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente) ON DELETE SET NULL,
+  CONSTRAINT fk_usuarios_entrenador FOREIGN KEY (id_entrenador) REFERENCES entrenadores(id_entrenador) ON DELETE SET NULL
 );

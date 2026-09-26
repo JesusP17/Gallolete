@@ -54,8 +54,13 @@ async function abrirModalRutina(id = null) {
     `<option value="${c.id_cliente}" ${rutina && rutina.id_cliente === c.id_cliente ? 'selected' : ''}>${c.nombre} ${c.apellido}</option>`
   ).join('');
 
+  const user = Auth.getUser();
+  const idEntrenadorSeleccionado = rutina 
+    ? rutina.id_entrenador 
+    : (user && user.id_entrenador ? user.id_entrenador : null);
+
   const optEntrenadores = entrenadores.map(e => 
-    `<option value="${e.id_entrenador}" ${rutina && rutina.id_entrenador === e.id_entrenador ? 'selected' : ''}>${e.nombre} ${e.apellido}</option>`
+    `<option value="${e.id_entrenador}" ${idEntrenadorSeleccionado === e.id_entrenador ? 'selected' : ''}>${e.nombre} ${e.apellido}</option>`
   ).join('');
 
   document.getElementById('modalTitle').innerText = esEdicion ? 'Editar Rutina' : 'Nueva Rutina';

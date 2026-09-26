@@ -189,22 +189,29 @@ async function cargarDashboardAdmin() {
 
 // 2. Cargar Dashboard Entrenador
 async function cargarDashboardEntrenador() {
+  const user = Auth.getUser();
+  const idEntrenador = user ? user.id_entrenador : null;
+
   const [resRut, resEj, resCli] = await Promise.all([
     Auth.fetchApi('/rutinas'),
     Auth.fetchApi('/ejercicios'),
     Auth.fetchApi('/clientes')
   ]);
 
-  const rutinas = resRut.ok ? resRut.rutinas : [];
+  let rutinas = resRut.ok ? resRut.rutinas : [];
   const ejercicios = resEj.ok ? resEj.ejercicios : [];
   const clientes = resCli.ok ? resCli.clientes : [];
 
+  if (idEntrenador) {
+    rutinas = rutinas.filter(r => r.id_entrenador === idEntrenador);
+  }
+
   document.getElementById('statEntrenadorRutinas').innerText = rutinas.filter(r => r.estado === 'activa').length;
   document.getElementById('statEntrenadorEjercicios').innerText = ejercicios.length;
-  document.getElementById('statEntrenadorClientes').innerText = clientes.length;
+  document.getElementById('statEntrenadorClientes').innerText = rutinas.length > 0 ? new Set(rutinas.map(r => r.id_cliente)).size : clientes.length;
 
   const tbody = document.getElementById('tableEntrenadorDashboard');
-  tbody.innerHTML = rutinas.slice(0, 5).map(r => `
+  tbody.innerHTML = rutinas.map(r => `
     <tr>
       <td><strong>${r.nombre_rutina}</strong></td>
       <td>${r.cliente_nombre}</td>
@@ -212,7 +219,7 @@ async function cargarDashboardEntrenador() {
       <td><span class="badge badge-${r.estado}">${r.estado}</span></td>
       <td><button class="btn btn-primary btn-sm" onclick="verDetalleRutina(${r.id_rutina})">💪 Ver Ejercicios</button></td>
     </tr>
-  `).join('') || '<tr><td colspan="5" style="text-align:center;">No hay rutinas creadas.</td></tr>';
+  `).join('') || '<tr><td colspan="5" style="text-align:center;">No hay rutinas creadas o asignadas a tu perfil de entrenador.</td></tr>';
 }
 
 // 3. Cargar Dashboard Recepcionista
@@ -245,7 +252,16 @@ async function cargarDashboardRecepcionista() {
 // 4. Cargar Dashboard Cliente (Portal de Atleta)
 async function cargarDashboardCliente() {
   const user = Auth.getUser();
-  const idCliente = user ? user.id_cliente : 1; // Si no hay vínculo usa id=1 de prueba
+  const idCliente = user ? user.id_cliente : null;
+
+  if (!idCliente) {
+    document.getElementById('statClienteMembresiaEstado').innerText = 'SIN VÍNCULO';
+    document.getElementById('statClienteMembresiaFin').innerText = '-';
+    document.getElementById('statClienteRutinaNombre').innerText = 'Sin Perfil Vinculado';
+    document.getElementById('tableClienteRutina').innerHTML = '<tr><td colspan="5" style="text-align:center; color: #d32f2f; font-weight: bold;">⚠️ Tu usuario no está vinculado a ningún perfil de cliente.<br><small style="color: #666; font-weight: normal;">Solicita al administrador vincular tu usuario con tu registro de cliente en el módulo de Usuarios.</small></td></tr>';
+    document.getElementById('tableClientePagos').innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin registro de cliente vinculado.</td></tr>';
+    return;
+  }
 
   const [resMem, resRut, resPag] = await Promise.all([
     Auth.fetchApi('/membresias'),
@@ -258,7 +274,7 @@ async function cargarDashboardCliente() {
   const pagos = resPag.ok ? resPag.pagos.filter(p => p.id_cliente === idCliente) : [];
 
   // Membresía
-  const membresiaActual = membresias[0];
+  const membresiaActual = membresias.find(m => m.estado === 'activa') || membresias[0];
   if (membresiaActual) {
     document.getElementById('statClienteMembresiaEstado').innerText = membresiaActual.estado.toUpperCase();
     document.getElementById('statClienteMembresiaFin').innerText = membresiaActual.fecha_fin ? membresiaActual.fecha_fin.substring(0,10) : '-';
@@ -267,14 +283,14 @@ async function cargarDashboardCliente() {
     document.getElementById('statClienteMembresiaFin').innerText = '-';
   }
 
-  // Rutina
-  const rutinaActual = rutinas[0];
+  // Rutina (prioriza la activa)
+  const rutinaActual = rutinas.find(r => r.estado === 'activa') || rutinas[0];
   if (rutinaActual) {
-    document.getElementById('statClienteRutinaNombre').innerText = rutinaActual.nombre_rutina;
+    document.getElementById('statClienteRutinaNombre').innerText = `${rutinaActual.nombre_rutina} (${rutinaActual.nivel})`;
     
     // Cargar detalle completo de la rutina con sus ejercicios
     const resDetalle = await Auth.fetchApi(`/rutinas/${rutinaActual.id_rutina}`);
-    if (resDetalle.ok && resDetalle.rutina.ejercicios) {
+    if (resDetalle.ok && resDetalle.rutina && resDetalle.rutina.ejercicios && resDetalle.rutina.ejercicios.length > 0) {
       const tbodyRutina = document.getElementById('tableClienteRutina');
       tbodyRutina.innerHTML = resDetalle.rutina.ejercicios.map(e => `
         <tr>
@@ -285,6 +301,8 @@ async function cargarDashboardCliente() {
           <td>${e.descanso || '-'}</td>
         </tr>
       `).join('');
+    } else {
+      document.getElementById('tableClienteRutina').innerHTML = '<tr><td colspan="5" style="text-align:center;">La rutina asignada no tiene ejercicios agregados aún.</td></tr>';
     }
   } else {
     document.getElementById('statClienteRutinaNombre').innerText = 'Sin Rutina Asignada';
