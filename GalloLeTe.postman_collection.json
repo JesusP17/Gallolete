@@ -1,0 +1,135 @@
+{
+  "info": {
+    "_postman_id": "gallolete-gym-api-2026",
+    "name": "GalloLeTe - REST API Colección",
+    "description": "Colección de pruebas para la API REST del Gimnasio GalloLeTe",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Auth - Login Admin",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usuario\": \"admin\",\n  \"password\": \"admin123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "2. Clientes - Obtener Todos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/clientes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "clientes"]
+        }
+      }
+    },
+    {
+      "name": "3. Clientes - Crear Cliente",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer TU_TOKEN_AQUI" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"documento\": \"1099887766\",\n  \"nombre\": \"Andrés\",\n  \"apellido\": \"Zapata\",\n  \"fecha_nacimiento\": \"1997-04-10\",\n  \"genero\": \"Masculino\",\n  \"telefono\": \"3014445566\",\n  \"correo\": \"andres.zapata@gmail.com\",\n  \"direccion\": \"Calle 50 # 20-10\",\n  \"estado\": \"activo\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/clientes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "clientes"]
+        }
+      }
+    },
+    {
+      "name": "4. Membresías - Obtener Todas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/membresias",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "membresias"]
+        }
+      }
+    },
+    {
+      "name": "5. Entrenadores - Obtener Todos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/entrenadores",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "entrenadores"]
+        }
+      }
+    },
+    {
+      "name": "6. Ejercicios - Obtener Todos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/ejercicios",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "ejercicios"]
+        }
+      }
+    },
+    {
+      "name": "7. Rutinas - Obtener Todas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/rutinas",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "rutinas"]
+        }
+      }
+    },
+    {
+      "name": "8. Pagos - Obtener Todos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/api/pagos",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "pagos"]
+        }
+      }
+    }
+  ]
+}

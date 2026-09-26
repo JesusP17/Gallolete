@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GalloLeTe - Sistema de Gestión para Gimnasios</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- VISTA DE LOGIN -->
+  <div id="loginView" class="login-container">
+    <div class="login-card">
+      <h2>Gallo<span>LeTe</span> 🏋️‍♂️</h2>
+      <p>Sistema de Gestión de Gimnasio</p>
+      <div id="loginError" class="badge badge-vencida hidden" style="margin-bottom: 1rem; width: 100%; text-align: center;"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Usuario o Correo</label>
+          <input type="text" id="loginUsuario" class="form-control" placeholder="Ej: admin, carlos_entrenador, maria_recep, juan_cliente" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Iniciar Sesión</button>
+      </form>
+      <div style="margin-top: 1.5rem; text-align: left; background: #f8f9fa; padding: 0.8rem; border-radius: 6px; font-size: 0.8rem;">
+        <strong>Usuarios de prueba (clave: admin123):</strong>
+        <ul style="margin-left: 1.2rem; margin-top: 0.3rem;">
+          <li><code>admin</code> (Administrador)</li>
+          <li><code>carlos_entrenador</code> (Entrenador)</li>
+          <li><code>maria_recep</code> (Recepcionista)</li>
+          <li><code>juan_cliente</code> (Cliente)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL PRINCIPAL (APP LAYOUT) -->
+  <div id="appLayout" class="app-layout hidden">
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        Gallo<span>LeTe</span> 🏋️‍♂️
+      </div>
+      <ul class="nav-list" id="sidebarNav">
+        <!-- Las pestañas se renderizan dinámicamente según el ROL -->
+      </ul>
+      <div class="user-profile">
+        <div>
+          <strong id="userNombre">Usuario</strong><br>
+          <small id="userRol" style="color: #a8dedc; font-weight: bold;">Rol</small>
+        </div>
+        <button id="btnLogout" class="btn btn-danger btn-sm" title="Cerrar Sesión">🚪</button>
+      </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+      <div class="top-bar">
+        <h1 id="tabTitle">Dashboard Principal</h1>
+      </div>
+
+      <!-- VISTAS DASHBOARD ESPECÍFICAS SEGÚN EL ROL -->
+
+      <!-- 1. DASHBOARD ADMINISTRADOR -->
+      <section id="tab-dashboard-admin" class="tab-content hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="title">Total Clientes</span>
+            <span class="value" id="statAdminClientes">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Membresías Activas</span>
+            <span class="value" id="statAdminMembresiasActivas" style="color: var(--success);">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Membresías Vencidas</span>
+            <span class="value" id="statAdminMembresiasVencidas" style="color: var(--danger);">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Ingresos Totales</span>
+            <span class="value" id="statAdminTotalPagos" style="color: var(--primary-color);">$0</span>
+          </div>
+        </div>
+        <h3>Resumen Global de Membresías</h3>
+        <div class="table-container" style="margin-top: 1rem;">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tableAdminDashboard"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 2. DASHBOARD ENTRENADOR -->
+      <section id="tab-dashboard-entrenador" class="tab-content hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="title">Rutinas Activas</span>
+            <span class="value" id="statEntrenadorRutinas" style="color: var(--primary-color);">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Ejercicios Disponibles</span>
+            <span class="value" id="statEntrenadorEjercicios">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Clientes a Cargo</span>
+            <span class="value" id="statEntrenadorClientes" style="color: var(--success);">0</span>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; margin-bottom: 1rem;">
+          <h3>Rutinas Recientes de Mis Atletas</h3>
+          <button class="btn btn-primary btn-sm" onclick="cambiarTab('rutinas')">+ Asignar Nueva Rutina</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Rutina</th>
+                <th>Cliente</th>
+                <th>Nivel</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tableEntrenadorDashboard"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. DASHBOARD RECEPCIONISTA -->
+      <section id="tab-dashboard-recepcionista" class="tab-content hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="title">Clientes Registrados</span>
+            <span class="value" id="statRecepClientes">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Membresías Vigentes</span>
+            <span class="value" id="statRecepActivas" style="color: var(--success);">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Membresías por Renovar</span>
+            <span class="value" id="statRecepVencidas" style="color: var(--danger);">0</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem; margin-bottom: 1.5rem;">
+          <button class="btn btn-primary" onclick="cambiarTab('clientes'); abrirModalCliente();">+ Registrar Nuevo Cliente</button>
+          <button class="btn btn-secondary" onclick="cambiarTab('pagos'); abrirModalPago();">💰 Cobrar Membresía</button>
+        </div>
+        <h3>Membresías Vencidas / Alertas de Renovación</h3>
+        <div class="table-container" style="margin-top: 1rem;">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Vencimiento</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tableRecepDashboard"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 4. DASHBOARD CLIENTE (PORTAL DEL ATLETA) -->
+      <section id="tab-dashboard-cliente" class="tab-content hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="title">Estado de Mi Membresía</span>
+            <span class="value" id="statClienteMembresiaEstado">-</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Vencimiento</span>
+            <span class="value" id="statClienteMembresiaFin" style="font-size: 1.2rem;">-</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Mi Rutina Asignada</span>
+            <span class="value" id="statClienteRutinaNombre" style="font-size: 1.2rem; color: var(--primary-color);">-</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <h3>💪 Mi Plan de Entrenamiento Asignado</h3>
+          <div class="table-container" style="margin-top: 1rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ejercicio</th>
+                  <th>Grupo Muscular</th>
+                  <th>Series x Repeticiones</th>
+                  <th>Peso (Kg)</th>
+                  <th>Descanso</th>
+                </tr>
+              </thead>
+              <tbody id="tableClienteRutina"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <h3>💳 Mi Historial de Pagos</h3>
+          <div class="table-container" style="margin-top: 1rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Monto</th>
+                  <th>Método</th>
+                  <th>Referencia</th>
+                </tr>
+              </thead>
+              <tbody id="tableClientePagos"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VISTAS GENERALES CRUD -->
+
+      <!-- VISTA CLIENTES -->
+      <section id="tab-clientes" class="tab-content hidden">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+          <input type="text" id="searchCliente" class="form-control" placeholder="Buscar por documento o nombre..." style="max-width: 300px;">
+          <button class="btn btn-primary" onclick="abrirModalCliente()">+ Nuevo Cliente</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Documento</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableClientes"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA MEMBRESIAS -->
+      <section id="tab-membresias" class="tab-content hidden">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+          <div>
+            <button class="btn btn-secondary btn-sm" onclick="filtrarMembresias('todas')">Todas</button>
+            <button class="btn btn-secondary btn-sm" onclick="filtrarMembresias('activa')">Activas</button>
+            <button class="btn btn-secondary btn-sm" onclick="filtrarMembresias('vencida')">Vencidas</button>
+          </div>
+          <button class="btn btn-primary" onclick="abrirModalMembresia()">+ Nueva Membresía</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableMembresias"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA ENTRENADORES -->
+      <section id="tab-entrenadores" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalEntrenador()">+ Nuevo Entrenador</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Documento</th>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+                <th>Horario</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableEntrenadores"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA RUTINAS -->
+      <section id="tab-rutinas" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalRutina()">+ Nueva Rutina</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Rutina</th>
+                <th>Cliente</th>
+                <th>Entrenador</th>
+                <th>Nivel</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableRutinas"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA EJERCICIOS -->
+      <section id="tab-ejercicios" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalEjercicio()">+ Nuevo Ejercicio</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Ejercicio</th>
+                <th>Grupo Muscular</th>
+                <th>Nivel</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableEjercicios"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA PAGOS -->
+      <section id="tab-pagos" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalPago()">+ Registrar Pago</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Membresía</th>
+                <th>Fecha</th>
+                <th>Valor</th>
+                <th>Método</th>
+                <th>Referencia</th>
+              </tr>
+            </thead>
+            <tbody id="tablePagos"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA USUARIOS -->
+      <section id="tab-usuarios" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalUsuario()">+ Nuevo Usuario</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableUsuarios"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- CONTENEDOR DE MODALES -->
+  <div id="modalOverlay" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Título Modal</h3>
+        <button class="close-btn" onclick="cerrarModal()">&times;</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS JS DE LA APLICACIÓN -->
+  <script src="js/auth.js"></script>
+  <script src="js/clientes.js"></script>
+  <script src="js/membresias.js"></script>
+  <script src="js/entrenadores.js"></script>
+  <script src="js/ejercicios.js"></script>
+  <script src="js/rutinas.js"></script>
+  <script src="js/pagos.js"></script>
+  <script src="js/usuarios.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
