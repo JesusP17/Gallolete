@@ -5,7 +5,7 @@ class MembresiaModel {
     const query = `
       SELECT m.*, CONCAT(c.nombre, ' ', c.apellido) AS cliente_nombre, c.documento AS cliente_documento
       FROM membresias m
-      JOIN clientes c ON m.id_cliente = c.id_cliente
+      LEFT JOIN clientes c ON m.id_cliente = c.id_cliente
       ORDER BY m.id_membresia DESC
     `;
     const [filas] = await db.query(query);
@@ -16,7 +16,7 @@ class MembresiaModel {
     const query = `
       SELECT m.*, CONCAT(c.nombre, ' ', c.apellido) AS cliente_nombre, c.documento AS cliente_documento
       FROM membresias m
-      JOIN clientes c ON m.id_cliente = c.id_cliente
+      LEFT JOIN clientes c ON m.id_cliente = c.id_cliente
       WHERE m.id_membresia = ?
     `;
     const [filas] = await db.query(query, [id]);
@@ -29,22 +29,22 @@ class MembresiaModel {
   }
 
   static async crear(datos) {
-    const { id_cliente, tipo, fecha_inicio, fecha_fin, precio, estado, metodo_pago } = datos;
+    const { id_cliente, tipo, fecha_inicio, fecha_fin, precio, estado, metodo_pago, imagen } = datos;
     const [resultado] = await db.query(
-      `INSERT INTO membresias (id_cliente, tipo, fecha_inicio, fecha_fin, precio, estado, metodo_pago)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id_cliente, tipo, fecha_inicio, fecha_fin, precio, estado || 'activa', metodo_pago || 'Efectivo']
+      `INSERT INTO membresias (id_cliente, tipo, fecha_inicio, fecha_fin, precio, estado, metodo_pago, imagen)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id_cliente || null, tipo, fecha_inicio, fecha_fin, precio, estado || 'activa', metodo_pago || 'Pendiente', imagen || null]
     );
     return this.obtenerPorId(resultado.insertId);
   }
 
   static async actualizar(id, datos) {
-    const { id_cliente, tipo, fecha_inicio, fecha_fin, precio, estado, metodo_pago } = datos;
+    const { id_cliente, tipo, fecha_inicio, fecha_fin, precio, estado, metodo_pago, imagen } = datos;
     await db.query(
       `UPDATE membresias
-       SET id_cliente = ?, tipo = ?, fecha_inicio = ?, fecha_fin = ?, precio = ?, estado = ?, metodo_pago = ?
+       SET id_cliente = ?, tipo = ?, fecha_inicio = ?, fecha_fin = ?, precio = ?, estado = ?, metodo_pago = ?, imagen = COALESCE(?, imagen)
        WHERE id_membresia = ?`,
-      [id_cliente, tipo, fecha_inicio, fecha_fin, precio, estado, metodo_pago, id]
+      [id_cliente || null, tipo, fecha_inicio, fecha_fin, precio, estado || 'activa', metodo_pago || 'Pendiente', imagen || null, id]
     );
     return this.obtenerPorId(id);
   }

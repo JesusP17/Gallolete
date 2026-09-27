@@ -17,7 +17,7 @@ function renderizarUsuarios(lista) {
   tbody.innerHTML = '';
 
   if (lista.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay usuarios registrados.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay usuarios registrados.</td></tr>';
     return;
   }
 
@@ -29,17 +29,21 @@ function renderizarUsuarios(lista) {
       vinculoText = `🏋️ Entrenador: <strong>${u.entrenador_nombre}</strong>`;
     }
 
+    const esActivo = u.estado === 'activo';
+    const btnEstadoText = esActivo ? '🚫 Deshabilitar' : '✅ Activar';
+    const btnEstadoClass = esActivo ? 'btn-secondary' : 'btn-primary';
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>#${u.id_usuario}</td>
       <td><strong>${u.nombre_usuario}</strong></td>
       <td>${u.correo}</td>
       <td><span class="badge" style="background:#e8eaf6; color:#283593;">${u.rol}</span></td>
       <td>${vinculoText}</td>
       <td><span class="badge badge-${u.estado}">${u.estado}</span></td>
       <td>
+        <button class="btn ${btnEstadoClass} btn-sm" onclick="cambiarEstadoUsuario(${u.id_usuario}, '${u.estado}', '${u.nombre_usuario}')">${btnEstadoText}</button>
         <button class="btn btn-secondary btn-sm" onclick="abrirModalUsuario(${u.id_usuario})">✏️ Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${u.id_usuario})">🗑️</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${u.id_usuario}, '${u.nombre_usuario}')">🗑️ Quitar</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -167,22 +171,87 @@ async function guardarUsuario(e, id) {
   });
 
   if (res.ok) {
-    alert(res.mensaje);
     cerrarModal();
+    mostrarModalNotificacion({
+      titulo: id ? 'Usuario Actualizado' : 'Usuario Creado',
+      mensaje: res.mensaje || 'Información de usuario guardada correctamente.',
+      tipo: 'exito'
+    });
     cargarUsuarios();
   } else {
-    alert(res.mensaje || 'Error al guardar usuario.');
+    mostrarModalNotificacion({
+      titulo: 'Error',
+      mensaje: res.mensaje || 'Error al guardar usuario.',
+      tipo: 'error'
+    });
   }
 }
 
-async function eliminarUsuario(id) {
-  if (confirm('¿Está seguro de eliminar este usuario del sistema?')) {
-    const res = await Auth.fetchApi(`/usuarios/${id}`, { method: 'DELETE' });
-    if (res.ok) {
-      alert(res.mensaje);
-      cargarUsuarios();
-    } else {
-      alert(res.mensaje || 'Error al eliminar usuario.');
+function cambiarEstadoUsuario(id, estadoActual, nombreUsuario) {
+  const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
+  const accion = nuevoEstado === 'inactivo' ? 'deshabilitar' : 'activar';
+
+  mostrarModalConfirmacion({
+    titulo: `Confirmar ${accion.toUpperCase()}`,
+    mensaje: `¿Está seguro de que desea ${accion} la cuenta de usuario "${nombreUsuario}"?`,
+    textoBoton: `Sí, ${accion}`,
+    claseBoton: nuevoEstado === 'inactivo' ? 'btn-danger' : 'btn-primary',
+    onConfirm: async () => {
+      const usr = usuariosData.find(u => u.id_usuario === id);
+      if (!usr) return;
+
+      const res = await Auth.fetchApi(`/usuarios/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          nombre_usuario: usr.nombre_usuario,
+          correo: usr.correo,
+          rol: usr.rol,
+          id_cliente: usr.id_cliente,
+          id_entrenador: usr.id_entrenador,
+          estado: nuevoEstado
+        })
+      });
+
+      if (res.ok) {
+        mostrarModalNotificacion({
+          titulo: 'Estado Actualizado',
+          mensaje: `La cuenta "${nombreUsuario}" ha sido ${nuevoEstado === 'inactivo' ? 'deshabilitada' : 'activada'} correctamente.`,
+          tipo: 'exito'
+        });
+        cargarUsuarios();
+      } else {
+        mostrarModalNotificacion({
+          titulo: 'Error',
+          mensaje: res.mensaje || 'No se pudo cambiar el estado de la cuenta.',
+          tipo: 'error'
+        });
+      }
     }
-  }
+  });
+}
+
+function eliminarUsuario(id, nombreUsuario) {
+  mostrarModalConfirmacion({
+    titulo: 'Quitar Cuenta de Usuario',
+    mensaje: `¿Está seguro de que desea quitar permanentemente la cuenta de "${nombreUsuario}" del sistema? Esta acción no se puede deshacer.`,
+    textoBoton: 'Sí, quitar cuenta',
+    claseBoton: 'btn-danger',
+    onConfirm: async () => {
+      const res = await Auth.fetchApi(`/usuarios/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        mostrarModalNotificacion({
+          titulo: 'Usuario Eliminado',
+          mensaje: `La cuenta de usuario "${nombreUsuario}" ha sido eliminada con éxito.`,
+          tipo: 'exito'
+        });
+        cargarUsuarios();
+      } else {
+        mostrarModalNotificacion({
+          titulo: 'Error',
+          mensaje: res.mensaje || 'Error al quitar usuario.',
+          tipo: 'error'
+        });
+      }
+    }
+  });
 }

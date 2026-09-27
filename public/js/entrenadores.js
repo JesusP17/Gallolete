@@ -15,16 +15,14 @@ function renderizarEntrenadores(lista) {
   tbody.innerHTML = '';
 
   if (lista.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay entrenadores registrados.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay entrenadores registrados.</td></tr>';
     return;
   }
 
   lista.forEach(e => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>#${e.id_entrenador}</td>
-      <td><strong>${e.documento}</strong></td>
-      <td>${e.nombre} ${e.apellido}</td>
+      <td><strong>${e.nombre} ${e.apellido}</strong></td>
       <td>${e.especialidad || 'General'}</td>
       <td>${e.horario || '-'}</td>
       <td><span class="badge badge-${e.estado}">${e.estado}</span></td>
@@ -44,19 +42,6 @@ function abrirModalEntrenador(id = null) {
   document.getElementById('modalTitle').innerText = esEdicion ? 'Editar Entrenador' : 'Nuevo Entrenador';
   document.getElementById('modalBody').innerHTML = `
     <form id="formEntrenador" onsubmit="guardarEntrenador(event, ${id})">
-      <div class="grid-2">
-        <div class="form-group">
-          <label>Documento *</label>
-          <input type="text" id="entDocumento" class="form-control" value="${entrenador ? entrenador.documento : ''}" required>
-        </div>
-        <div class="form-group">
-          <label>Estado</label>
-          <select id="entEstado" class="form-control">
-            <option value="activo" ${entrenador && entrenador.estado === 'activo' ? 'selected' : ''}>Activo</option>
-            <option value="inactivo" ${entrenador && entrenador.estado === 'inactivo' ? 'selected' : ''}>Inactivo</option>
-          </select>
-        </div>
-      </div>
       <div class="grid-2">
         <div class="form-group">
           <label>Nombre *</label>
@@ -87,6 +72,13 @@ function abrirModalEntrenador(id = null) {
           <input type="text" id="entHorario" class="form-control" placeholder="Ej: Mañana (6:00 AM - 2:00 PM)" value="${entrenador ? entrenador.horario || '' : ''}">
         </div>
       </div>
+      <div class="form-group">
+        <label>Estado</label>
+        <select id="entEstado" class="form-control">
+          <option value="activo" ${entrenador && entrenador.estado === 'activo' ? 'selected' : ''}>Activo</option>
+          <option value="inactivo" ${entrenador && entrenador.estado === 'inactivo' ? 'selected' : ''}>Inactivo</option>
+        </select>
+      </div>
       <button type="submit" class="btn btn-primary" style="margin-top:1rem; width:100%;">
         ${esEdicion ? 'Actualizar Entrenador' : 'Guardar Entrenador'}
       </button>
@@ -97,8 +89,9 @@ function abrirModalEntrenador(id = null) {
 
 async function guardarEntrenador(e, id) {
   e.preventDefault();
+  const entrenadorExistente = id ? entrenadoresData.find(ent => ent.id_entrenador === id) : null;
   const datos = {
-    documento: document.getElementById('entDocumento').value,
+    documento: entrenadorExistente ? entrenadorExistente.documento : 'DOC-ENT-' + Date.now(),
     nombre: document.getElementById('entNombre').value,
     apellido: document.getElementById('entApellido').value,
     telefono: document.getElementById('entTelefono').value,

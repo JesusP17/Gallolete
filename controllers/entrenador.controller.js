@@ -24,9 +24,13 @@ const obtenerEntrenadorPorId = async (req, res, next) => {
 
 const crearEntrenador = async (req, res, next) => {
   try {
-    const { nombre, apellido, documento } = req.body;
-    if (!nombre || !apellido || !documento) {
-      return res.status(400).json({ ok: false, mensaje: 'Los campos nombre, apellido y documento son obligatorios.' });
+    const { nombre, apellido } = req.body;
+    if (!nombre || !apellido) {
+      return res.status(400).json({ ok: false, mensaje: 'Los campos nombre y apellido son obligatorios.' });
+    }
+
+    if (!req.body.documento) {
+      req.body.documento = 'DOC-ENT-' + Date.now();
     }
 
     const nuevoEntrenador = await EntrenadorModel.crear(req.body);

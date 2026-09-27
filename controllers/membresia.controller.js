@@ -25,9 +25,9 @@ const obtenerMembresiaPorId = async (req, res, next) => {
 
 const crearMembresia = async (req, res, next) => {
   try {
-    const { id_cliente, tipo, fecha_inicio, fecha_fin, precio } = req.body;
-    if (!id_cliente || !tipo || !fecha_inicio || !fecha_fin || !precio) {
-      return res.status(400).json({ ok: false, mensaje: 'Los campos cliente, tipo, fechas y precio son obligatorios.' });
+    const { tipo, fecha_inicio, fecha_fin, precio } = req.body;
+    if (!tipo || !fecha_inicio || !fecha_fin || !precio) {
+      return res.status(400).json({ ok: false, mensaje: 'Los campos tipo, fechas y precio son obligatorios.' });
     }
 
     const nuevaMembresia = await MembresiaModel.crear(req.body);

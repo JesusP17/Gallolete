@@ -5,11 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
-  if (Auth.isAuthenticated()) {
-    mostrarAppLayout();
-  } else {
-    mostrarLogin();
-  }
+  mostrarLandingView();
 
   // Login Form Event Listener
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -35,28 +31,319 @@ function initApp() {
     }
   });
 
+  // Register Form Event Listener
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nombreCompleto = document.getElementById('regNombreCompleto').value.trim();
+    const correo = document.getElementById('regCorreo').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const nombre_usuario = document.getElementById('regUsuario').value.trim();
+
+    const errorDiv = document.getElementById('loginError');
+    errorDiv.classList.add('hidden');
+
+    if (!nombreCompleto) {
+      errorDiv.innerText = 'Debe ingresar nombre y apellido.';
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+
+    const partes = nombreCompleto.split(/\s+/);
+    const nombre = (partes[0] || '').substring(0, 30);
+    const apellido = (partes.slice(1).join(' ') || partes[0] || '').substring(0, 30);
+
+    if (correo.length > 70) {
+      errorDiv.innerText = 'El correo electrónico no puede superar los 70 caracteres.';
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(correo) || !correo.includes('@') || !correo.includes('.')) {
+      errorDiv.innerText = 'El correo debe incluir "@" y un punto "." con un dominio válido (ej: usuario@correo.com).';
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+
+    if (password.length < 8 || password.length > 12) {
+      errorDiv.innerText = 'La contraseña debe tener un mínimo de 8 caracteres y un máximo de 12.';
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+
+    if (nombre_usuario.length > 30) {
+      errorDiv.innerText = 'El nombre de usuario no puede superar los 30 caracteres.';
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+
+    const res = await fetch('/api/auth/registro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre_completo: nombreCompleto,
+        nombre,
+        apellido,
+        correo,
+        password,
+        nombre_usuario
+      })
+    });
+
+    const data = await res.json();
+    if (data.ok) {
+      Auth.setSession(data.token, data.usuario);
+      mostrarAppLayout();
+    } else {
+      errorDiv.innerText = data.mensaje || 'Error al registrar el cliente.';
+      errorDiv.classList.remove('hidden');
+    }
+  });
+
   // Logout Event Listener
   document.getElementById('btnLogout').addEventListener('click', () => {
     Auth.clearSession();
-    mostrarLogin();
+    mostrarLandingView();
   });
 }
 
-function mostrarLogin() {
-  document.getElementById('loginView').classList.remove('hidden');
+function mostrarLandingView() {
+  document.getElementById('landingView').classList.remove('hidden');
+  document.getElementById('loginView').classList.add('hidden');
   document.getElementById('appLayout').classList.add('hidden');
+  actualizarBotonHeaderLanding();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function mostrarLoginView(tab = 'login') {
+  document.getElementById('landingView').classList.add('hidden');
+  document.getElementById('appLayout').classList.add('hidden');
+  document.getElementById('loginView').classList.remove('hidden');
+  mostrarAuthTab(tab);
+}
+
+function actualizarBotonHeaderLanding() {
+  const loggedOutDiv = document.getElementById('landingHeaderLoggedOut');
+  const loggedInDiv = document.getElementById('landingHeaderLoggedIn');
+
+  if (Auth.isAuthenticated()) {
+    const user = Auth.getUser();
+    if (loggedOutDiv) loggedOutDiv.classList.add('hidden');
+    if (loggedInDiv) {
+      loggedInDiv.classList.remove('hidden');
+      const uName = document.getElementById('landingUserNombre');
+      const uRole = document.getElementById('landingUserRol');
+      const dName = document.getElementById('landingDropdownNombre');
+      const dMail = document.getElementById('landingDropdownCorreo');
+      if (uName) uName.innerText = user ? user.nombre_usuario : 'Usuario';
+      if (uRole) uRole.innerText = user ? user.rol : 'Rol';
+      if (dName) dName.innerText = user ? user.nombre_usuario : 'Usuario';
+      if (dMail) dMail.innerText = user ? (user.correo || `${user.nombre_usuario}@gallolete.com`) : '';
+    }
+  } else {
+    if (loggedInDiv) loggedInDiv.classList.add('hidden');
+    if (loggedOutDiv) loggedOutDiv.classList.remove('hidden');
+  }
+}
+
+function irAComprarPlan(tipoPlan) {
+  if (!Auth.isAuthenticated()) {
+    mostrarLoginView('registro');
+    mostrarModalNotificacion({
+      titulo: `Plan ${tipoPlan}`,
+      mensaje: 'Crea tu cuenta de cliente o inicia sesión para adquirir tu plan de membresía.',
+      tipo: 'info'
+    });
+    return;
+  }
+
+  const user = Auth.getUser();
+  if (user && user.rol === 'Cliente') {
+    abrirModalAdquirirPlanCliente(tipoPlan);
+  } else {
+    mostrarAppLayout();
+    cambiarTab('membresias');
+    setTimeout(() => {
+      abrirModalMembresia();
+      const memTipoSelect = document.getElementById('memTipo');
+      if (memTipoSelect) memTipoSelect.value = tipoPlan;
+    }, 400);
+  }
+}
+
+function abrirModalAdquirirPlanCliente(tipoPlan) {
+  const user = Auth.getUser();
+  const idCliente = user ? user.id_cliente : null;
+
+  if (!idCliente) {
+    mostrarModalNotificacion({
+      titulo: 'Atención',
+      mensaje: 'Tu usuario aún no está vinculado a un perfil de cliente. Solicitalo en recepción.',
+      tipo: 'error'
+    });
+    return;
+  }
+
+  const precios = {
+    'Mensual General': 100000,
+    'Mensual VIP': 120000,
+    'Trimestral Ahorro': 300000,
+    'Trimestral': 300000,
+    'Anual Black': 950000,
+    'Anual': 950000
+  };
+
+  const precio = precios[tipoPlan] || 100000;
+
+  document.getElementById('modalTitle').innerText = `💳 Adquirir Plan ${tipoPlan}`;
+  document.getElementById('modalBody').innerHTML = `
+    <form id="formAdquirirPlan" onsubmit="confirmarAdquisicionPlan(event, '${tipoPlan}', ${precio})">
+      <div style="text-align: center; margin-bottom: 1.2rem;">
+        <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">🔥</div>
+        <h3 style="color: var(--dark-bg); font-weight: 800;">Plan ${tipoPlan}</h3>
+        <p style="font-size: 1.4rem; color: var(--primary-color); font-weight: 900; margin: 0.4rem 0;">
+          $${precio.toLocaleString('es-CO')} COP
+        </p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Acceso total a la Sede UniSalamanca Cra 50 #79-155.
+        </p>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--dark-bg);">Método de Pago</label>
+        <select id="planMetodoPago" class="form-control" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:6px;">
+          <option value="Tarjeta de Crédito / PSE">💳 Tarjeta de Crédito / PSE</option>
+          <option value="Transferencia Nequi / Daviplata">📱 Transferencia Nequi / Daviplata</option>
+          <option value="Efectivo en Recepción">💵 Efectivo en Recepción</option>
+        </select>
+      </div>
+
+      <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">🚀 Confirmar y Activar Plan</button>
+      </div>
+    </form>
+  `;
+
+  abrirModal();
+}
+
+async function confirmarAdquisicionPlan(e, tipoPlan, precio) {
+  e.preventDefault();
+  const user = Auth.getUser();
+  const idCliente = user ? user.id_cliente : null;
+  const metodoPago = document.getElementById('planMetodoPago').value;
+
+  if (!idCliente) return;
+
+  const hoy = new Date();
+  const fechaInicio = hoy.toISOString().substring(0, 10);
+  
+  let dias = 30;
+  if (tipoPlan.includes('Trimestral')) dias = 90;
+  if (tipoPlan.includes('Anual')) dias = 365;
+
+  const fechaFinObj = new Date(hoy.getTime() + (dias * 24 * 60 * 60 * 1000));
+  const fechaFin = fechaFinObj.toISOString().substring(0, 10);
+
+  // 1. Crear Membresía para el Cliente
+  const resMem = await Auth.fetchApi('/membresias', {
+    method: 'POST',
+    body: JSON.stringify({
+      id_cliente: idCliente,
+      tipo: tipoPlan,
+      precio: precio,
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
+      estado: 'activa'
+    })
+  });
+
+  if (resMem.ok) {
+    // 2. Registrar Pago
+    const idMembresia = resMem.membresia ? resMem.membresia.id_membresia : null;
+    await Auth.fetchApi('/pagos', {
+      method: 'POST',
+      body: JSON.stringify({
+        id_cliente: idCliente,
+        id_membresia: idMembresia,
+        valor: precio,
+        fecha_pago: fechaInicio,
+        metodo_pago: metodoPago,
+        referencia: `PLAN-${Date.now().toString().slice(-6)}`
+      })
+    });
+
+    cerrarModal();
+    mostrarAppLayout();
+    cambiarTab('dashboard-cliente');
+    mostrarModalNotificacion({
+      titulo: '¡Membresía Activada!',
+      mensaje: `Tu plan ${tipoPlan} fue adquirido con éxito. ¡Bienvenido a GalloLeTe!`,
+      tipo: 'exito'
+    });
+  } else {
+    mostrarModalNotificacion({
+      titulo: 'Error',
+      mensaje: resMem.mensaje || 'No se pudo procesar la adquisición del plan.',
+      tipo: 'error'
+    });
+  }
+}
+
+function mostrarAuthTab(tab) {
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const btnTabLogin = document.getElementById('btnTabLogin');
+  const btnTabRegistro = document.getElementById('btnTabRegistro');
+  const loginError = document.getElementById('loginError');
+  const registerSuccess = document.getElementById('registerSuccess');
+
+  if (loginError) loginError.classList.add('hidden');
+  if (registerSuccess) registerSuccess.classList.add('hidden');
+
+  if (tab === 'login') {
+    loginForm.classList.remove('hidden');
+    registerForm.classList.add('hidden');
+    btnTabLogin.classList.remove('btn-secondary');
+    btnTabLogin.classList.add('btn-primary');
+    btnTabRegistro.classList.remove('btn-primary');
+    btnTabRegistro.classList.add('btn-secondary');
+  } else {
+    loginForm.classList.add('hidden');
+    registerForm.classList.remove('hidden');
+    btnTabRegistro.classList.remove('btn-secondary');
+    btnTabRegistro.classList.add('btn-primary');
+    btnTabLogin.classList.remove('btn-primary');
+    btnTabLogin.classList.add('btn-secondary');
+  }
+}
+
+function mostrarLogin() {
+  mostrarLoginView('login');
 }
 
 function mostrarAppLayout() {
   const user = Auth.getUser();
-  if (!user) return mostrarLogin();
+  if (!user) return mostrarLoginView('login');
 
   document.getElementById('userNombre').innerText = user.nombre_usuario;
   document.getElementById('userRol').innerText = user.rol;
 
+  const hName = document.getElementById('headerUserNombre');
+  const hRole = document.getElementById('headerUserRol');
+  const ddName = document.getElementById('dropdownUserNombre');
+  const ddEmail = document.getElementById('dropdownUserCorreo');
+
+  if (hName) hName.innerText = user.nombre_usuario;
+  if (hRole) hRole.innerText = user.rol;
+  if (ddName) ddName.innerText = user.nombre_usuario;
+  if (ddEmail) ddEmail.innerText = user.correo || `${user.nombre_usuario}@gallolete.com`;
+
   // Construir navegación lateral según el ROL
   construirMenuPorRol(user.rol);
 
+  document.getElementById('landingView').classList.add('hidden');
   document.getElementById('loginView').classList.add('hidden');
   document.getElementById('appLayout').classList.remove('hidden');
 
@@ -76,13 +363,11 @@ function construirMenuPorRol(rol) {
   if (rol === 'Administrador') {
     opciones = [
       { id: 'dashboard-admin', label: '📊 Dashboard General' },
-      { id: 'clientes', label: '👥 Clientes' },
       { id: 'membresias', label: '💳 Membresías' },
       { id: 'entrenadores', label: '🏋️ Entrenadores' },
-      { id: 'rutinas', label: '📋 Rutinas' },
-      { id: 'ejercicios', label: '💪 Ejercicios' },
-      { id: 'pagos', label: '💰 Pagos' },
-      { id: 'usuarios', label: '⚙️ Usuarios' }
+      { id: 'recepcionistas', label: '📞 Recepcionistas' },
+      { id: 'clientes', label: '👥 Clientes' },
+      { id: 'pagos', label: '💰 Pagos' }
     ];
   } else if (rol === 'Entrenador') {
     opciones = [
@@ -115,6 +400,16 @@ function construirMenuPorRol(rol) {
 }
 
 function cambiarTab(tab) {
+  // Cerrar sidebar en móviles tras seleccionar una pestaña
+  const sidebar = document.querySelector('.sidebar');
+  const btnSidebar = document.getElementById('btnSidebarBurger');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if (sidebar && sidebar.classList.contains('active-mobile')) {
+    sidebar.classList.remove('active-mobile');
+    if (btnSidebar) btnSidebar.classList.remove('active');
+    if (backdrop) backdrop.classList.add('hidden');
+  }
+
   document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
 
@@ -132,6 +427,7 @@ function cambiarTab(tab) {
     clientes: 'Gestión de Clientes',
     membresias: 'Gestión de Membresías',
     entrenadores: 'Gestión de Entrenadores',
+    recepcionistas: 'Gestión de Recepcionistas',
     rutinas: 'Gestión de Rutinas',
     ejercicios: 'Base de Ejercicios',
     pagos: 'Historial de Pagos',
@@ -149,6 +445,7 @@ function cambiarTab(tab) {
     case 'clientes': cargarClientes(); break;
     case 'membresias': cargarMembresias(); break;
     case 'entrenadores': cargarEntrenadores(); break;
+    case 'recepcionistas': cargarRecepcionistas(); break;
     case 'rutinas': cargarRutinas(); break;
     case 'ejercicios': cargarEjercicios(); break;
     case 'pagos': cargarPagos(); break;
@@ -210,6 +507,20 @@ async function cargarDashboardEntrenador() {
   document.getElementById('statEntrenadorEjercicios').innerText = ejercicios.length;
   document.getElementById('statEntrenadorClientes').innerText = rutinas.length > 0 ? new Set(rutinas.map(r => r.id_cliente)).size : clientes.length;
 
+  // Renderizar Clientes Recientes para Entrenador
+  const tbodyNuevosCli = document.getElementById('tableEntrenadorNuevosClientes');
+  if (tbodyNuevosCli) {
+    tbodyNuevosCli.innerHTML = clientes.slice(0, 5).map(c => `
+      <tr>
+        <td><strong>${c.nombre} ${c.apellido}</strong></td>
+        <td>${c.telefono || '-'}</td>
+        <td>${c.correo || '-'}</td>
+        <td><span class="badge badge-${c.estado}">${c.estado}</span></td>
+        <td><button class="btn btn-primary btn-sm" onclick="cambiarTab('rutinas'); abrirModalRutina();">📋 Asignar Rutina</button></td>
+      </tr>
+    `).join('') || '<tr><td colspan="5" style="text-align:center;">No hay clientes registrados aún.</td></tr>';
+  }
+
   const tbody = document.getElementById('tableEntrenadorDashboard');
   tbody.innerHTML = rutinas.map(r => `
     <tr>
@@ -235,6 +546,20 @@ async function cargarDashboardRecepcionista() {
   document.getElementById('statRecepClientes').innerText = clientes.length;
   document.getElementById('statRecepActivas').innerText = membresias.filter(m => m.estado === 'activa').length;
   document.getElementById('statRecepVencidas').innerText = membresias.filter(m => m.estado === 'vencida').length;
+
+  // Renderizar Clientes Recientes para Recepcionista
+  const tbodyNuevosCli = document.getElementById('tableRecepNuevosClientes');
+  if (tbodyNuevosCli) {
+    tbodyNuevosCli.innerHTML = clientes.slice(0, 5).map(c => `
+      <tr>
+        <td><strong>${c.nombre} ${c.apellido}</strong></td>
+        <td>${c.telefono || '-'}</td>
+        <td>${c.correo || '-'}</td>
+        <td><span class="badge badge-${c.estado}">${c.estado}</span></td>
+        <td><button class="btn btn-secondary btn-sm" onclick="cambiarTab('membresias'); abrirModalMembresia();">💳 Membresía</button></td>
+      </tr>
+    `).join('') || '<tr><td colspan="5" style="text-align:center;">No hay clientes registrados aún.</td></tr>';
+  }
 
   const vencidas = membresias.filter(m => m.estado === 'vencida');
   const tbody = document.getElementById('tableRecepDashboard');
@@ -329,3 +654,270 @@ function abrirModal() {
 function cerrarModal() {
   document.getElementById('modalOverlay').classList.remove('active');
 }
+
+// Ventanas Emergentes (Modales Personalizados de Confirmación y Notificación)
+function mostrarModalConfirmacion({ titulo = 'Confirmar Acción', mensaje, textoBoton = 'Confirmar', claseBoton = 'btn-danger', onConfirm }) {
+  document.getElementById('modalTitle').innerText = titulo;
+  document.getElementById('modalBody').innerHTML = `
+    <div style="text-align: center; padding: 1rem 0;">
+      <div style="font-size: 3.2rem; margin-bottom: 0.8rem; line-height: 1;">⚠️</div>
+      <h4 style="margin-bottom: 0.5rem; color: var(--dark-bg); font-weight: 700;">${titulo}</h4>
+      <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 1.8rem; line-height: 1.5;">${mensaje}</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button type="button" class="btn btn-secondary" style="flex: 1; padding: 0.65rem 1rem;" onclick="cerrarModal()">Cancelar</button>
+        <button type="button" id="btnModalConfirmarAccion" class="btn ${claseBoton}" style="flex: 1; padding: 0.65rem 1rem;">${textoBoton}</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('btnModalConfirmarAccion').onclick = async () => {
+    cerrarModal();
+    if (typeof onConfirm === 'function') {
+      await onConfirm();
+    }
+  };
+
+  abrirModal();
+}
+
+function mostrarModalNotificacion({ titulo = 'Aviso', mensaje, tipo = 'exito' }) {
+  const icono = tipo === 'exito' ? '✅' : (tipo === 'error' ? '❌' : 'ℹ️');
+  document.getElementById('modalTitle').innerText = titulo;
+  document.getElementById('modalBody').innerHTML = `
+    <div style="text-align: center; padding: 1rem 0;">
+      <div style="font-size: 3.2rem; margin-bottom: 0.8rem; line-height: 1;">${icono}</div>
+      <h4 style="margin-bottom: 0.5rem; color: var(--dark-bg); font-weight: 700;">${titulo}</h4>
+      <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 1.8rem; line-height: 1.5;">${mensaje}</p>
+      <button type="button" class="btn btn-primary" style="width: 100%; max-width: 200px;" onclick="cerrarModal()">Aceptar</button>
+    </div>
+  `;
+  abrirModal();
+}
+
+// -------------------------------------------------------------
+// Funciones Adicionales: Desplazamiento Suave, Menú de Roles y Perfil de Usuario
+// -------------------------------------------------------------
+
+function scrollASeccion(e, id) {
+  if (e) e.preventDefault();
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function seleccionarRolDemo(rol) {
+  const userInp = document.getElementById('loginUsuario');
+  const passInp = document.getElementById('loginPassword');
+  if (!userInp || !passInp) return;
+
+  if (rol === 'Administrador') {
+    userInp.value = 'admin';
+    passInp.value = 'admin123';
+  } else if (rol === 'Entrenador') {
+    userInp.value = 'carlos_entrenador';
+    passInp.value = 'admin123';
+  } else if (rol === 'Recepcionista') {
+    userInp.value = 'maria_recep';
+    passInp.value = 'admin123';
+  } else if (rol === 'Cliente') {
+    userInp.value = 'JesusP171';
+    passInp.value = 'admin123';
+  }
+}
+
+function toggleUserDropdownMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('userHeaderDropdown');
+  if (menu) {
+    menu.classList.toggle('active');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const dropdown = document.getElementById('userHeaderDropdown');
+  const toggleBtn = document.getElementById('btnUserMenuToggle');
+  if (dropdown && toggleBtn && !dropdown.contains(e.target) && !toggleBtn.contains(e.target)) {
+    dropdown.classList.remove('active');
+  }
+});
+
+function ejecutarCerrarSesion() {
+  const menu = document.getElementById('userHeaderDropdown');
+  if (menu) menu.classList.remove('active');
+  Auth.clearSession();
+  mostrarLandingView();
+}
+
+function abrirModalMiPerfil() {
+  const menu = document.getElementById('userHeaderDropdown');
+  if (menu) menu.classList.remove('active');
+
+  const user = Auth.getUser();
+  if (!user) return;
+
+  document.getElementById('modalTitle').innerText = '✏️ Modificar Mis Datos de Cuenta';
+  document.getElementById('modalBody').innerHTML = `
+    <form id="formMiPerfil" onsubmit="guardarMiPerfil(event)">
+      <div style="margin-bottom: 1rem;">
+        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--dark-bg);">Nombre de Usuario *</label>
+        <input type="text" id="perfilUsuario" class="form-control" value="${user.nombre_usuario || ''}" required maxlength="30">
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--dark-bg);">Correo Electrónico *</label>
+        <input type="email" id="perfilCorreo" class="form-control" value="${user.correo || ''}" required maxlength="70">
+      </div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--dark-bg);">Nueva Contraseña (Opcional)</label>
+        <input type="password" id="perfilPassword" class="form-control" placeholder="Dejar en blanco para conservar actual (8-12 carát.)" minlength="8" maxlength="12">
+      </div>
+      <div style="display:flex; gap:1rem; justify-content:flex-end;">
+        <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">💾 Guardar Cambios</button>
+      </div>
+    </form>
+  `;
+
+  abrirModal();
+}
+
+async function guardarMiPerfil(e) {
+  e.preventDefault();
+  const user = Auth.getUser();
+  if (!user) return;
+
+  const nombre_usuario = document.getElementById('perfilUsuario').value.trim();
+  const correo = document.getElementById('perfilCorreo').value.trim();
+  const password = document.getElementById('perfilPassword').value;
+
+  if (!nombre_usuario) {
+    mostrarModalNotificacion({ titulo: 'Error', mensaje: 'El nombre de usuario es obligatorio.', tipo: 'error' });
+    return;
+  }
+
+  if (correo.length > 70) {
+    mostrarModalNotificacion({ titulo: 'Error', mensaje: 'El correo no puede superar los 70 caracteres.', tipo: 'error' });
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(correo) || !correo.includes('@') || !correo.includes('.')) {
+    mostrarModalNotificacion({ titulo: 'Error', mensaje: 'El correo debe ser un email válido (ej: usuario@correo.com).', tipo: 'error' });
+    return;
+  }
+
+  if (password && (password.length < 8 || password.length > 12)) {
+    mostrarModalNotificacion({ titulo: 'Error', mensaje: 'La contraseña debe tener entre 8 y 12 caracteres.', tipo: 'error' });
+    return;
+  }
+
+  const payload = {
+    nombre_usuario,
+    correo,
+    rol: user.rol,
+    id_cliente: user.id_cliente,
+    id_entrenador: user.id_entrenador,
+    estado: user.estado || 'activo'
+  };
+  if (password) {
+    payload.password = password;
+  }
+
+  const res = await Auth.fetchApi(`/usuarios/${user.id_usuario}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
+
+  if (res.ok) {
+    user.nombre_usuario = nombre_usuario;
+    user.correo = correo;
+    Auth.setSession(Auth.getToken(), user);
+    cerrarModal();
+    mostrarAppLayout();
+    mostrarModalNotificacion({ titulo: '¡Datos Actualizados!', mensaje: 'Tus datos de usuario fueron actualizados correctamente.', tipo: 'exito' });
+  } else {
+    mostrarModalNotificacion({ titulo: 'Error', mensaje: res.mensaje || 'No se pudieron actualizar los datos.', tipo: 'error' });
+  }
+}
+
+// -------------------------------------------------------------
+// Control del Menú Hamburguesa en Dispositivos Móviles
+// -------------------------------------------------------------
+
+function toggleLandingMobileMenu(e) {
+  if (e) e.stopPropagation();
+  const nav = document.getElementById('landingNav');
+  const btn = document.getElementById('btnLandingBurger');
+  if (nav && btn) {
+    nav.classList.toggle('active');
+    btn.classList.toggle('active');
+  }
+}
+
+function toggleSidebarMobile(e) {
+  if (e) e.stopPropagation();
+  const sidebar = document.querySelector('.sidebar');
+  const btn = document.getElementById('btnSidebarBurger');
+  const backdrop = document.getElementById('sidebarBackdrop');
+
+  if (sidebar) {
+    sidebar.classList.toggle('active-mobile');
+    if (btn) btn.classList.toggle('active');
+    if (backdrop) backdrop.classList.toggle('hidden');
+  }
+}
+
+// -------------------------------------------------------------
+// Menús Desplegables de Landing Page y Cierre al Clic Afuera
+// -------------------------------------------------------------
+
+function toggleLandingRoleDropdown(e) {
+  if (e) e.stopPropagation();
+  const dropdown = document.getElementById('landingRoleDropdown');
+  if (dropdown) dropdown.classList.toggle('active');
+}
+
+function toggleLandingUserDropdown(e) {
+  if (e) e.stopPropagation();
+  const dropdown = document.getElementById('landingUserDropdown');
+  if (dropdown) dropdown.classList.toggle('active');
+}
+
+function seleccionarRolYAcceder(rol) {
+  const dropdown = document.getElementById('landingRoleDropdown');
+  if (dropdown) dropdown.classList.remove('active');
+
+  const roleSelect = document.getElementById('loginRolSelect');
+  if (roleSelect) {
+    roleSelect.value = rol;
+    seleccionarRolDemo(rol);
+  }
+  mostrarLoginView('login');
+}
+
+// Escuchador global de clics para cerrar menús desplegables al hacer clic afuera
+document.addEventListener('click', (e) => {
+  // Dropdown de perfil en panel principal
+  const userHeaderDropdown = document.getElementById('userHeaderDropdown');
+  const btnUserMenuToggle = document.getElementById('btnUserMenuToggle');
+  if (userHeaderDropdown && btnUserMenuToggle && !userHeaderDropdown.contains(e.target) && !btnUserMenuToggle.contains(e.target)) {
+    userHeaderDropdown.classList.remove('active');
+  }
+
+  // Dropdown de rol en landing
+  const landingRoleDropdown = document.getElementById('landingRoleDropdown');
+  const btnHeaderAccesoPaneles = document.getElementById('btnHeaderAccesoPaneles');
+  if (landingRoleDropdown && btnHeaderAccesoPaneles && !landingRoleDropdown.contains(e.target) && !btnHeaderAccesoPaneles.contains(e.target)) {
+    landingRoleDropdown.classList.remove('active');
+  }
+
+  // Dropdown de perfil en landing
+  const landingUserDropdown = document.getElementById('landingUserDropdown');
+  const btnLandingUserMenu = document.getElementById('btnLandingUserMenu');
+  if (landingUserDropdown && btnLandingUserMenu && !landingUserDropdown.contains(e.target) && !btnLandingUserMenu.contains(e.target)) {
+    landingUserDropdown.classList.remove('active');
+  }
+});
+
+
+

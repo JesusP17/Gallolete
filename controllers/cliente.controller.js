@@ -24,14 +24,13 @@ const obtenerClientePorId = async (req, res, next) => {
 
 const crearCliente = async (req, res, next) => {
   try {
-    const { documento, nombre, apellido } = req.body;
-    if (!documento || !nombre || !apellido) {
-      return res.status(400).json({ ok: false, mensaje: 'Los campos documento, nombre y apellido son obligatorios.' });
+    const { nombre, apellido } = req.body;
+    if (!nombre || !apellido) {
+      return res.status(400).json({ ok: false, mensaje: 'Los campos nombre y apellido son obligatorios.' });
     }
 
-    const existe = await ClienteModel.obtenerPorDocumento(documento);
-    if (existe) {
-      return res.status(400).json({ ok: false, mensaje: 'Ya existe un cliente registrado con ese número de documento.' });
+    if (!req.body.documento) {
+      req.body.documento = 'DOC-' + Date.now();
     }
 
     const nuevoCliente = await ClienteModel.crear(req.body);

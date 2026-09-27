@@ -15,14 +15,13 @@ function renderizarEjercicios(lista) {
   tbody.innerHTML = '';
 
   if (lista.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay ejercicios registrados.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay ejercicios registrados.</td></tr>';
     return;
   }
 
   lista.forEach(e => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>#${e.id_ejercicio}</td>
       <td><strong>${e.nombre}</strong></td>
       <td><span class="badge" style="background:#e3f2fd; color:#1565c0;">${e.grupo_muscular}</span></td>
       <td>${e.nivel}</td>

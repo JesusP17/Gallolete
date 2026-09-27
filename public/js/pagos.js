@@ -15,15 +15,14 @@ function renderizarPagos(lista) {
   tbody.innerHTML = '';
 
   if (lista.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay pagos registrados.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay pagos registrados.</td></tr>';
     return;
   }
 
   lista.forEach(p => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>#${p.id_pago}</td>
-      <td><strong>${p.cliente_nombre || 'Cliente #' + p.id_cliente}</strong><br><small>${p.cliente_documento || ''}</small></td>
+      <td><strong>${p.cliente_nombre || 'Cliente'}</strong></td>
       <td>${p.membresia_tipo || 'General'}</td>
       <td>${p.fecha_pago ? p.fecha_pago.replace('T', ' ').substring(0, 16) : ''}</td>
       <td style="color:var(--success); font-weight:bold;">$${parseFloat(p.valor).toLocaleString('es-CO')}</td>
@@ -44,7 +43,7 @@ async function abrirModalPago() {
   const membresias = resMembresias.ok ? resMembresias.membresias : [];
 
   const optClientes = clientes.map(c => 
-    `<option value="${c.id_cliente}">${c.nombre} ${c.apellido} (${c.documento})</option>`
+    `<option value="${c.id_cliente}">${c.nombre} ${c.apellido}</option>`
   ).join('');
 
   const optMembresias = membresias.map(m => 

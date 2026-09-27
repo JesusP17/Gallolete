@@ -34,6 +34,11 @@ class ClienteModel {
        WHERE id_cliente = ?`,
       [documento, nombre, apellido, fecha_nacimiento || null, genero || null, telefono || null, correo || null, direccion || null, estado || 'activo', id]
     );
+
+    if (estado) {
+      await db.query('UPDATE usuarios SET estado = ? WHERE id_cliente = ?', [estado, id]);
+    }
+
     return this.obtenerPorId(id);
   }
 

@@ -15,17 +15,16 @@ function renderizarRutinas(lista) {
   tbody.innerHTML = '';
 
   if (lista.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay rutinas asignadas.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay rutinas asignadas.</td></tr>';
     return;
   }
 
   lista.forEach(r => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>#${r.id_rutina}</td>
       <td><strong>${r.nombre_rutina}</strong></td>
-      <td>${r.cliente_nombre || 'Cliente #' + r.id_cliente}</td>
-      <td>${r.entrenador_nombre || 'Entrenador #' + r.id_entrenador}</td>
+      <td>${r.cliente_nombre || 'Cliente'}</td>
+      <td>${r.entrenador_nombre || 'Entrenador'}</td>
       <td>${r.nivel}</td>
       <td><span class="badge badge-${r.estado}">${r.estado}</span></td>
       <td>

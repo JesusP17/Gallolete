@@ -8,30 +8,344 @@
 </head>
 <body>
 
-  <!-- VISTA DE LOGIN -->
-  <div id="loginView" class="login-container">
-    <div class="login-card">
+  <!-- 0. PÁGINA PRINCIPAL / LANDING PAGE (Referencia Sede UniSalamanca) -->
+  <div id="landingView" class="landing-container">
+    <!-- HEADER NAVEGACIÓN PRINCIPAL -->
+    <header class="landing-header">
+      <div class="landing-header-content">
+        <div class="landing-logo">
+          <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:var(--primary-color);"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 6.29 3.43 4.86 2 3.43 3.43 2 4.86l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43l8.57 8.57L12 20.57 13.43 22l1.43-1.43 1.43 1.43 1.43-1.43 1.43 1.43 1.43-1.43-1.43-1.43z"/></svg>
+          Gallo<span>LeTe</span> <small style="font-size:0.65rem; color:#888; font-weight:normal; margin-left:4px;">GIMNASIO</small>
+        </div>
+        
+        <!-- Botón Hamburguesa para Teléfonos/Móviles -->
+        <button id="btnLandingBurger" class="burger-btn" onclick="toggleLandingMobileMenu(event)" aria-label="Menú de Navegación">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="landing-nav" id="landingNav">
+          <a href="#sede" onclick="scrollASeccion(event, 'sede')">Sede UniSalamanca</a>
+          <a href="#planes" onclick="scrollASeccion(event, 'planes')">Planes y Membresías</a>
+          <a href="#instalaciones" onclick="scrollASeccion(event, 'instalaciones')">Instalaciones</a>
+          <a href="#sede" onclick="scrollASeccion(event, 'sede')">Horarios</a>
+          <div class="mobile-only-action" style="margin-top: 1rem;">
+            <button class="btn btn-primary width-100" onclick="mostrarLoginView(); toggleLandingMobileMenu();">
+              🔐 Acceder a Paneles
+            </button>
+          </div>
+        </nav>
+
+        <div class="landing-header-actions" style="position: relative;">
+          <!-- Cuando NO ha iniciado sesión -->
+          <div id="landingHeaderLoggedOut" style="position: relative;">
+            <button id="btnHeaderAccesoPaneles" class="btn btn-primary" onclick="toggleLandingRoleDropdown(event)">
+              🔐 Acceder a Paneles ▾
+            </button>
+            <div id="landingRoleDropdown" class="user-dropdown-menu">
+              <div class="dropdown-header">
+                <strong>Seleccionar Rol de Acceso</strong>
+                <small>Elige tu rol para ingresar</small>
+              </div>
+              <hr style="border: 0; border-top: 1px solid #eee; margin: 0.4rem 0;">
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Administrador')">⚙️ Administrador</button>
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Entrenador')">🏋️ Entrenador</button>
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Recepcionista')">📞 Recepcionista</button>
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Cliente')">👤 Cliente</button>
+            </div>
+          </div>
+
+          <!-- Cuando SÍ ha iniciado sesión -->
+          <div id="landingHeaderLoggedIn" class="hidden" style="position: relative;">
+            <button id="btnLandingUserMenu" class="btn btn-secondary" onclick="toggleLandingUserDropdown(event)" style="display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.9rem;">
+              👤 <strong id="landingUserNombre">Usuario</strong> (<span id="landingUserRol">Rol</span>) ▾
+            </button>
+            <div id="landingUserDropdown" class="user-dropdown-menu">
+              <div class="dropdown-header">
+                <strong id="landingDropdownNombre">Cuenta de Usuario</strong>
+                <small id="landingDropdownCorreo">usuario@gallolete.com</small>
+              </div>
+              <hr style="border: 0; border-top: 1px solid #eee; margin: 0.4rem 0;">
+              <button type="button" class="dropdown-item" onclick="abrirModalMiPerfil()">
+                ✏️ Modificar Mis Datos
+              </button>
+              <button type="button" class="dropdown-item" onclick="mostrarAppLayout()">
+                ⚡ Ir a Mi Panel
+              </button>
+              <hr style="border: 0; border-top: 1px solid #eee; margin: 0.4rem 0;">
+              <button type="button" class="dropdown-item text-danger" onclick="ejecutarCerrarSesion()">
+                🚪 Cerrar Sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO BANNER PRINCIPAL -->
+    <section class="landing-hero" style="background-image: linear-gradient(to right, rgba(15, 23, 42, 0.92) 30%, rgba(15, 23, 42, 0.45)), url('img/hero.jpg');">
+      <div class="landing-hero-content">
+        <div class="landing-badge">📍 SEDE UNISALAMANCA • CRA 50 #79-155</div>
+        <h1 class="landing-hero-title">El Gimnasio Inteligente <span>GalloLeTe</span></h1>
+        <p class="landing-hero-subtitle">
+          Entrena en instalaciones de primer nivel, máquinas de última generación y seguimiento personalizado con entrenadores expertos en UniSalamanca Cra 50 #79-155.
+        </p>
+        <div class="landing-hero-buttons">
+          <a href="#planes" onclick="scrollASeccion(event, 'planes')" class="btn btn-primary btn-lg">🔥 Ver Planes de Membresía</a>
+          <button class="btn btn-secondary btn-lg" onclick="mostrarLoginView()">🔐 Acceso a Paneles de Gestión</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- BARRA DE ESTADÍSTICAS O VALORES DESTACADOS -->
+    <section class="landing-stats-bar">
+      <div class="landing-stats-grid">
+        <div class="landing-stat-item">
+          <strong>+1,500 m²</strong>
+          <span>Instalaciones Modernas</span>
+        </div>
+        <div class="landing-stat-item">
+          <strong>100%</strong>
+          <span>Tecnología & Equipamiento VIP</span>
+        </div>
+        <div class="landing-stat-item">
+          <strong>4 Paneles</strong>
+          <span>Gestión Integral por Rol</span>
+        </div>
+        <div class="landing-stat-item">
+          <strong>5:00 AM - 10:00 PM</strong>
+          <span>Horario Extendido</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN PLANES Y MEMBRESÍAS (Estilo Smart Fit) -->
+    <section id="planes" class="landing-section">
+      <div class="landing-section-header">
+        <span class="landing-section-tag">NUESTROS PLANES</span>
+        <h2>Membresías Adaptadas a Tus Metas</h2>
+        <p>Elige el plan ideal para ti y comienza a entrenar hoy mismo en nuestra Sede UniSalamanca Cra 50 #79-155.</p>
+      </div>
+
+      <div class="landing-plans-grid">
+        <!-- Plan 1 -->
+        <div class="landing-plan-card">
+          <div class="landing-plan-header">
+            <h3>Mensual General</h3>
+            <div class="landing-plan-price">$100.000 <span>/ mes</span></div>
+          </div>
+          <ul class="landing-plan-features">
+            <li>✅ Acceso a zona de musculación y peso libre</li>
+            <li>✅ Área cardio y resistencia ilimitada</li>
+            <li>✅ Duchas con agua caliente y vestieres VIP</li>
+            <li>✅ App móvil para control de entrenamiento</li>
+          </ul>
+          <button class="btn btn-primary width-100" onclick="irAComprarPlan('Mensual General')">Elegir Mensual General</button>
+        </div>
+
+        <!-- Plan 2 (Destacado VIP) -->
+        <div class="landing-plan-card featured">
+          <div class="landing-plan-badge">RECOMENDADO ⭐</div>
+          <div class="landing-plan-header">
+            <h3>Mensual VIP</h3>
+            <div class="landing-plan-price">$120.000 <span>/ mes</span></div>
+          </div>
+          <ul class="landing-plan-features">
+            <li>✅ <strong>Todo lo del Plan General</strong></li>
+            <li>✅ Evaluación física y seguimiento con Entrenador</li>
+            <li>✅ Rutinas personalizadas por objetivo</li>
+            <li>✅ Invitado gratis 4 días al mes</li>
+            <li>✅ Lockers preferenciales de seguridad</li>
+          </ul>
+          <button class="btn btn-primary width-100" onclick="irAComprarPlan('Mensual VIP')">Inscribirme Plan VIP</button>
+        </div>
+
+        <!-- Plan 3 -->
+        <div class="landing-plan-card">
+          <div class="landing-plan-header">
+            <h3>Trimestral Ahorro</h3>
+            <div class="landing-plan-price">$300.000 <span>/ 3 meses</span></div>
+          </div>
+          <ul class="landing-plan-features">
+            <li>✅ Ahorro garantizado del 15%</li>
+            <li>✅ Acceso a todas las zonas del gimnasio</li>
+            <li>✅ Asesoría en nutrición deportiva básica</li>
+            <li>✅ Clases grupales y funcional</li>
+          </ul>
+          <button class="btn btn-primary width-100" onclick="irAComprarPlan('Trimestral')">Elegir Plan Trimestral</button>
+        </div>
+
+        <!-- Plan 4 -->
+        <div class="landing-plan-card">
+          <div class="landing-plan-header">
+            <h3>Anual Black</h3>
+            <div class="landing-plan-price">$950.000 <span>/ año</span></div>
+          </div>
+          <ul class="landing-plan-features">
+            <li>✅ Máximo ahorro y tarifa fija asegurada</li>
+            <li>✅ Congelamiento de membresía hasta por 30 días</li>
+            <li>✅ Acceso prioritario a eventos y talleres</li>
+            <li>✅ Regalo de bienvenida kit GalloLeTe</li>
+          </ul>
+          <button class="btn btn-primary width-100" onclick="irAComprarPlan('Anual')">Elegir Plan Anual</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN INSTALACIONES Y ZONAS -->
+    <section id="instalaciones" class="landing-section bg-alt">
+      <div class="landing-section-header">
+        <span class="landing-section-tag">NUESTRA SEDE</span>
+        <h2>Instalaciones de Última Generación</h2>
+        <p>Espacios amplios y equipamiento moderno diseñados para maximizar tu rendimiento.</p>
+      </div>
+
+      <div class="landing-zones-grid">
+        <div class="landing-zone-card">
+          <div class="landing-zone-img" style="background-image: url('img/hero.jpg');"></div>
+          <div class="landing-zone-info">
+            <h3>Zona Musculación & Peso Libre</h3>
+            <p>Racks de sentadilla, mancuernas de alto gramaje, bancos ajustables y máquinas biomecánicas de precisión.</p>
+          </div>
+        </div>
+
+        <div class="landing-zone-card">
+          <div class="landing-zone-img" style="background-image: url('img/cardio.jpg');"></div>
+          <div class="landing-zone-info">
+            <h3>Zona Cardio & Resistencia</h3>
+            <p>Caminadoras de última generación con pantallas interactivas, elípticas, escaladoras y bicicletas de spinning.</p>
+          </div>
+        </div>
+
+        <div class="landing-zone-card">
+          <div class="landing-zone-img" style="background-image: url('img/crossfit.jpg');"></div>
+          <div class="landing-zone-info">
+            <h3>Área Funcional & Crossfit</h3>
+            <p>Cuerdas de batalla, kettlebells, cajones pliométricos, estructuras de calistenia y zona de césped sintético.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN SEDE & HORARIOS (Reference Sede UniSalamanca Cra 50 #79-155) -->
+    <section id="sede" class="landing-section">
+      <div class="landing-location-card">
+        <div class="landing-location-info">
+          <div class="landing-badge">📍 INFORMACIÓN DE LA SEDE</div>
+          <h2>Sede UniSalamanca</h2>
+          <p class="address">🏢 Cra 50 #79-155, Barranquilla</p>
+          
+          <div class="schedule-box">
+            <h4>⏰ Horarios de Atención:</h4>
+            <ul>
+              <li><strong>Lunes a Viernes:</strong> 5:00 AM – 10:00 PM</li>
+              <li><strong>Sábados:</strong> 6:00 AM – 6:00 PM</li>
+              <li><strong>Domingos y Festivos:</strong> 7:00 AM – 4:00 PM</li>
+            </ul>
+          </div>
+
+          <div class="amenities-list">
+            <span>❄️ Aire Acondicionado</span>
+            <span>🚿 Duchas de Agua Caliente</span>
+            <span>🔒 Lockers de Seguridad</span>
+            <span>🅿️ Parqueadero Gratis (2 hrs)</span>
+          </div>
+
+          <div style="margin-top:1.5rem;">
+            <button class="btn btn-primary" onclick="mostrarLoginView()">🚀 Ingresar al Sistema de Gestión</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER PRINCIPAL -->
+    <footer class="landing-footer">
+      <div class="landing-footer-content">
+        <div>
+          <h3>Gallo<span>LeTe</span> Gimnasio</h3>
+          <p>Sistema Integral de Gestión de Gimnasio - Sede UniSalamanca Cra 50 #79-155.</p>
+        </div>
+        <div>
+          <button class="btn btn-primary" onclick="mostrarLoginView()">🔐 Acceso a Paneles de Gestión</button>
+        </div>
+      </div>
+      <div class="landing-footer-bottom">
+        <p>&copy; 2026 GalloLeTe Gimnasio Sede UniSalamanca Cra 50 #79-155. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- VISTA DE LOGIN Y REGISTRO -->
+  <div id="loginView" class="login-container hidden">
+    <div class="login-card" style="max-width: 480px;">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="mostrarLandingView()" style="margin-bottom: 1rem; width: 100%;">← Volver a Página Principal</button>
       <h2>Gallo<span>LeTe</span> 🏋️‍♂️</h2>
       <p>Sistema de Gestión de Gimnasio</p>
+      
+      <!-- Pestañas para elegir Iniciar Sesión o Registrarse -->
+      <div class="auth-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.2rem;">
+        <button id="btnTabLogin" type="button" class="btn btn-primary" style="flex: 1; padding: 0.5rem;" onclick="mostrarAuthTab('login')">Iniciar Sesión</button>
+        <button id="btnTabRegistro" type="button" class="btn btn-secondary" style="flex: 1; padding: 0.5rem;" onclick="mostrarAuthTab('registro')">Registrarse</button>
+      </div>
+
       <div id="loginError" class="badge badge-vencida hidden" style="margin-bottom: 1rem; width: 100%; text-align: center;"></div>
+      <div id="registerSuccess" class="badge badge-activa hidden" style="margin-bottom: 1rem; width: 100%; text-align: center;"></div>
+
+      <!-- FORMULARIO LOGIN -->
       <form id="loginForm">
         <div class="form-group">
+          <label>Seleccionar Rol de Acceso (Demo Rápido)</label>
+          <select id="loginRolSelect" class="form-control" onchange="seleccionarRolDemo(this.value)" style="background:#f0f4f8; font-weight:600; border-color:var(--primary-color);">
+            <option value="Administrador">⚙️ Administrador (admin)</option>
+            <option value="Entrenador">🏋️ Entrenador (carlos_entrenador)</option>
+            <option value="Recepcionista">📞 Recepcionista (maria_recep)</option>
+            <option value="Cliente" selected>👤 Cliente (JesusP171)</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label>Usuario o Correo</label>
-          <input type="text" id="loginUsuario" class="form-control" placeholder="Ej: admin, carlos_entrenador, maria_recep, juan_cliente" required>
+          <input type="text" id="loginUsuario" class="form-control" value="JesusP171" placeholder="Ej: admin, carlos_entrenador, maria_recep, JesusP171" required>
         </div>
         <div class="form-group">
           <label>Contraseña</label>
-          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+          <input type="password" id="loginPassword" class="form-control" value="admin123" placeholder="••••••••" required>
         </div>
         <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Iniciar Sesión</button>
       </form>
-      <div style="margin-top: 1.5rem; text-align: left; background: #f8f9fa; padding: 0.8rem; border-radius: 6px; font-size: 0.8rem;">
-        <strong>Usuarios de prueba (clave: admin123):</strong>
+
+      <!-- FORMULARIO REGISTRO -->
+      <form id="registerForm" class="hidden">
+        <div class="form-group">
+          <label>Nombre y Apellido * (máx 60)</label>
+          <input type="text" id="regNombreCompleto" class="form-control" placeholder="Ej: Carlos Mendoza" maxlength="60" required>
+        </div>
+
+        <div class="form-group">
+          <label>Correo Electrónico * (máx 70)</label>
+          <input type="email" id="regCorreo" class="form-control" placeholder="Ej: carlos@ejemplo.com" maxlength="70" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" title="Ingrese un correo válido con @ y dominio con punto (ej: usuario@correo.com)" required>
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña * (8 - 12 carát.)</label>
+          <input type="password" id="regPassword" class="form-control" placeholder="••••••••" minlength="8" maxlength="12" title="La contraseña debe tener entre 8 y 12 caracteres" required>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre de Usuario * (máx 30)</label>
+          <input type="text" id="regUsuario" class="form-control" placeholder="Ej: carlos_cliente" maxlength="30" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Crear Cuenta de Cliente</button>
+      </form>
+
+      <div id="demoUsersBox" style="margin-top: 1.5rem; text-align: left; background: #f8f9fa; padding: 0.8rem; border-radius: 6px; font-size: 0.8rem;">
+        <strong>Cuentas disponibles (clave: admin123):</strong>
         <ul style="margin-left: 1.2rem; margin-top: 0.3rem;">
           <li><code>admin</code> (Administrador)</li>
           <li><code>carlos_entrenador</code> (Entrenador)</li>
           <li><code>maria_recep</code> (Recepcionista)</li>
-          <li><code>juan_cliente</code> (Cliente)</li>
+          <li><code>JesusP171</code> (Cliente)</li>
         </ul>
       </div>
     </div>
@@ -42,7 +356,8 @@
     <!-- BARRA LATERAL -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        Gallo<span>LeTe</span> 🏋️‍♂️
+        <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:var(--primary-color);"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 6.29 3.43 4.86 2 3.43 3.43 2 4.86l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43l8.57 8.57L12 20.57 13.43 22l1.43-1.43 1.43 1.43 1.43-1.43 1.43 1.43 1.43-1.43-1.43-1.43z"/></svg>
+        Gallo<span>LeTe</span>
       </div>
       <ul class="nav-list" id="sidebarNav">
         <!-- Las pestañas se renderizan dinámicamente según el ROL -->
@@ -52,14 +367,51 @@
           <strong id="userNombre">Usuario</strong><br>
           <small id="userRol" style="color: #a8dedc; font-weight: bold;">Rol</small>
         </div>
-        <button id="btnLogout" class="btn btn-danger btn-sm" title="Cerrar Sesión">🚪</button>
+        <button id="btnLogout" class="btn btn-danger btn-sm" onclick="ejecutarCerrarSesion()" title="Cerrar Sesión">
+          <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:white;"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+        </button>
       </div>
     </aside>
 
+    <!-- BACKDROP CAPA DE FONDO PARA NAVEGACIÓN MÓVIL EN PANELES -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop hidden" onclick="toggleSidebarMobile()"></div>
+
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
-      <div class="top-bar">
-        <h1 id="tabTitle">Dashboard Principal</h1>
+      <div class="top-bar" style="display:flex; justify-content:space-between; align-items:center; gap:0.8rem;">
+        <div style="display:flex; align-items:center; gap:0.8rem;">
+          <button id="btnSidebarBurger" class="burger-btn burger-dark" onclick="toggleSidebarMobile(event)" aria-label="Menú Lateral">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <h1 id="tabTitle">Dashboard Principal</h1>
+        </div>
+        
+        <!-- MENU DESPLEGABLE DE PERFIL Y CONFIGURACIÓN EN HEADER -->
+        <div class="user-header-menu-container" style="position: relative;">
+          <button id="btnUserMenuToggle" class="btn btn-secondary" onclick="toggleUserDropdownMenu(event)" style="display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.9rem;">
+            👤 <strong id="headerUserNombre">Usuario</strong> (<span id="headerUserRol">Rol</span>) ▾
+          </button>
+
+          <div id="userHeaderDropdown" class="user-dropdown-menu">
+            <div class="dropdown-header">
+              <strong id="dropdownUserNombre">Cuenta de Usuario</strong>
+              <small id="dropdownUserCorreo">usuario@gallolete.com</small>
+            </div>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 0.5rem 0;">
+            <button type="button" class="dropdown-item" onclick="abrirModalMiPerfil()">
+              ✏️ Modificar Mis Datos
+            </button>
+            <button type="button" class="dropdown-item" onclick="mostrarLandingView()">
+              🏠 Página Principal
+            </button>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 0.5rem 0;">
+            <button type="button" class="dropdown-item text-danger" onclick="ejecutarCerrarSesion()">
+              🚪 Cerrar Sesión
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- VISTAS DASHBOARD ESPECÍFICAS SEGÚN EL ROL -->
@@ -117,23 +469,47 @@
             <span class="value" id="statEntrenadorClientes" style="color: var(--success);">0</span>
           </div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; margin-bottom: 1rem;">
-          <h3>Rutinas Recientes de Mis Atletas</h3>
-          <button class="btn btn-primary btn-sm" onclick="cambiarTab('rutinas')">+ Asignar Nueva Rutina</button>
+
+        <div style="margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <h3>👥 Clientes Recientes Registrados</h3>
+            <button class="btn btn-secondary btn-sm" onclick="cambiarTab('clientes')">Ver Todos los Clientes</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Teléfono</th>
+                  <th>Correo</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tableEntrenadorNuevosClientes"></tbody>
+            </table>
+          </div>
         </div>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Rutina</th>
-                <th>Cliente</th>
-                <th>Nivel</th>
-                <th>Estado</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="tableEntrenadorDashboard"></tbody>
-          </table>
+
+        <div style="margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <h3>📋 Rutinas Recientes de Mis Atletas</h3>
+            <button class="btn btn-primary btn-sm" onclick="cambiarTab('rutinas'); abrirModalRutina();">+ Asignar Nueva Rutina</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Rutina</th>
+                  <th>Cliente</th>
+                  <th>Nivel</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tableEntrenadorDashboard"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -157,20 +533,41 @@
           <button class="btn btn-primary" onclick="cambiarTab('clientes'); abrirModalCliente();">+ Registrar Nuevo Cliente</button>
           <button class="btn btn-secondary" onclick="cambiarTab('pagos'); abrirModalPago();">💰 Cobrar Membresía</button>
         </div>
-        <h3>Membresías Vencidas / Alertas de Renovación</h3>
-        <div class="table-container" style="margin-top: 1rem;">
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Tipo</th>
-                <th>Vencimiento</th>
-                <th>Estado</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="tableRecepDashboard"></tbody>
-          </table>
+
+        <div style="margin-top: 1.5rem;">
+          <h3>👥 Clientes Recientes Registrados</h3>
+          <div class="table-container" style="margin-top: 0.8rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Teléfono</th>
+                  <th>Correo</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tableRecepNuevosClientes"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.8rem;">
+          <h3>Membresías Vencidas / Alertas de Renovación</h3>
+          <div class="table-container" style="margin-top: 0.8rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Tipo</th>
+                  <th>Vencimiento</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tableRecepDashboard"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -232,15 +629,13 @@
       <!-- VISTA CLIENTES -->
       <section id="tab-clientes" class="tab-content hidden">
         <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-          <input type="text" id="searchCliente" class="form-control" placeholder="Buscar por documento o nombre..." style="max-width: 300px;">
+          <input type="text" id="searchCliente" class="form-control" placeholder="Buscar cliente por nombre..." style="max-width: 300px;">
           <button class="btn btn-primary" onclick="abrirModalCliente()">+ Nuevo Cliente</button>
         </div>
         <div class="table-container">
           <table>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Documento</th>
                 <th>Nombre</th>
                 <th>Teléfono</th>
                 <th>Correo</th>
@@ -267,7 +662,7 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Imagen</th>
                 <th>Cliente</th>
                 <th>Tipo</th>
                 <th>Inicio</th>
@@ -291,8 +686,6 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Documento</th>
                 <th>Nombre</th>
                 <th>Especialidad</th>
                 <th>Horario</th>
@@ -314,7 +707,6 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Rutina</th>
                 <th>Cliente</th>
                 <th>Entrenador</th>
@@ -337,7 +729,6 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Ejercicio</th>
                 <th>Grupo Muscular</th>
                 <th>Nivel</th>
@@ -359,7 +750,6 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Cliente</th>
                 <th>Membresía</th>
                 <th>Fecha</th>
@@ -373,6 +763,27 @@
         </div>
       </section>
 
+      <!-- VISTA RECEPCIONISTAS -->
+      <section id="tab-recepcionistas" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalRecepcionista()">+ Nuevo Recepcionista</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableRecepcionistas"></tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- VISTA USUARIOS -->
       <section id="tab-usuarios" class="tab-content hidden">
         <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
@@ -382,7 +793,6 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Usuario</th>
                 <th>Correo</th>
                 <th>Rol</th>
@@ -414,6 +824,7 @@
   <script src="js/clientes.js"></script>
   <script src="js/membresias.js"></script>
   <script src="js/entrenadores.js"></script>
+  <script src="js/recepcionistas.js"></script>
   <script src="js/ejercicios.js"></script>
   <script src="js/rutinas.js"></script>
   <script src="js/pagos.js"></script>

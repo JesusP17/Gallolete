@@ -27,13 +27,14 @@ CREATE TABLE clientes (
 -- 2. TABLA MEMBRESIAS
 CREATE TABLE membresias (
   id_membresia INT AUTO_INCREMENT PRIMARY KEY,
-  id_cliente INT NOT NULL,
+  id_cliente INT NULL,
   tipo VARCHAR(50) NOT NULL,
   fecha_inicio DATE NOT NULL,
   fecha_fin DATE NOT NULL,
   precio DECIMAL(10, 2) NOT NULL,
   estado ENUM('activa', 'vencida', 'cancelada') DEFAULT 'activa',
-  metodo_pago VARCHAR(50) DEFAULT 'Efectivo',
+  metodo_pago VARCHAR(50) DEFAULT 'Pendiente',
+  imagen LONGTEXT NULL,
   CONSTRAINT fk_membresias_cliente FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente) ON DELETE CASCADE
 );
 
