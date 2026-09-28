@@ -1,4 +1,4 @@
-const db = require('../config/database');
+﻿const db = require('../config/database');
 
 class RutinaModel {
   static async obtenerTodas() {
@@ -56,13 +56,26 @@ class RutinaModel {
   }
 
   static async actualizar(id, datos) {
-    const { id_cliente, id_entrenador, nombre_rutina, objetivo, nivel, fecha_inicio, fecha_fin, observaciones, estado } = datos;
+    const asignaciones = [];
+    const valores = [];
+
+    const agregar = (columna, valor) => { asignaciones.push(`${columna} = ?`); valores.push(valor); };
+
+    for (const campo of ['nombre_rutina', 'objetivo', 'nivel', 'fecha_inicio', 'fecha_fin', 'observaciones', 'estado']) {
+      if (datos[campo] !== undefined) agregar(campo, datos[campo]);
+    }
+    for (const campo of ['id_cliente', 'id_entrenador']) {
+      if (datos[campo] !== undefined) agregar(campo, datos[campo] === '' ? null : datos[campo]);
+    }
+
+    if (asignaciones.length === 0) return this.obtenerPorId(id);
+
+    valores.push(id);
     await db.query(
-      `UPDATE rutinas
-       SET id_cliente = ?, id_entrenador = ?, nombre_rutina = ?, objetivo = ?, nivel = ?, fecha_inicio = ?, fecha_fin = ?, observaciones = ?, estado = ?
-       WHERE id_rutina = ?`,
-      [id_cliente, id_entrenador, nombre_rutina, objetivo || null, nivel || 'Principiante', fecha_inicio || null, fecha_fin || null, observaciones || null, estado || 'activa', id]
+      `UPDATE rutinas SET ${asignaciones.join(', ')} WHERE id_rutina = ?`,
+      valores
     );
+
     return this.obtenerPorId(id);
   }
 

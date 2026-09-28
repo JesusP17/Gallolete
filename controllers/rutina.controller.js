@@ -1,4 +1,4 @@
-const RutinaModel = require('../models/rutina.model');
+﻿const RutinaModel = require('../models/rutina.model');
 
 const obtenerRutinas = async (req, res, next) => {
   try {
@@ -24,12 +24,13 @@ const obtenerRutinaPorId = async (req, res, next) => {
 
 const crearRutina = async (req, res, next) => {
   try {
-    const { id_cliente, id_entrenador, nombre_rutina } = req.body;
+    const { id_cliente, nombre_rutina } = req.body;
+    const id_entrenador = req.usuario?.id_entrenador;
     if (!id_cliente || !id_entrenador || !nombre_rutina) {
       return res.status(400).json({ ok: false, mensaje: 'El cliente, el entrenador y el nombre de la rutina son obligatorios.' });
     }
 
-    const nuevaRutina = await RutinaModel.crear(req.body);
+    const nuevaRutina = await RutinaModel.crear({ ...req.body, id_entrenador });
     res.status(201).json({ ok: true, mensaje: 'Rutina creada exitosamente.', rutina: nuevaRutina });
   } catch (error) {
     next(error);

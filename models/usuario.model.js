@@ -1,4 +1,4 @@
-const db = require('../config/database');
+﻿const db = require('../config/database');
 const bcrypt = require('bcryptjs');
 
 class UsuarioModel {
@@ -53,25 +53,31 @@ class UsuarioModel {
   }
 
   static async actualizar(id, datos) {
-    const { nombre_usuario, correo, password, rol, id_cliente, id_entrenador, estado } = datos;
-    
-    if (password && password.trim() !== '') {
-      const salt = await bcrypt.genSalt(10);
-      const passwordHashed = await bcrypt.hash(password, salt);
-      await db.query(
-        `UPDATE usuarios
-         SET nombre_usuario = ?, correo = ?, password = ?, rol = ?, id_cliente = ?, id_entrenador = ?, estado = ?
-         WHERE id_usuario = ?`,
-        [nombre_usuario, correo, passwordHashed, rol, id_cliente || null, id_entrenador || null, estado, id]
-      );
-    } else {
-      await db.query(
-        `UPDATE usuarios
-         SET nombre_usuario = ?, correo = ?, rol = ?, id_cliente = ?, id_entrenador = ?, estado = ?
-         WHERE id_usuario = ?`,
-        [nombre_usuario, correo, rol, id_cliente || null, id_entrenador || null, estado, id]
-      );
+    // Se arma el SET solo con los campos que llegan, para que un PUT parcial
+    // no vacie las columnas ausentes.
+    const asignaciones = [];
+    const valores = [];
+
+    const agregar = (columna, valor) => { asignaciones.push(`${columna} = ?`); valores.push(valor); };
+
+    for (const campo of ['nombre_usuario', 'correo', 'rol', 'estado']) {
+      if (datos[campo] !== undefined) agregar(campo, datos[campo]);
     }
+    for (const campo of ['id_cliente', 'id_entrenador']) {
+      if (datos[campo] !== undefined) agregar(campo, datos[campo] === '' ? null : datos[campo]);
+    }
+    if (datos.password && String(datos.password).trim() !== '') {
+      const salt = await bcrypt.genSalt(10);
+      agregar('password', await bcrypt.hash(datos.password, salt));
+    }
+
+    if (asignaciones.length === 0) return this.obtenerPorId(id);
+
+    valores.push(id);
+    await db.query(
+      `UPDATE usuarios SET ${asignaciones.join(', ')} WHERE id_usuario = ?`,
+      valores
+    );
 
     return this.obtenerPorId(id);
   }
@@ -82,9 +88,7 @@ class UsuarioModel {
   }
 
   static async verificarPassword(passwordPlana, passwordEncriptada) {
-    if (passwordPlana === 'admin123' && (passwordEncriptada.startsWith('$2a$') || passwordEncriptada.startsWith('$2b$'))) {
-      return true;
-    }
+    if (typeof passwordPlana !== 'string' || typeof passwordEncriptada !== 'string') return false;
     return await bcrypt.compare(passwordPlana, passwordEncriptada);
   }
 }

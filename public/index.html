@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GalloLeTe - Sistema de Gestión para Gimnasios</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/modern-dashboard.css">
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Font Awesome para iconos profesionales -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts para tipografía moderna -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -25,6 +34,9 @@
         </div>
         <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Iniciar Sesión</button>
       </form>
+      <p style="margin-top: 1rem; text-align: center; font-size: 0.85rem;">
+        <a href="/landing.html" style="color: var(--primary-color); font-weight: 600; text-decoration: none;">Conoce el sitio público de GalloLeTe →</a>
+      </p>
       <div style="margin-top: 1.5rem; text-align: left; background: #f8f9fa; padding: 0.8rem; border-radius: 6px; font-size: 0.8rem;">
         <strong>Usuarios de prueba (clave: admin123):</strong>
         <ul style="margin-left: 1.2rem; margin-top: 0.3rem;">
@@ -39,20 +51,64 @@
 
   <!-- PANEL PRINCIPAL (APP LAYOUT) -->
   <div id="appLayout" class="app-layout hidden">
-    <!-- BARRA LATERAL -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        Gallo<span>LeTe</span> 🏋️‍♂️
-      </div>
-      <ul class="nav-list" id="sidebarNav">
-        <!-- Las pestañas se renderizan dinámicamente según el ROL -->
-      </ul>
-      <div class="user-profile">
-        <div>
-          <strong id="userNombre">Usuario</strong><br>
-          <small id="userRol" style="color: #a8dedc; font-weight: bold;">Rol</small>
+    <!-- BARRA LATERAL MODERNA -->
+    <aside class="modern-sidebar">
+      <!-- Header del Sidebar -->
+      <div class="modern-sidebar-header">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <i class="fas fa-dumbbell"></i>
+          </div>
+          <div class="logo-text">
+            <span class="logo-name">Gallo<span class="logo-accent">LeTe</span></span>
+            <span class="logo-subtitle">Gym System</span>
+          </div>
         </div>
-        <button id="btnLogout" class="btn btn-danger btn-sm" title="Cerrar Sesión">🚪</button>
+        <button class="sidebar-toggle" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <!-- Navegación Principal -->
+      <nav class="modern-nav">
+        <ul class="modern-nav-list" id="modernSidebarNav">
+          <!-- Las pestañas se renderizan dinámicamente según el ROL -->
+        </ul>
+      </nav>
+
+      <!-- Sección de Usuario Moderna -->
+      <div class="modern-user-section">
+        <div class="user-avatar">
+          <div class="avatar-circle">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="user-status online"></div>
+        </div>
+        <div class="user-info">
+          <div class="user-name" id="modernUserNombre">Usuario</div>
+          <div class="user-role" id="modernUserRol">Rol</div>
+        </div>
+        <div class="user-actions">
+          <button class="user-action-btn" id="btnPerfil" title="Perfil" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-user-circle"></i>
+          </button>
+          <div class="profile-menu hidden" id="profileMenu">
+            <div class="profile-menu-header">
+              <div class="profile-menu-name" id="profileMenuNombre">Usuario</div>
+              <div class="profile-menu-role" id="profileMenuRol">Rol</div>
+            </div>
+            <button class="profile-menu-item logout-btn" id="btnCerrarSesion">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Cerrar Sesión</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indicador de Actividad -->
+      <div class="activity-indicator">
+        <div class="activity-pulse"></div>
+        <span class="activity-text">En línea</span>
       </div>
     </aside>
 
@@ -101,39 +157,235 @@
         </div>
       </section>
 
-      <!-- 2. DASHBOARD ENTRENADOR -->
+      <!-- 2. DASHBOARD ENTRENADOR - REDISEÑADO MODERNO -->
       <section id="tab-dashboard-entrenador" class="tab-content hidden">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <span class="title">Rutinas Activas</span>
-            <span class="value" id="statEntrenadorRutinas" style="color: var(--primary-color);">0</span>
-          </div>
-          <div class="stat-card">
-            <span class="title">Ejercicios Disponibles</span>
-            <span class="value" id="statEntrenadorEjercicios">0</span>
-          </div>
-          <div class="stat-card">
-            <span class="title">Clientes a Cargo</span>
-            <span class="value" id="statEntrenadorClientes" style="color: var(--success);">0</span>
+        
+        <!-- Header del Dashboard -->
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <div class="title-content">
+              <div class="title-icon">
+                <i class="fas fa-dumbbell"></i>
+              </div>
+              <div>
+                <h1>Panel de Entrenador</h1>
+                <p class="title-subtitle">Gestiona a tus atletas y su progreso</p>
+              </div>
+            </div>
+            <div class="header-actions">
+              <button class="btn-modern btn-alerts" id="btnAlertasEntrenador" onclick="PanelEntrenadorFase2.mostrarPanelAlertas()">
+                <i class="fas fa-bell"></i>
+                <span>Alertas</span>
+                <span class="alert-badge" id="contadorAlertas" style="display: none;">0</span>
+              </button>
+              <button class="btn-modern btn-primary" onclick="cambiarTab('clientes')">
+                <i class="fas fa-plus"></i>
+                <span>Acción Rápida</span>
+              </button>
+            </div>
           </div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; margin-bottom: 1rem;">
-          <h3>Rutinas Recientes de Mis Atletas</h3>
-          <button class="btn btn-primary btn-sm" onclick="cambiarTab('rutinas')">+ Asignar Nueva Rutina</button>
+
+        <!-- Alertas activas visibles -->
+        <div class="alerts-strip" id="alertsStripEntrenador" aria-live="polite"></div>
+
+        <!-- Stats Cards Modernas -->
+        <div class="modern-stats-grid stagger-animation">
+          <div class="modern-stat-card primary" data-tooltip="Total de atletas bajo tu supervisión">
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number animated-counter" data-target="0" id="statEntrenadorClientes">0</div>
+              <div class="stat-label">Atletas a Cargo</div>
+              <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i>
+                <span>+2 este mes</span>
+              </div>
+            </div>
+            <div class="stat-chart">
+              <div class="mini-chart-line"></div>
+            </div>
+          </div>
+
+          <div class="modern-stat-card success" data-tooltip="Rutinas de ejercicios que has creado">
+            <div class="stat-icon">
+              <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number animated-counter" data-target="0" id="statEntrenadorRutinas">0</div>
+              <div class="stat-label">Rutinas Activas</div>
+              <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i>
+                <span>Todas al día</span>
+              </div>
+            </div>
+            <div class="stat-chart">
+              <div class="mini-chart-bar"></div>
+            </div>
+          </div>
+
+          <div class="modern-stat-card warning" data-tooltip="Ejercicios disponibles en el sistema">
+            <div class="stat-icon">
+              <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number animated-counter" data-target="0" id="statEntrenadorEjercicios">0</div>
+              <div class="stat-label">Ejercicios Disponibles</div>
+              <div class="stat-change neutral">
+                <i class="fas fa-minus"></i>
+                <span>Sin cambios</span>
+              </div>
+            </div>
+            <div class="stat-chart">
+              <div class="mini-chart-donut"></div>
+            </div>
+          </div>
+
+          <div class="modern-stat-card info">
+            <div class="stat-icon">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number" id="statEntrenadorAsistencias">0</div>
+              <div class="stat-label">Asistencias Hoy</div>
+              <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i>
+                <span>+5 vs ayer</span>
+              </div>
+            </div>
+            <div class="stat-chart">
+              <div class="mini-chart-pulse"></div>
+            </div>
+          </div>
         </div>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Rutina</th>
-                <th>Cliente</th>
-                <th>Nivel</th>
-                <th>Estado</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="tableEntrenadorDashboard"></tbody>
-          </table>
+
+        <!-- Panel de Acciones Rápidas -->
+        <div class="quick-actions-panel">
+          <h2 class="section-title">
+            <i class="fas fa-bolt"></i>
+            Acciones Rápidas
+          </h2>
+          <div class="quick-actions-grid">
+            <div class="quick-action-card" onclick="cambiarTab('clientes')">
+              <div class="action-icon clients">
+                <i class="fas fa-user-friends"></i>
+              </div>
+              <div class="action-content">
+                <h3>Mis Atletas</h3>
+                <p>Gestionar clientes y ver progreso</p>
+              </div>
+              <div class="action-arrow">
+                <i class="fas fa-chevron-right"></i>
+              </div>
+            </div>
+
+            <div class="quick-action-card" onclick="cambiarTab('entrenador-rutinas')">
+              <div class="action-icon routines">
+                <i class="fas fa-list-alt"></i>
+              </div>
+              <div class="action-content">
+                <h3>Rutinas</h3>
+                <p>Crear y editar planes de entrenamiento</p>
+              </div>
+              <div class="action-arrow">
+                <i class="fas fa-chevron-right"></i>
+              </div>
+            </div>
+
+            <div class="quick-action-card" onclick="abrirModalAsistenciaRapida()">
+              <div class="action-icon attendance">
+                <i class="fas fa-user-check"></i>
+              </div>
+              <div class="action-content">
+                <h3>Registrar Asistencia</h3>
+                <p>Check-in rápido de atletas</p>
+              </div>
+              <div class="action-arrow">
+                <i class="fas fa-chevron-right"></i>
+              </div>
+            </div>
+
+            <div class="quick-action-card" onclick="cambiarTab('ejercicios')">
+              <div class="action-icon exercises">
+                <i class="fas fa-dumbbell"></i>
+              </div>
+              <div class="action-content">
+                <h3>Ejercicios</h3>
+                <p>Explorar biblioteca de ejercicios</p>
+              </div>
+              <div class="action-arrow">
+                <i class="fas fa-chevron-right"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel de Actividad Reciente -->
+        <div class="recent-activity-panel">
+          <div class="activity-header">
+            <h2 class="section-title">
+              <i class="fas fa-history"></i>
+              Actividad Reciente
+            </h2>
+            <button class="btn-modern btn-outline" onclick="cambiarTab('entrenador-rutinas')">
+              Ver Todas
+            </button>
+          </div>
+          
+          <div class="activity-container">
+            <div class="activity-timeline" id="timelineEntrenador">
+              <!-- Se llena dinámicamente -->
+            </div>
+            
+            <div class="rutinas-recientes-modern">
+              <h3>Rutinas Recientes</h3>
+              <div class="rutinas-cards-container" id="rutinasRecientesContainer">
+                <!-- Se llena dinámicamente -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Widget de Progreso del Día -->
+        <div class="daily-progress-widget">
+          <div class="widget-header">
+            <h3>
+              <i class="fas fa-chart-line"></i>
+              Progreso del Día
+            </h3>
+            <span class="widget-date" id="fechaHoy"></span>
+          </div>
+          <div class="progress-metrics">
+            <div class="progress-item">
+              <div class="progress-circle" data-progress="75">
+                <div class="progress-text">
+                  <span class="progress-number">75%</span>
+                  <span class="progress-label">Asistencias</span>
+                </div>
+              </div>
+            </div>
+            <div class="daily-stats">
+              <div class="daily-stat">
+                <div class="stat-icon small">
+                  <i class="fas fa-user-check"></i>
+                </div>
+                <div>
+                  <div class="stat-value">12</div>
+                  <div class="stat-desc">Check-ins hoy</div>
+                </div>
+              </div>
+              <div class="daily-stat">
+                <div class="stat-icon small">
+                  <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div>
+                  <div class="stat-value">8</div>
+                  <div class="stat-desc">Rutinas completadas</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -231,25 +483,72 @@
 
       <!-- VISTA CLIENTES -->
       <section id="tab-clientes" class="tab-content hidden">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-          <input type="text" id="searchCliente" class="form-control" placeholder="Buscar por documento o nombre..." style="max-width: 300px;">
-          <button class="btn btn-primary" onclick="abrirModalCliente()">+ Nuevo Cliente</button>
+        <div class="clients-header">
+          <div class="clients-title">
+            <h2><i class="fas fa-user-friends"></i> Mis Atletas</h2>
+            <p>Gestiona y supervisa el progreso de tus clientes</p>
+          </div>
+          <div class="clients-actions">
+            <div class="search-container">
+              <i class="fas fa-search"></i>
+              <input type="text" id="searchCliente" class="search-input" placeholder="Buscar atleta...">
+            </div>
+            <button class="btn-modern btn-primary" onclick="abrirModalCliente()">
+              <i class="fas fa-user-plus"></i>
+              <span>Nuevo Atleta</span>
+            </button>
+          </div>
         </div>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Documento</th>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Correo</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tableClientes"></tbody>
-          </table>
+
+        <div class="clients-filters">
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">
+              <i class="fas fa-users"></i>
+              <span>Todos</span>
+              <span class="filter-count" id="countAll">0</span>
+            </button>
+            <button class="filter-tab" data-filter="activo">
+              <i class="fas fa-user-check"></i>
+              <span>Activos</span>
+              <span class="filter-count" id="countActive">0</span>
+            </button>
+            <button class="filter-tab" data-filter="inactivo">
+              <i class="fas fa-user-times"></i>
+              <span>Inactivos</span>
+              <span class="filter-count" id="countInactive">0</span>
+            </button>
+          </div>
+          <div class="view-toggle">
+            <button class="view-btn active" data-view="cards">
+              <i class="fas fa-th-large"></i>
+            </button>
+            <button class="view-btn" data-view="list">
+              <i class="fas fa-list"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="clients-container">
+          <div id="clientsGrid" class="clients-grid">
+            <!-- Las cards de clientes se generarán aquí -->
+          </div>
+          
+          <div id="clientsList" class="clients-list hidden">
+            <div class="table-container">
+              <table class="table modern-table">
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Contacto</th>
+                    <th>Estado</th>
+                    <th>Última Actividad</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tableClientes"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -330,9 +629,45 @@
 
       <!-- VISTA EJERCICIOS -->
       <section id="tab-ejercicios" class="tab-content hidden">
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
-          <button class="btn btn-primary" onclick="abrirModalEjercicio()">+ Nuevo Ejercicio</button>
+        <!-- Barra de búsqueda y contador -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div style="flex: 1; max-width: 400px;">
+            <input type="text" id="searchEjercicio" class="form-control" placeholder="🔍 Buscar ejercicio por nombre o descripción..." onkeyup="buscarEjercicio(this.value)">
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span id="contadorEjercicios" style="color: var(--text-muted); font-size: 0.9rem; margin-right: 1rem;">Cargando...</span>
+            <button class="btn btn-secondary btn-sm" onclick="limpiarFiltros()">🔄 Limpiar Filtros</button>
+            <button class="btn btn-primary" onclick="abrirModalEjercicio()">+ Nuevo Ejercicio</button>
+          </div>
         </div>
+
+        <!-- Filtros por grupo muscular -->
+        <div style="margin-bottom: 1rem;">
+          <strong style="display: block; margin-bottom: 0.5rem; color: var(--dark-bg);">Filtrar por Grupo Muscular:</strong>
+          <div class="filter-group">
+            <button class="filter-btn filtro-grupo active" data-grupo="todos" onclick="filtrarPorGrupo('todos')">Todos</button>
+            <button class="filter-btn filtro-grupo" data-grupo="Pecho" onclick="filtrarPorGrupo('Pecho')">🫀 Pecho</button>
+            <button class="filter-btn filtro-grupo" data-grupo="Espalda" onclick="filtrarPorGrupo('Espalda')">🔙 Espalda</button>
+            <button class="filter-btn filtro-grupo" data-grupo="Pierna" onclick="filtrarPorGrupo('Pierna')">🦵 Pierna</button>
+            <button class="filter-btn filtro-grupo" data-grupo="Hombros" onclick="filtrarPorGrupo('Hombros')">💪 Hombros</button>
+            <button class="filter-btn filtro-grupo" data-grupo="Brazos" onclick="filtrarPorGrupo('Brazos')">💪 Brazos</button>
+            <button class="filter-btn filtro-grupo" data-grupo="Abdomen" onclick="filtrarPorGrupo('Abdomen')">🏋️ Abdomen</button>
+            <button class="filter-btn filtro-grupo" data-grupo="Cardio" onclick="filtrarPorGrupo('Cardio')">🏃 Cardio</button>
+            <button class="filter-btn filtro-grupo" data-grupo="Full Body" onclick="filtrarPorGrupo('Full Body')">🔥 Full Body</button>
+          </div>
+        </div>
+
+        <!-- Filtros por nivel -->
+        <div style="margin-bottom: 1.5rem;">
+          <strong style="display: block; margin-bottom: 0.5rem; color: var(--dark-bg);">Filtrar por Nivel:</strong>
+          <div class="filter-group">
+            <button class="filter-btn filtro-nivel active" data-nivel="todos" onclick="filtrarPorNivel('todos')">Todos</button>
+            <button class="filter-btn filtro-nivel" data-nivel="Principiante" onclick="filtrarPorNivel('Principiante')">⭐ Principiante</button>
+            <button class="filter-btn filtro-nivel" data-nivel="Intermedio" onclick="filtrarPorNivel('Intermedio')">⭐⭐ Intermedio</button>
+            <button class="filter-btn filtro-nivel" data-nivel="Avanzado" onclick="filtrarPorNivel('Avanzado')">⭐⭐⭐ Avanzado</button>
+          </div>
+        </div>
+
         <div class="table-container">
           <table>
             <thead>
@@ -398,14 +733,27 @@
     </main>
   </div>
 
-  <!-- CONTENEDOR DE MODALES -->
-  <div id="modalOverlay" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 id="modalTitle">Título Modal</h3>
-        <button class="close-btn" onclick="cerrarModal()">&times;</button>
+  <!-- CONTENEDOR DE MODALES MODERNOS -->
+  <div id="modalOverlay" class="modal-overlay-modern">
+    <div class="modal-backdrop" onclick="cerrarModal()"></div>
+    <div class="modal-modern" id="modalModern">
+      <div class="modal-header-modern">
+        <div class="modal-title-section">
+          <div class="modal-icon" id="modalIcon">
+            <i class="fas fa-plus"></i>
+          </div>
+          <div>
+            <h3 id="modalTitle">Título Modal</h3>
+            <p id="modalSubtitle" class="modal-subtitle">Descripción de la acción</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="cerrarModal()">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
-      <div id="modalBody"></div>
+      <div class="modal-body-modern" id="modalBody">
+        <!-- Contenido dinámico aquí -->
+      </div>
     </div>
   </div>
 
@@ -418,6 +766,9 @@
   <script src="js/rutinas.js"></script>
   <script src="js/pagos.js"></script>
   <script src="js/usuarios.js"></script>
+  <script src="js/panel-entrenador.js"></script>
+  <script src="js/panel-entrenador-fase2.js"></script>
+  <script src="js/animations.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

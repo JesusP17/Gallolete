@@ -248,6 +248,80 @@ table {
 th, td {
   padding: 0.9rem 1.2rem;
   border-bottom: 1px solid var(--border-color);
+  white-space: normal;
+  overflow-wrap: break-word;
+  vertical-align: top;
+}
+
+@media (max-width: 900px) {
+  th, td {
+    padding: 0.6rem 0.6rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* En pantallas estrechas las tablas se apilan como tarjetas (usando el
+   data-label que inyecta app.js) para que nunca haya scroll horizontal. */
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: visible;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .table-container table thead {
+    display: none;
+  }
+
+  .table-container table,
+  .table-container table tbody,
+  .table-container table tr,
+  .table-container table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-container table tr {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    overflow: hidden;
+  }
+
+  .table-container table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    text-align: right;
+  }
+
+  .table-container table td:last-child {
+    border-bottom: none;
+  }
+
+  .table-container table td::before {
+    content: attr(data-label);
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: left;
+  }
+
+  .table-container table td[colspan] {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .table-container table td[colspan]::before {
+    content: none;
+  }
 }
 
 th {
@@ -347,4 +421,634 @@ tr:hover {
 
 .hidden {
   display: none !important;
+}
+
+/* ============================================================
+   ANIMACIONES
+   ============================================================ */
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   ESTILOS ADICIONALES PARA EL PANEL ENTRENADOR
+   ============================================================ */
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dark-bg);
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.alert-warning {
+  background: #fff8e1;
+  color: #f57f17;
+  border-left: 4px solid #ffb703;
+}
+
+.alert-info {
+  background: #e3f2fd;
+  color: #1976d2;
+  border-left: 4px solid #2196f3;
+}
+
+.alert-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #38b000;
+}
+
+.alert-danger {
+  background: #ffebee;
+  color: #c62828;
+  border-left: 4px solid #d90429;
+}
+
+/* Botones con iconos */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Estilos para filtros */
+.filter-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.filter-btn:hover {
+  background: var(--light-bg);
+}
+
+.filter-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Tooltips simples */
+[data-tooltip] {
+  position: relative;
+  cursor: help;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Empty states */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+.empty-state-text {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-subtext {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-2, .grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   ESTILOS FASE 2 - GRÁFICOS Y ALERTAS
+   ============================================================ */
+
+/* Tabs para gráficos */
+.tabs-container {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.tab-btn {
+  padding: 0.6rem 1.2rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.3s;
+}
+
+.tab-btn:hover {
+  color: var(--dark-bg);
+  background: var(--light-bg);
+}
+
+.tab-btn.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+/* Contenedores de gráficos */
+.grafico-container {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+}
+
+.grafico-container canvas {
+  max-height: 400px;
+}
+
+/* Alertas mejoradas */
+.alert {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  border-left: 4px solid;
+}
+
+.alert:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.alert-warning {
+  background: #fff8e1;
+  color: #f57f17;
+  border-left-color: #ffb703;
+}
+
+.alert-info {
+  background: #e3f2fd;
+  color: #1976d2;
+  border-left-color: #2196f3;
+}
+
+.alert-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left-color: #38b000;
+}
+
+.alert-danger {
+  background: #ffebee;
+  color: #c62828;
+  border-left-color: #d90429;
+}
+
+/* Badge de notificación */
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--danger);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+/* Tabla comparativa mejorada */
+.comparativa-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparativa-table th {
+  background: var(--light-bg);
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.comparativa-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comparativa-table tr:hover {
+  background: var(--light-bg);
+}
+
+/* Indicador de cambio positivo/negativo */
+.cambio-positivo {
+  color: var(--success);
+  font-weight: bold;
+}
+
+.cambio-negativo {
+  color: var(--danger);
+  font-weight: bold;
+}
+
+.cambio-neutro {
+  color: var(--text-muted);
+}
+
+/* Stats grid para modal */
+.modal .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.modal .stat-card {
+  background: var(--light-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Scrollbar personalizado para historial */
+.grafico-container::-webkit-scrollbar,
+div[style*="overflow-y: auto"]::-webkit-scrollbar {
+  width: 8px;
+}
+
+.grafico-container::-webkit-scrollbar-track,
+div[style*="overflow-y: auto"]::-webkit-scrollbar-track {
+  background: var(--light-bg);
+  border-radius: 4px;
+}
+
+.grafico-container::-webkit-scrollbar-thumb,
+div[style*="overflow-y: auto"]::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+
+.grafico-container::-webkit-scrollbar-thumb:hover,
+div[style*="overflow-y: auto"]::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-bg);
+}
+
+/* Botón de notificaciones */
+.btn-notificaciones {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-notificaciones .badge-count {
+  background: var(--danger);
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+/* Animación para nuevas alertas */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.alerta-nueva {
+  animation: pulse 2s infinite;
+}
+
+/* Mejoras para modal grande */
+.modal-large {
+  max-width: 900px;
+  width: 95%;
+}
+
+/* Responsive para gráficos */
+@media (max-width: 768px) {
+  .tabs-container {
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .grafico-container canvas {
+    max-height: 300px;
+  }
+
+  .modal .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   ESTILOS BIBLIOTECA DE EJERCICIOS - FASE 2
+   ============================================================ */
+
+/* Badges de nivel */
+.badge-nivel-principiante {
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.badge-nivel-intermedio {
+  background: #fff8e1;
+  color: #f57f17;
+  font-weight: 600;
+}
+
+.badge-nivel-avanzado {
+  background: #ffebee;
+  color: #c62828;
+  font-weight: 600;
+}
+
+/* Contador de filtros */
+.contador-badge {
+  display: inline-block;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 10px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.7rem;
+  margin-left: 0.3rem;
+  font-weight: bold;
+}
+
+/* Mejorar tooltips para descripciones */
+[title] {
+  cursor: help;
+  border-bottom: 1px dotted var(--text-muted);
+}
+
+/* Vista de detalle de ejercicio */
+.ejercicio-detalle {
+  padding: 1.5rem;
+  background: white;
+  border-radius: 10px;
+}
+
+.ejercicio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.ejercicio-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ejercicio-info-item {
+  padding: 1rem;
+  background: var(--light-bg);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.ejercicio-info-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ejercicio-info-value {
+  font-size: 1.1rem;
+  color: var(--dark-bg);
+  font-weight: 600;
+}
+
+/* Mejorar el form de ejercicios */
+.form-ejercicio-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-color);
+}
+
+/* Animación para carga de filtros */
+.filtros-loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Responsive para biblioteca de ejercicios */
+@media (max-width: 768px) {
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-btn {
+    width: 100%;
+    text-align: left;
+  }
+
+  .ejercicio-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Destacar ejercicios al hover */
+#tableEjercicios tr:hover {
+  background-color: #f8f9fa;
+  transform: scale(1.01);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+/* Badge para grupos musculares */
+.badge-grupo-pecho {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.badge-grupo-espalda {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.badge-grupo-pierna {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.badge-grupo-brazos {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+.badge-grupo-hombros {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-grupo-abdomen {
+  background: #fce4ec;
+  color: #c2185b;
+}
+
+.badge-grupo-cardio {
+  background: #e1f5fe;
+  color: #0277bd;
+}
+
+.badge-grupo-fullbody {
+  background: #fff3e0;
+  color: #e65100;
 }

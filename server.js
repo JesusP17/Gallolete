@@ -14,6 +14,8 @@ const rutinaRoutes = require('./routes/rutina.routes');
 const ejercicioRoutes = require('./routes/ejercicio.routes');
 const pagoRoutes = require('./routes/pago.routes');
 const usuarioRoutes = require('./routes/usuario.routes');
+const asistenciaRoutes = require('./routes/asistencia.routes');
+const progresoRoutes = require('./routes/progreso.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +37,8 @@ app.use('/api/rutinas', rutinaRoutes);
 app.use('/api/ejercicios', ejercicioRoutes);
 app.use('/api/pagos', pagoRoutes);
 app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/asistencias', asistenciaRoutes);
+app.use('/api/progresos', progresoRoutes);
 
 // Ruta raíz para servir el index.html
 app.get('*', (req, res, next) => {
