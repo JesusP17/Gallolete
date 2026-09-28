@@ -4,7 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GalloLeTe - Sistema de Gestión para Gimnasios</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('gallolete_theme') || 'light';
+      if (savedTheme === 'electric') {
+        document.documentElement.setAttribute('data-theme', 'electric');
+      }
+    })();
+  </script>
 </head>
 <body>
 
@@ -14,7 +24,7 @@
     <header class="landing-header">
       <div class="landing-header-content">
         <div class="landing-logo">
-          <svg viewBox="0 0 24 24" style="width:28px; height:28px; fill:var(--primary-color);"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 6.29 3.43 4.86 2 3.43 3.43 2 4.86l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43l8.57 8.57L12 20.57 13.43 22l1.43-1.43 1.43 1.43 1.43-1.43 1.43 1.43 1.43-1.43-1.43-1.43z"/></svg>
+          <img src="img/logo.png" alt="GalloLeTe Logo" class="brand-logo-img">
           Gallo<span>LeTe</span> <small style="font-size:0.65rem; color:#888; font-weight:normal; margin-left:4px;">GIMNASIO</small>
         </div>
         
@@ -37,7 +47,9 @@
           </div>
         </nav>
 
-        <div class="landing-header-actions" style="position: relative;">
+        <div class="landing-header-actions" style="position: relative; display: flex; align-items: center; gap: 0.75rem;">
+          <button type="button" class="btn btn-theme-toggle theme-toggle-btn" onclick="toggleTheme()" title="Cambiar Tema de Color">⚡ Modo Eléctrico</button>
+          
           <!-- Cuando NO ha iniciado sesión -->
           <div id="landingHeaderLoggedOut" style="position: relative;">
             <button id="btnHeaderAccesoPaneles" class="btn btn-primary" onclick="toggleLandingRoleDropdown(event)">
@@ -262,9 +274,12 @@
     <!-- FOOTER PRINCIPAL -->
     <footer class="landing-footer">
       <div class="landing-footer-content">
-        <div>
-          <h3>Gallo<span>LeTe</span> Gimnasio</h3>
-          <p>Sistema Integral de Gestión de Gimnasio - Sede UniSalamanca Cra 50 #79-155.</p>
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+          <img src="img/logo.png" alt="GalloLeTe Logo" style="height: 48px; width: auto; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));">
+          <div>
+            <h3 style="margin: 0; font-size: 1.4rem;">Gallo<span>LeTe</span> Gimnasio</h3>
+            <p style="margin: 0.2rem 0 0 0; color: #94a3b8; font-size: 0.85rem;">Sistema Integral de Gestión de Gimnasio - Sede UniSalamanca Cra 50 #79-155.</p>
+          </div>
         </div>
         <div>
           <button class="btn btn-primary" onclick="mostrarLoginView()">🔐 Acceso a Paneles de Gestión</button>
@@ -279,8 +294,14 @@
   <!-- VISTA DE LOGIN Y REGISTRO -->
   <div id="loginView" class="login-container hidden">
     <div class="login-card" style="max-width: 480px;">
-      <button type="button" class="btn btn-secondary btn-sm" onclick="mostrarLandingView()" style="margin-bottom: 1rem; width: 100%;">← Volver a Página Principal</button>
-      <h2>Gallo<span>LeTe</span> 🏋️‍♂️</h2>
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="mostrarLandingView()" style="flex: 1;">← Volver a Principal</button>
+        <button type="button" class="btn btn-theme-toggle theme-toggle-btn" onclick="toggleTheme()">⚡ Modo Eléctrico</button>
+      </div>
+      <div class="login-logo-container">
+        <img src="img/logo.png" alt="GalloLeTe Mascot Logo" class="login-brand-logo">
+      </div>
+      <h2>Gallo<span>LeTe</span></h2>
       <p>Sistema de Gestión de Gimnasio</p>
       
       <!-- Pestañas para elegir Iniciar Sesión o Registrarse -->
@@ -356,7 +377,7 @@
     <!-- BARRA LATERAL -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:var(--primary-color);"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 6.29 3.43 4.86 2 3.43 3.43 2 4.86l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43l8.57 8.57L12 20.57 13.43 22l1.43-1.43 1.43 1.43 1.43-1.43 1.43 1.43 1.43-1.43-1.43-1.43z"/></svg>
+        <img src="img/logo.png" alt="GalloLeTe Logo" class="brand-logo-img sidebar-logo">
         Gallo<span>LeTe</span>
       </div>
       <ul class="nav-list" id="sidebarNav">
@@ -388,28 +409,32 @@
           <h1 id="tabTitle">Dashboard Principal</h1>
         </div>
         
-        <!-- MENU DESPLEGABLE DE PERFIL Y CONFIGURACIÓN EN HEADER -->
-        <div class="user-header-menu-container" style="position: relative;">
-          <button id="btnUserMenuToggle" class="btn btn-secondary" onclick="toggleUserDropdownMenu(event)" style="display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.9rem;">
-            👤 <strong id="headerUserNombre">Usuario</strong> (<span id="headerUserRol">Rol</span>) ▾
-          </button>
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <button type="button" class="btn btn-theme-toggle theme-toggle-btn" onclick="toggleTheme()" title="Cambiar Tema de Color">⚡ Modo Eléctrico</button>
 
-          <div id="userHeaderDropdown" class="user-dropdown-menu">
-            <div class="dropdown-header">
-              <strong id="dropdownUserNombre">Cuenta de Usuario</strong>
-              <small id="dropdownUserCorreo">usuario@gallolete.com</small>
+          <!-- MENU DESPLEGABLE DE PERFIL Y CONFIGURACIÓN EN HEADER -->
+          <div class="user-header-menu-container" style="position: relative;">
+            <button id="btnUserMenuToggle" class="btn btn-secondary" onclick="toggleUserDropdownMenu(event)" style="display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.9rem;">
+              👤 <strong id="headerUserNombre">Usuario</strong> (<span id="headerUserRol">Rol</span>) ▾
+            </button>
+
+            <div id="userHeaderDropdown" class="user-dropdown-menu">
+              <div class="dropdown-header">
+                <strong id="dropdownUserNombre">Cuenta de Usuario</strong>
+                <small id="dropdownUserCorreo">usuario@gallolete.com</small>
+              </div>
+              <hr style="border: 0; border-top: 1px solid #eee; margin: 0.5rem 0;">
+              <button type="button" class="dropdown-item" onclick="abrirModalMiPerfil()">
+                ✏️ Modificar Mis Datos
+              </button>
+              <button type="button" class="dropdown-item" onclick="mostrarLandingView()">
+                🏠 Página Principal
+              </button>
+              <hr style="border: 0; border-top: 1px solid #eee; margin: 0.5rem 0;">
+              <button type="button" class="dropdown-item text-danger" onclick="ejecutarCerrarSesion()">
+                🚪 Cerrar Sesión
+              </button>
             </div>
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 0.5rem 0;">
-            <button type="button" class="dropdown-item" onclick="abrirModalMiPerfil()">
-              ✏️ Modificar Mis Datos
-            </button>
-            <button type="button" class="dropdown-item" onclick="mostrarLandingView()">
-              🏠 Página Principal
-            </button>
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 0.5rem 0;">
-            <button type="button" class="dropdown-item text-danger" onclick="ejecutarCerrarSesion()">
-              🚪 Cerrar Sesión
-            </button>
           </div>
         </div>
       </div>
@@ -436,20 +461,68 @@
             <span class="value" id="statAdminTotalPagos" style="color: var(--primary-color);">$0</span>
           </div>
         </div>
-        <h3>Resumen Global de Membresías</h3>
-        <div class="table-container" style="margin-top: 1rem;">
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Tipo</th>
-                <th>Inicio</th>
-                <th>Fin</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody id="tableAdminDashboard"></tbody>
-          </table>
+
+        <!-- PANEL DE GRÁFICOS Y ANALÍTICA DE VENTAS / AFLUENCIA -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
+          <div class="stat-card" style="padding: 1.4rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+              <h4 style="margin:0; font-size:1.1rem; color:var(--text-dark);">📈 Días Pico de Recaudación y Asistencia</h4>
+              <span class="badge badge-activa">EN VIVO</span>
+            </div>
+            <div style="position: relative; height: 260px; width: 100%;">
+              <canvas id="chartAfluenciaPagos"></canvas>
+            </div>
+          </div>
+
+          <div class="stat-card" style="padding: 1.4rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+              <h4 style="margin:0; font-size:1.1rem; color:var(--text-dark);">📊 Ventas por Tipo de Membresía</h4>
+              <span class="badge" style="background:#e0f2fe; color:#0369a1;">DISTRIBUCIÓN</span>
+            </div>
+            <div style="position: relative; height: 260px; width: 100%;">
+              <canvas id="chartTiposMembresia"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA ANALÍTICA DE DÍAS PICO -->
+        <div style="margin-top: 1.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.8rem;">
+            <h3>🔥 Análisis de Ingresos y Afluencia por Día de la Semana</h3>
+            <button class="btn btn-secondary btn-sm" onclick="cargarGraficosDashboardAdmin()">🔄 Actualizar Analítica</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Día de la Semana</th>
+                  <th>Total Recaudado ($)</th>
+                  <th>Transacciones</th>
+                  <th>Promedio Atletas</th>
+                  <th>Nivel de Carga</th>
+                </tr>
+              </thead>
+              <tbody id="tableAdminDiasPico"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <h3>Resumen Global de Membresías</h3>
+          <div class="table-container" style="margin-top: 0.8rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Tipo</th>
+                  <th>Inicio</th>
+                  <th>Fin</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="tableAdminDashboard"></tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -517,8 +590,12 @@
       <section id="tab-dashboard-recepcionista" class="tab-content hidden">
         <div class="stats-grid">
           <div class="stat-card">
-            <span class="title">Clientes Registrados</span>
-            <span class="value" id="statRecepClientes">0</span>
+            <span class="title">Atletas en Sede Ahora</span>
+            <span class="value" id="statRecepAtletasEnSede" style="color: var(--primary-color);">0 / 200</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Entradas Registradas Hoy</span>
+            <span class="value" id="statRecepEntradasHoy" style="color: var(--success);">0</span>
           </div>
           <div class="stat-card">
             <span class="title">Membresías Vigentes</span>
@@ -529,30 +606,68 @@
             <span class="value" id="statRecepVencidas" style="color: var(--danger);">0</span>
           </div>
         </div>
-        <div style="display: flex; gap: 1rem; margin-top: 1rem; margin-bottom: 1.5rem;">
-          <button class="btn btn-primary" onclick="cambiarTab('clientes'); abrirModalCliente();">+ Registrar Nuevo Cliente</button>
-          <button class="btn btn-secondary" onclick="cambiarTab('pagos'); abrirModalPago();">💰 Cobrar Membresía</button>
+
+        <!-- MÓDULO DE ASISTENCIA Y CONTROL DE ACCESO EN RECEPCIÓN -->
+        <div class="stat-card" style="margin-top: 1.5rem; padding: 1.8rem; border-top: 4px solid var(--primary-color);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="margin: 0; font-size: 1.3rem; color: var(--text-dark);">⚡ Registro de Asistencia y Torniquete Sede UniSalamanca</h3>
+              <p style="margin: 0.3rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Busca al atleta por su nombre de usuario (ej: <strong>JesusP171</strong>) para validar su entrada.</p>
+            </div>
+            <div>
+              <button class="btn btn-primary" onclick="cambiarTab('clientes'); abrirModalCliente();">+ Registrar Nuevo Cliente</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; align-items: center;">
+            <div style="flex: 1; min-width: 280px; position: relative;">
+              <input type="text" id="inputAsistenciaBuscar" class="form-control" placeholder="🔍 Buscar por nombre de usuario (Ej: JesusP171...)" onkeyup="buscarClienteAsistencia(this.value)" autocomplete="off" style="padding: 0.8rem 1rem; font-size: 1rem;">
+              <div id="resultadosAsistenciaBuscar" class="user-dropdown-menu" style="width: 100%; top: 100%; display: none; max-height: 250px; overflow-y: auto;"></div>
+            </div>
+          </div>
+
+          <!-- TARJETA DE VERIFICACIÓN DE ATLETA SELECCIONADO -->
+          <div id="boxVerificacionAtleta" class="hidden" style="margin-top: 1.5rem; background: var(--section-alt); padding: 1.4rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.2rem;">
+              <div style="display: flex; align-items: center; gap: 1.2rem;">
+                <img src="img/logo.png" alt="Mascota" style="height: 65px; width: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));">
+                <div>
+                  <h3 id="verifNombreCliente" style="margin: 0; font-size: 1.3rem; color: var(--text-dark);">Nombre del Cliente</h3>
+                  <p id="verifPlanCliente" style="margin: 0.3rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">Plan General • Vencimiento: 2026-10-30</p>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <span id="verifBadgeEstado" class="badge badge-activa" style="font-size: 0.95rem; padding: 0.6rem 1.2rem;">🟢 MEMBRESÍA VIGENTE</span>
+                <button id="btnMarcarAsistencia" class="btn btn-primary btn-lg" onclick="ejecutarMarcacionAsistencia()">⚡ Marcar Entrada (Torniquete)</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div style="margin-top: 1.5rem;">
-          <h3>👥 Clientes Recientes Registrados</h3>
-          <div class="table-container" style="margin-top: 0.8rem;">
+        <!-- TABLA REAL DE REGISTRO DE ASISTENCIA -->
+        <div style="margin-top: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <h3>📋 Registro Real de Asistencia y Entradas del Día (Sede UniSalamanca)</h3>
+            <button class="btn btn-secondary btn-sm" onclick="cargarRegistroAsistencia()">🔄 Actualizar Asistencia</button>
+          </div>
+          <div class="table-container">
             <table>
               <thead>
                 <tr>
-                  <th>Cliente</th>
-                  <th>Teléfono</th>
-                  <th>Correo</th>
-                  <th>Estado</th>
+                  <th>Hora de Ingreso</th>
+                  <th>Atleta / Cliente</th>
+                  <th>Membresía</th>
+                  <th>Puerta / Punto</th>
+                  <th>Estado de Acceso</th>
                   <th>Acción</th>
                 </tr>
               </thead>
-              <tbody id="tableRecepNuevosClientes"></tbody>
+              <tbody id="tableRegistroAsistencia"></tbody>
             </table>
           </div>
         </div>
 
-        <div style="margin-top: 1.8rem;">
+        <div style="margin-top: 2rem;">
           <h3>Membresías Vencidas / Alertas de Renovación</h3>
           <div class="table-container" style="margin-top: 0.8rem;">
             <table>
@@ -829,6 +944,7 @@
   <script src="js/rutinas.js"></script>
   <script src="js/pagos.js"></script>
   <script src="js/usuarios.js"></script>
+  <script src="js/pasarela_asistencia.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

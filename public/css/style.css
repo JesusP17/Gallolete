@@ -1,16 +1,101 @@
 :root {
-  --primary-color: #e63946;
-  --primary-hover: #c1121f;
-  --dark-bg: #1d3557;
-  --light-bg: #f8f9fa;
+  /* TEMA CLARO (Default) */
+  --primary-color: #0066ff;
+  --primary-hover: #0052cc;
+  --secondary-color: #475569;
+  --dark-bg: #0f172a;
+  --light-bg: #f8fafc;
   --card-bg: #ffffff;
-  --text-dark: #2b2d42;
-  --text-muted: #6c757d;
-  --border-color: #e9ecef;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
   --success: #38b000;
   --warning: #ffb703;
   --danger: #d90429;
   --sidebar-width: 250px;
+
+  /* Variables específicas de temas */
+  --bg-body: #f8fafc;
+  --landing-bg: #f8fafc;
+  --landing-text: #0f172a;
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --header-text: #0f172a;
+  --nav-link-color: #475569;
+  --card-border: #e2e8f0;
+  --card-shadow: 0 4px 20px rgba(0, 102, 255, 0.06);
+  --hero-title-color: #0f172a;
+  --hero-subtitle-color: #475569;
+  --hero-gradient: linear-gradient(to right, rgba(248, 250, 252, 0.96) 35%, rgba(248, 250, 252, 0.7));
+  --stats-bg: #ffffff;
+  --stats-border: #e2e8f0;
+  --section-alt: #f1f5f9;
+  --plan-card-bg: #ffffff;
+  --plan-card-border: #e2e8f0;
+  --plan-card-text: #0f172a;
+  --plan-card-featured-bg: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
+  --footer-bg: #0f172a;
+  --footer-text: #f8fafc;
+  --login-container-bg: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  --login-card-bg: #ffffff;
+  --login-card-text: #0f172a;
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-text: #0f172a;
+  --table-bg: #ffffff;
+  --table-header-bg: #f1f5f9;
+  --modal-bg: #ffffff;
+
+  /* Botón de cambio de tema */
+  --btn-electric-bg: linear-gradient(135deg, #0066ff 0%, #00d2ff 100%);
+  --btn-electric-text: #ffffff;
+  --btn-electric-shadow: 0 4px 15px rgba(0, 102, 255, 0.35);
+}
+
+[data-theme="electric"] {
+  /* TEMA AZUL ELÉCTRICO (Modo Eléctrico) */
+  --primary-color: #00d2ff;
+  --primary-hover: #00a8cc;
+  --secondary-color: #3b82f6;
+  --dark-bg: #060b19;
+  --light-bg: #0d162d;
+  --card-bg: #0d162d;
+  --text-dark: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: rgba(0, 210, 255, 0.25);
+  
+  --bg-body: #060b19;
+  --landing-bg: #060b19;
+  --landing-text: #f8fafc;
+  --header-bg: rgba(10, 18, 42, 0.93);
+  --header-text: #ffffff;
+  --nav-link-color: #cbd5e1;
+  --card-border: rgba(0, 210, 255, 0.25);
+  --card-shadow: 0 6px 30px rgba(0, 210, 255, 0.2);
+  --hero-title-color: #ffffff;
+  --hero-subtitle-color: #cbd5e1;
+  --hero-gradient: linear-gradient(to right, rgba(6, 11, 25, 0.96) 35%, rgba(6, 11, 25, 0.6));
+  --stats-bg: #0b1328;
+  --stats-border: rgba(0, 210, 255, 0.2);
+  --section-alt: #091024;
+  --plan-card-bg: #0e1832;
+  --plan-card-border: rgba(0, 210, 255, 0.3);
+  --plan-card-text: #ffffff;
+  --plan-card-featured-bg: linear-gradient(180deg, #0e1832 0%, #11234a 100%);
+  --footer-bg: #03060f;
+  --footer-text: #f8fafc;
+  --login-container-bg: linear-gradient(135deg, #060b19 0%, #0e1e44 100%);
+  --login-card-bg: #0d162d;
+  --login-card-text: #ffffff;
+  --input-bg: #081024;
+  --input-border: rgba(0, 210, 255, 0.3);
+  --input-text: #ffffff;
+  --table-bg: #0d162d;
+  --table-header-bg: #0d1a3a;
+  --modal-bg: #0e172e;
+
+  --btn-electric-bg: linear-gradient(135deg, #00d2ff 0%, #0052cc 100%);
+  --btn-electric-text: #ffffff;
+  --btn-electric-shadow: 0 4px 22px rgba(0, 210, 255, 0.6);
 }
 
 * {
@@ -21,9 +106,10 @@
 }
 
 body {
-  background-color: #f0f2f5;
+  background-color: var(--bg-body);
   color: var(--text-dark);
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Modal Login */
@@ -32,17 +118,21 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+  background: var(--login-container-bg);
+  transition: background 0.3s ease;
 }
 
 .login-card {
-  background: #ffffff;
+  background: var(--login-card-bg);
+  color: var(--login-card-text);
   padding: 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
   width: 100%;
-  max-width: 400px;
+  max-width: 480px;
   text-align: center;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .login-card h2 {
@@ -72,15 +162,38 @@ body {
 .form-control {
   width: 100%;
   padding: 0.65rem 0.9rem;
-  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
   border-radius: 6px;
   font-size: 0.95rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.3s ease;
 }
 
 .form-control:focus {
   border-color: var(--primary-color);
   outline: none;
+}
+
+.btn-theme-toggle {
+  background: var(--btn-electric-bg) !important;
+  color: var(--btn-electric-text) !important;
+  box-shadow: var(--btn-electric-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  padding: 0.45rem 1rem !important;
+  font-weight: 700 !important;
+  border-radius: 50px !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.btn-theme-toggle:hover {
+  transform: translateY(-2px) scale(1.06);
+  filter: brightness(1.15);
 }
 
 .btn {
@@ -177,14 +290,18 @@ body {
 .app-layout {
   display: flex;
   min-height: 100vh;
+  background-color: var(--bg-body);
+  color: var(--text-dark);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .sidebar {
   width: var(--sidebar-width);
-  background-color: #1d3557;
+  background-color: var(--bg-sidebar);
   color: white;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease;
 }
 
 .sidebar-header {
@@ -214,13 +331,13 @@ body {
   align-items: center;
   gap: 0.8rem;
   cursor: pointer;
-  color: #a8dedc;
+  color: #94a3b8;
   transition: all 0.2s;
 }
 
 .nav-item:hover, .nav-item.active {
   background-color: rgba(255, 255, 255, 0.1);
-  color: white;
+  color: #ffffff;
   border-left: 4px solid var(--primary-color);
 }
 
@@ -236,6 +353,8 @@ body {
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
+  background-color: var(--bg-body);
+  color: var(--text-dark);
 }
 
 .top-bar {
@@ -247,7 +366,7 @@ body {
 
 .top-bar h1 {
   font-size: 1.8rem;
-  color: var(--dark-bg);
+  color: var(--text-dark);
 }
 
 /* Cards & Stats */
@@ -259,12 +378,15 @@ body {
 }
 
 .stat-card {
-  background: white;
+  background: var(--card-bg);
+  color: var(--text-dark);
   padding: 1.5rem;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .stat-card .title {
@@ -276,15 +398,17 @@ body {
 .stat-card .value {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--dark-bg);
+  color: var(--text-dark);
 }
 
 /* Tablas */
 .table-container {
-  background: white;
+  background: var(--table-bg);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
   overflow-x: auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 table {
@@ -296,16 +420,17 @@ table {
 th, td {
   padding: 0.9rem 1.2rem;
   border-bottom: 1px solid var(--border-color);
+  color: var(--text-dark);
 }
 
 th {
-  background-color: #f8f9fa;
+  background-color: var(--table-header-bg);
   font-weight: 600;
-  color: var(--dark-bg);
+  color: var(--text-dark);
 }
 
 tr:hover {
-  background-color: #f8f9fa;
+  background-color: rgba(0, 102, 255, 0.05);
 }
 
 /* Badges */
@@ -356,10 +481,12 @@ tr:hover {
 }
 
 .modal {
-  background: white;
+  background: var(--modal-bg);
+  color: var(--text-dark);
   width: 90%;
   max-width: 600px;
   border-radius: 10px;
+  border: 1px solid var(--card-border);
   padding: 1.5rem;
   max-height: 90vh;
   overflow-y: auto;
@@ -376,7 +503,7 @@ tr:hover {
 }
 
 .modal-header h3 {
-  color: var(--dark-bg);
+  color: var(--text-dark);
 }
 
 .close-btn {
@@ -400,11 +527,15 @@ tr:hover {
 /* ============================================================
    ESTILOS PÁGINA PRINCIPAL / LANDING PAGE (Referencia Smart Fit Sede Portal del Prado)
    ============================================================ */
+/* ============================================================
+   ESTILOS PÁGINA PRINCIPAL / LANDING PAGE
+   ============================================================ */
 .landing-container {
-  background-color: #0f172a;
-  color: #f8fafc;
+  background-color: var(--landing-bg);
+  color: var(--landing-text);
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Header Navegación Principal */
@@ -412,10 +543,11 @@ tr:hover {
   position: sticky;
   top: 0;
   z-index: 900;
-  background: rgba(15, 23, 42, 0.92);
+  background: var(--header-bg);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
   padding: 1rem 2rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .landing-header-content {
@@ -429,10 +561,46 @@ tr:hover {
 .landing-logo {
   font-size: 1.6rem;
   font-weight: 900;
-  color: #ffffff;
+  color: var(--header-text);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
+}
+
+.brand-logo-img {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 102, 255, 0.4));
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.landing-logo:hover .brand-logo-img,
+.sidebar-header:hover .brand-logo-img {
+  transform: scale(1.12) rotate(-4deg);
+}
+
+.sidebar-logo {
+  height: 38px;
+}
+
+.login-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.login-brand-logo {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.25));
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.login-brand-logo:hover {
+  transform: scale(1.08) rotate(-2deg);
 }
 
 .landing-logo span {
@@ -442,10 +610,11 @@ tr:hover {
 .landing-nav {
   display: flex;
   gap: 1.8rem;
+  align-items: center;
 }
 
 .landing-nav a {
-  color: #cbd5e1;
+  color: var(--nav-link-color);
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 600;
@@ -475,8 +644,8 @@ tr:hover {
 
 .landing-badge {
   display: inline-block;
-  background: rgba(230, 57, 70, 0.2);
-  color: #ff4d5e;
+  background: rgba(0, 102, 255, 0.12);
+  color: var(--primary-color);
   border: 1px solid var(--primary-color);
   padding: 0.4rem 1rem;
   border-radius: 50px;
@@ -491,12 +660,12 @@ tr:hover {
   font-weight: 900;
   line-height: 1.15;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: var(--hero-title-color);
 }
 
 .landing-hero-title span {
   color: var(--primary-color);
-  background: linear-gradient(135deg, #e63946, #ff758c);
+  background: linear-gradient(135deg, var(--primary-color), #00d2ff);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -504,7 +673,7 @@ tr:hover {
 
 .landing-hero-subtitle {
   font-size: 1.15rem;
-  color: #94a3b8;
+  color: var(--hero-subtitle-color);
   max-width: 680px;
   line-height: 1.6;
   margin-bottom: 2rem;
@@ -524,10 +693,11 @@ tr:hover {
 
 /* Stats Bar */
 .landing-stats-bar {
-  background: #1e293b;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--stats-bg);
+  border-top: 1px solid var(--stats-border);
+  border-bottom: 1px solid var(--stats-border);
   padding: 1.8rem 2rem;
+  transition: background-color 0.3s ease;
 }
 
 .landing-stats-grid {
@@ -548,7 +718,7 @@ tr:hover {
 
 .landing-stat-item span {
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 /* Sections General */
@@ -559,10 +729,11 @@ tr:hover {
 }
 
 .landing-section.bg-alt {
-  background: #1e293b;
+  background: var(--section-alt);
   max-width: 100%;
   padding-left: calc((100% - 1200px)/2 + 2rem);
   padding-right: calc((100% - 1200px)/2 + 2rem);
+  transition: background-color 0.3s ease;
 }
 
 .landing-section-header {
@@ -581,11 +752,11 @@ tr:hover {
   font-size: 2.2rem;
   font-weight: 800;
   margin: 0.5rem 0;
-  color: #ffffff;
+  color: var(--text-dark);
 }
 
 .landing-section-header p {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 1rem;
 }
 
@@ -597,25 +768,25 @@ tr:hover {
 }
 
 .landing-plan-card {
-  background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--plan-card-bg);
+  border: 1px solid var(--plan-card-border);
   border-radius: 14px;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .landing-plan-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--card-shadow);
 }
 
 .landing-plan-card.featured {
   border: 2px solid var(--primary-color);
-  background: linear-gradient(180deg, #1e293b 0%, #291a24 100%);
+  background: var(--plan-card-featured-bg);
 }
 
 .landing-plan-badge {
@@ -633,7 +804,7 @@ tr:hover {
 .landing-plan-header h3 {
   font-size: 1.4rem;
   margin-bottom: 0.5rem;
-  color: #ffffff;
+  color: var(--plan-card-text);
 }
 
 .landing-plan-price {
@@ -645,7 +816,7 @@ tr:hover {
 
 .landing-plan-price span {
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: normal;
 }
 
@@ -657,7 +828,7 @@ tr:hover {
 
 .landing-plan-features li {
   font-size: 0.9rem;
-  color: #cbd5e1;
+  color: var(--text-dark);
   margin-bottom: 0.8rem;
   line-height: 1.4;
 }
@@ -674,10 +845,12 @@ tr:hover {
 }
 
 .landing-zone-card {
-  background: #0f172a;
+  background: var(--card-bg);
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .landing-zone-img {
@@ -691,42 +864,44 @@ tr:hover {
 }
 
 .landing-zone-info h3 {
-  color: #ffffff;
+  color: var(--text-dark);
   margin-bottom: 0.5rem;
 }
 
 .landing-zone-info p {
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
-/* Location Card (Smart Fit Sede Portal del Prado Reference) */
+/* Location Card */
 .landing-location-card {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 16px;
   padding: 2.5rem;
+  box-shadow: var(--card-shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .landing-location-info h2 {
   font-size: 2rem;
   margin: 0.8rem 0;
-  color: #ffffff;
+  color: var(--text-dark);
 }
 
 .landing-location-info .address {
   font-size: 1.1rem;
-  color: #cbd5e1;
+  color: var(--text-muted);
   margin-bottom: 1.8rem;
 }
 
 .schedule-box {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--section-alt);
   border-radius: 10px;
   padding: 1.2rem;
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
 }
 
 .schedule-box h4 {
@@ -741,7 +916,7 @@ tr:hover {
 .schedule-box li {
   margin-bottom: 0.4rem;
   font-size: 0.95rem;
-  color: #e2e8f0;
+  color: var(--text-dark);
 }
 
 .amenities-list {
@@ -751,18 +926,21 @@ tr:hover {
 }
 
 .amenities-list span {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--section-alt);
   padding: 0.4rem 0.9rem;
   border-radius: 50px;
   font-size: 0.85rem;
-  color: #e2e8f0;
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
 }
 
 /* Footer */
 .landing-footer {
-  background: #020617;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--footer-bg);
+  color: var(--footer-text);
+  border-top: 1px solid var(--border-color);
   padding: 3rem 2rem 1.5rem 2rem;
+  transition: background-color 0.3s ease;
 }
 
 .landing-footer-content {
@@ -782,7 +960,7 @@ tr:hover {
 }
 
 .landing-footer-content p {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.9rem;
 }
 
@@ -790,9 +968,9 @@ tr:hover {
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1.5rem;
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.85rem;
 }
 

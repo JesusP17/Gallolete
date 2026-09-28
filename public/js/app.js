@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
+  initTheme();
   mostrarLandingView();
 
   // Login Form Event Listener
@@ -473,15 +474,22 @@ async function cargarDashboardAdmin() {
   document.getElementById('statAdminTotalPagos').innerText = `$${totalIngresos.toLocaleString('es-CO')}`;
 
   const tbody = document.getElementById('tableAdminDashboard');
-  tbody.innerHTML = membresias.slice(0, 5).map(m => `
-    <tr>
-      <td><strong>${m.cliente_nombre}</strong></td>
-      <td>${m.tipo}</td>
-      <td>${m.fecha_inicio ? m.fecha_inicio.substring(0,10) : ''}</td>
-      <td>${m.fecha_fin ? m.fecha_fin.substring(0,10) : ''}</td>
-      <td><span class="badge badge-${m.estado}">${m.estado}</span></td>
-    </tr>
-  `).join('') || '<tr><td colspan="5" style="text-align:center;">No hay registros.</td></tr>';
+  if (tbody) {
+    tbody.innerHTML = membresias.slice(0, 5).map(m => `
+      <tr>
+        <td><strong>${m.cliente_nombre}</strong></td>
+        <td>${m.tipo}</td>
+        <td>${m.fecha_inicio ? m.fecha_inicio.substring(0,10) : ''}</td>
+        <td>${m.fecha_fin ? m.fecha_fin.substring(0,10) : ''}</td>
+        <td><span class="badge badge-${m.estado}">${m.estado}</span></td>
+      </tr>
+    `).join('') || '<tr><td colspan="5" style="text-align:center;">No hay registros.</td></tr>';
+  }
+
+  // Cargar gráficos estadísticos de Chart.js y tabla de días pico
+  if (typeof cargarGraficosDashboardAdmin === 'function') {
+    cargarGraficosDashboardAdmin();
+  }
 }
 
 // 2. Cargar Dashboard Entrenador
@@ -522,15 +530,17 @@ async function cargarDashboardEntrenador() {
   }
 
   const tbody = document.getElementById('tableEntrenadorDashboard');
-  tbody.innerHTML = rutinas.map(r => `
-    <tr>
-      <td><strong>${r.nombre_rutina}</strong></td>
-      <td>${r.cliente_nombre}</td>
-      <td>${r.nivel}</td>
-      <td><span class="badge badge-${r.estado}">${r.estado}</span></td>
-      <td><button class="btn btn-primary btn-sm" onclick="verDetalleRutina(${r.id_rutina})">💪 Ver Ejercicios</button></td>
-    </tr>
-  `).join('') || '<tr><td colspan="5" style="text-align:center;">No hay rutinas creadas o asignadas a tu perfil de entrenador.</td></tr>';
+  if (tbody) {
+    tbody.innerHTML = rutinas.map(r => `
+      <tr>
+        <td><strong>${r.nombre_rutina}</strong></td>
+        <td>${r.cliente_nombre}</td>
+        <td>${r.nivel}</td>
+        <td><span class="badge badge-${r.estado}">${r.estado}</span></td>
+        <td><button class="btn btn-primary btn-sm" onclick="verDetalleRutina(${r.id_rutina})">💪 Ver Ejercicios</button></td>
+      </tr>
+    `).join('') || '<tr><td colspan="5" style="text-align:center;">No hay rutinas creadas o asignadas a tu perfil de entrenador.</td></tr>';
+  }
 }
 
 // 3. Cargar Dashboard Recepcionista
@@ -543,9 +553,15 @@ async function cargarDashboardRecepcionista() {
   const clientes = resCli.ok ? resCli.clientes : [];
   const membresias = resMem.ok ? resMem.membresias : [];
 
-  document.getElementById('statRecepClientes').innerText = clientes.length;
-  document.getElementById('statRecepActivas').innerText = membresias.filter(m => m.estado === 'activa').length;
-  document.getElementById('statRecepVencidas').innerText = membresias.filter(m => m.estado === 'vencida').length;
+  const elActivas = document.getElementById('statRecepActivas');
+  const elVencidas = document.getElementById('statRecepVencidas');
+  if (elActivas) elActivas.innerText = membresias.filter(m => m.estado === 'activa').length;
+  if (elVencidas) elVencidas.innerText = membresias.filter(m => m.estado === 'vencida').length;
+
+  // Cargar Registro de Asistencia en Tiempo Real
+  if (typeof cargarRegistroAsistencia === 'function') {
+    cargarRegistroAsistencia();
+  }
 
   // Renderizar Clientes Recientes para Recepcionista
   const tbodyNuevosCli = document.getElementById('tableRecepNuevosClientes');
@@ -918,6 +934,39 @@ document.addEventListener('click', (e) => {
     landingUserDropdown.classList.remove('active');
   }
 });
+
+/* ============================================================
+   GESTOR DE TEMAS: TEMA CLARO VS MODO AZUL ELÉCTRICO
+   ============================================================ */
+function initTheme() {
+  const savedTheme = localStorage.getItem('gallolete_theme') || 'light';
+  applyTheme(savedTheme);
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const newTheme = currentTheme === 'light' ? 'electric' : 'light';
+  applyTheme(newTheme);
+}
+
+function applyTheme(theme) {
+  if (theme === 'electric') {
+    document.documentElement.setAttribute('data-theme', 'electric');
+    localStorage.setItem('gallolete_theme', 'electric');
+    updateThemeButtons(true);
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('gallolete_theme', 'light');
+    updateThemeButtons(false);
+  }
+}
+
+function updateThemeButtons(isElectric) {
+  const buttons = document.querySelectorAll('.theme-toggle-btn');
+  buttons.forEach(btn => {
+    btn.innerHTML = isElectric ? '☀️ Modo Claro' : '⚡ Modo Eléctrico';
+  });
+}
 
 
 
