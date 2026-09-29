@@ -23,12 +23,16 @@ INSERT INTO entrenadores (id_entrenador, nombre, apellido, documento, telefono, 
 (1, 'Carlos', 'Mendoza', '91234567', '3157778899', 'carlos.mendoza@gallolete.com', 'Musculación y Hipertrofia', 'Mañana (6:00 AM - 2:00 PM)', 'activo');
 
 -- 3. USUARIOS PERMITIDOS (admin, carlos_entrenador, maria_recep, JesusP171)
--- La contraseña en texto plano para todos es: admin123
+-- Personal (acceso desde el botón desplegable "Iniciar Sesión ▾"):
+--   admin             -> admin2026
+--   carlos_entrenador -> entrenador2026
+--   maria_recep       -> recepcion2026
+-- Cliente: su cuenta se crea desde "Crear cuenta" (el sistema ya no expone contraseñas de prueba).
 INSERT INTO usuarios (nombre_usuario, correo, password, rol, id_cliente, id_entrenador, estado) VALUES
-('admin', 'admin@gallolete.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Administrador', NULL, NULL, 'activo'),
-('carlos_entrenador', 'carlos@gallolete.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Entrenador', NULL, 1, 'activo'),
-('maria_recep', 'maria@gallolete.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Recepcionista', NULL, NULL, 'activo'),
-('JesusP171', 'jesusp171@gmail.com', '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', 'Cliente', 1, NULL, 'activo');
+('admin', 'admin@gallolete.com', '$2a$10$7uyz2Oz3h9XtFLyLxK0yTeAwM8u14zZH6Pm/93wzKqmrPCJCaqB1u', 'Administrador', NULL, NULL, 'activo'),
+('carlos_entrenador', 'carlos@gallolete.com', '$2a$10$MRCE.kxnXS7ieiVONbs7Reww8W83kiNOtj3nY1MKUBiUohdZXxDnW', 'Entrenador', NULL, 1, 'activo'),
+('maria_recep', 'maria@gallolete.com', '$2a$10$Hd6vlhCPg93VevxlecVRQOXtqoP3.HsC/q2Jh/lCnuT/mHYORsGwK', 'Recepcionista', NULL, NULL, 'activo'),
+('JesusP171', 'jesusp171@gmail.com', '$2a$10$KmplkLLbDnFbRSTmdfUw4uH4fDbAnDK2ACxuojtTqRIoZknUyrK.K', 'Cliente', 1, NULL, 'activo');
 
 -- 4. EJERCICIOS DE PRUEBA
 INSERT INTO ejercicios (id_ejercicio, nombre, descripcion, grupo_muscular, nivel) VALUES

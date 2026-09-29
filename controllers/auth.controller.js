@@ -3,7 +3,7 @@ const ClienteModel = require('../models/cliente.model');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'gallolete_secreto_super_seguro_2026';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const login = async (req, res, next) => {
   try {
@@ -15,16 +15,16 @@ const login = async (req, res, next) => {
 
     const userObj = await UsuarioModel.obtenerPorCorreoONombre(usuario);
     if (!userObj) {
-      return res.status(404).json({ ok: false, mensaje: 'Usuario no encontrado o inactivo.' });
-    }
-
-    if (userObj.estado !== 'activo' || (userObj.cliente_estado && userObj.cliente_estado !== 'activo') || (userObj.entrenador_estado && userObj.entrenador_estado !== 'activo')) {
-      return res.status(403).json({ ok: false, mensaje: 'Esta cuenta o perfil se encuentra deshabilitado/inactivo. Contacte al administrador.' });
+      return res.status(401).json({ ok: false, mensaje: 'Usuario o contraseña incorrectos.' });
     }
 
     const passwordValida = await UsuarioModel.verificarPassword(password, userObj.password);
     if (!passwordValida) {
-      return res.status(401).json({ ok: false, mensaje: 'Contraseña incorrecta.' });
+      return res.status(401).json({ ok: false, mensaje: 'Usuario o contraseña incorrectos.' });
+    }
+
+    if (userObj.estado !== 'activo' || (userObj.cliente_estado && userObj.cliente_estado !== 'activo') || (userObj.entrenador_estado && userObj.entrenador_estado !== 'activo')) {
+      return res.status(403).json({ ok: false, mensaje: 'Esta cuenta o perfil se encuentra deshabilitado/inactivo. Contacte al administrador.' });
     }
 
     const payload = {
@@ -49,9 +49,30 @@ const login = async (req, res, next) => {
   }
 };
 
+// Genera un nombre de usuario único a partir del nombre y apellido (ej: "Juan Pérez" -> "juanperez").
+const generarNombreUsuario = async (nombreCompleto) => {
+  const palabras = nombreCompleto
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const base = ((palabras[0] || 'cliente') + (palabras.length > 1 ? palabras[palabras.length - 1] : '')).substring(0, 30) || 'cliente';
+
+  let candidato = base;
+  let contador = 1;
+  while (await UsuarioModel.existeNombreUsuario(candidato)) {
+    contador += 1;
+    const sufijo = String(contador);
+    candidato = base.substring(0, 30 - sufijo.length) + sufijo;
+  }
+  return candidato;
+};
+
 const registro = async (req, res, next) => {
   try {
-    let { documento, nombre, apellido, nombre_completo, correo, nombre_usuario, password, telefono, fecha_nacimiento, genero, direccion } = req.body;
+    let { documento, nombre, apellido, nombre_completo, correo, password, telefono, fecha_nacimiento, genero, direccion } = req.body;
 
     if (nombre_completo && (!nombre || !apellido)) {
       const partes = nombre_completo.trim().split(/\s+/);
@@ -63,11 +84,25 @@ const registro = async (req, res, next) => {
       documento = 'DOC-' + Math.floor(10000000 + Math.random() * 90000000);
     }
 
-    if (!nombre || !apellido || !correo || !nombre_usuario || !password) {
+    if (!nombre || !apellido || !correo || !password) {
       return res.status(400).json({
         ok: false,
-        mensaje: 'Campos obligatorios: nombre y apellido, correo, contraseña y nombre de usuario.'
+        mensaje: 'Campos obligatorios: nombre y apellido, correo y contraseña.'
       });
+    }
+
+    const nombreCompletoRecibido = (nombre_completo || `${nombre} ${apellido}`).trim();
+    if (nombreCompletoRecibido.split(/\s+/).filter(Boolean).length < 2) {
+      return res.status(400).json({ ok: false, mensaje: 'Debe ingresar nombre y apellido (mínimo dos palabras).' });
+    }
+
+    const nombreRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(\s+[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$/;
+    if (!nombreRegex.test(nombreCompletoRecibido)) {
+      return res.status(400).json({ ok: false, mensaje: 'El nombre y apellido no puede contener números ni símbolos (solo letras y espacios).' });
+    }
+
+    if (nombreCompletoRecibido.length > 30) {
+      return res.status(400).json({ ok: false, mensaje: 'El nombre completo no puede superar los 30 caracteres.' });
     }
 
     if (documento.trim().length > 20) {
@@ -86,30 +121,25 @@ const registro = async (req, res, next) => {
       return res.status(400).json({ ok: false, mensaje: 'El correo electrónico no puede superar los 70 caracteres.' });
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@gmail\.com$/i;
     if (!emailRegex.test(correo.trim())) {
-      return res.status(400).json({ ok: false, mensaje: 'El correo electrónico debe ser válido, incluyendo "@" y "." (ej: cliente@dominio.com).' });
+      return res.status(400).json({ ok: false, mensaje: 'El correo debe ser de Gmail obligatoriamente (ej: usuario@gmail.com).' });
     }
 
-    if (nombre_usuario.trim().length > 30) {
-      return res.status(400).json({ ok: false, mensaje: 'El nombre de usuario no puede superar los 30 caracteres.' });
+    if (password.length < 8) {
+      return res.status(400).json({ ok: false, mensaje: 'La contraseña debe tener mínimo 8 caracteres.' });
     }
 
-    if (password.length < 8 || password.length > 12) {
-      return res.status(400).json({ ok: false, mensaje: 'La contraseña debe tener entre 8 y 12 caracteres.' });
+    if (password.length > 30) {
+      return res.status(400).json({ ok: false, mensaje: 'La contraseña no puede superar los 30 caracteres.' });
     }
 
     if (telefono && telefono.trim().length > 20) {
       return res.status(400).json({ ok: false, mensaje: 'El teléfono no puede superar los 20 caracteres.' });
     }
 
-    const usuarioExistente = await UsuarioModel.obtenerPorCorreoONombre(nombre_usuario);
-    if (usuarioExistente) {
-      return res.status(400).json({
-        ok: false,
-        mensaje: 'El nombre de usuario ya se encuentra registrado.'
-      });
-    }
+    // El cliente no elige usuario: se genera automáticamente desde su nombre y apellido.
+    const nombre_usuario = await generarNombreUsuario(nombreCompletoRecibido);
 
     const correoExistente = await UsuarioModel.obtenerPorCorreoONombre(correo);
     if (correoExistente) {

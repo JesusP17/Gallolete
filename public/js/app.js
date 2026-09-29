@@ -1,5 +1,17 @@
 // Módulo Principal de Navegación, Dashboards por Rol y Modales
 
+// El formulario normal de login solo permite Cliente; el menú desplegable
+// habilita el rol elegido únicamente para ese inicio de sesión.
+let rolHabilitadoLogin = null;
+// Plan elegido en la landing sin sesión activa; se retoma en la pasarela al autenticarse.
+let planPendienteCliente = null;
+// Credenciales del personal: acceso solo desde el menú desplegable (nunca se muestran al Cliente).
+const CREDENCIALES_STAFF = {
+  Administrador: { usuario: 'admin@gallolete.com', clave: 'admin2026' },
+  Entrenador: { usuario: 'carlos@gallolete.com', clave: 'entrenador2026' },
+  Recepcionista: { usuario: 'maria@gallolete.com', clave: 'recepcion2026' }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   initApp();
 });
@@ -22,14 +34,27 @@ function initApp() {
     });
 
     const data = await res.json();
-    if (data.ok) {
-      Auth.setSession(data.token, data.usuario);
-      errorDiv.classList.add('hidden');
-      mostrarAppLayout();
-    } else {
-      errorDiv.innerText = data.mensaje || 'Credenciales incorrectas.';
+    if (!data.ok) {
+      if (rolHabilitadoLogin === null) {
+        errorDiv.innerHTML = `${data.mensaje || 'Credenciales incorrectas.'} Si aún no tienes cuenta, <a href="#" style="color:#E4002B; font-weight:700;" onclick="event.preventDefault(); irARegistroCliente();">créala aquí</a>.`;
+      } else {
+        errorDiv.innerText = data.mensaje || 'Credenciales incorrectas.';
+      }
       errorDiv.classList.remove('hidden');
+      return;
     }
+
+    // El formulario es solo para Clientes; los demás roles entran desde el menú desplegable
+    if (data.usuario.rol !== 'Cliente' && rolHabilitadoLogin !== data.usuario.rol) {
+      errorDiv.innerHTML = `Este inicio de sesión es solo para <strong>Clientes</strong>. Para entrar como <strong>${data.usuario.rol}</strong> usa el botón <strong>"Iniciar Sesión ▾"</strong> de la página principal.`;
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+
+    rolHabilitadoLogin = null;
+    Auth.setSession(data.token, data.usuario);
+    errorDiv.classList.add('hidden');
+    continuarTrasAutenticacion(data.usuario);
   });
 
   // Register Form Event Listener
@@ -38,20 +63,32 @@ function initApp() {
     const nombreCompleto = document.getElementById('regNombreCompleto').value.trim();
     const correo = document.getElementById('regCorreo').value.trim();
     const password = document.getElementById('regPassword').value;
-    const nombre_usuario = document.getElementById('regUsuario').value.trim();
 
     const errorDiv = document.getElementById('loginError');
     errorDiv.classList.add('hidden');
 
-    if (!nombreCompleto) {
-      errorDiv.innerText = 'Debe ingresar nombre y apellido.';
+    const palabrasNombre = nombreCompleto.split(/\s+/).filter(Boolean);
+    if (palabrasNombre.length < 2) {
+      errorDiv.innerText = 'Debe ingresar nombre y apellido (mínimo dos palabras).';
       errorDiv.classList.remove('hidden');
       return;
     }
 
-    const partes = nombreCompleto.split(/\s+/);
-    const nombre = (partes[0] || '').substring(0, 30);
-    const apellido = (partes.slice(1).join(' ') || partes[0] || '').substring(0, 30);
+    const nombreRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(\s+[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$/;
+    if (!nombreRegex.test(nombreCompleto)) {
+      errorDiv.innerText = 'El nombre y apellido no puede contener números ni símbolos (solo letras y espacios).';
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+
+    if (nombreCompleto.length > 30) {
+      errorDiv.innerText = 'El nombre completo no puede superar los 30 caracteres.';
+      errorDiv.classList.remove('hidden');
+      return;
+    }
+
+    const nombre = (palabrasNombre[0] || '').substring(0, 30);
+    const apellido = (palabrasNombre.slice(1).join(' ') || palabrasNombre[0] || '').substring(0, 30);
 
     if (correo.length > 70) {
       errorDiv.innerText = 'El correo electrónico no puede superar los 70 caracteres.';
@@ -59,21 +96,21 @@ function initApp() {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(correo) || !correo.includes('@') || !correo.includes('.')) {
-      errorDiv.innerText = 'El correo debe incluir "@" y un punto "." con un dominio válido (ej: usuario@correo.com).';
+    const emailRegex = /^[^\s@]+@gmail\.com$/i;
+    if (!emailRegex.test(correo)) {
+      errorDiv.innerText = 'El correo debe ser de Gmail obligatoriamente (ej: usuario@gmail.com).';
       errorDiv.classList.remove('hidden');
       return;
     }
 
-    if (password.length < 8 || password.length > 12) {
-      errorDiv.innerText = 'La contraseña debe tener un mínimo de 8 caracteres y un máximo de 12.';
+    if (password.length < 8) {
+      errorDiv.innerText = 'La contraseña debe tener mínimo 8 caracteres.';
       errorDiv.classList.remove('hidden');
       return;
     }
 
-    if (nombre_usuario.length > 30) {
-      errorDiv.innerText = 'El nombre de usuario no puede superar los 30 caracteres.';
+    if (password.length > 30) {
+      errorDiv.innerText = 'La contraseña no puede superar los 30 caracteres.';
       errorDiv.classList.remove('hidden');
       return;
     }
@@ -86,15 +123,19 @@ function initApp() {
         nombre,
         apellido,
         correo,
-        password,
-        nombre_usuario
+        password
       })
     });
 
     const data = await res.json();
     if (data.ok) {
       Auth.setSession(data.token, data.usuario);
-      mostrarAppLayout();
+      continuarTrasAutenticacion(data.usuario);
+      mostrarModalNotificacion({
+        titulo: '¡Cuenta creada!',
+        mensaje: `Tu nombre de usuario generado es "${data.usuario.nombre_usuario}". También puedes iniciar sesión con tu correo ${data.usuario.correo}.`,
+        tipo: 'exito'
+      });
     } else {
       errorDiv.innerText = data.mensaje || 'Error al registrar el cliente.';
       errorDiv.classList.remove('hidden');
@@ -109,11 +150,27 @@ function initApp() {
 }
 
 function mostrarLandingView() {
+  planPendienteCliente = null;
   document.getElementById('landingView').classList.remove('hidden');
   document.getElementById('loginView').classList.add('hidden');
   document.getElementById('appLayout').classList.add('hidden');
   actualizarBotonHeaderLanding();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function mostrarLoginCliente() {
+  rolHabilitadoLogin = null;
+  limpiarLoginView();
+  mostrarLoginView('login');
+}
+
+function limpiarLoginView() {
+  const userInp = document.getElementById('loginUsuario');
+  const passInp = document.getElementById('loginPassword');
+  if (userInp) userInp.value = '';
+  if (passInp) passInp.value = '';
+  const errorDiv = document.getElementById('loginError');
+  if (errorDiv) errorDiv.classList.add('hidden');
 }
 
 function mostrarLoginView(tab = 'login') {
@@ -147,12 +204,36 @@ function actualizarBotonHeaderLanding() {
   }
 }
 
+function continuarTrasAutenticacion(usuario) {
+  mostrarAppLayout();
+
+  if (!planPendienteCliente) return;
+
+  const plan = planPendienteCliente;
+  planPendienteCliente = null;
+
+  if (usuario && usuario.rol === 'Cliente' && usuario.id_cliente) {
+    setTimeout(() => abrirPasarelaPagoModal(plan.tipo, plan.precio), 350);
+  }
+}
+
 function irAComprarPlan(tipoPlan) {
+  const precios = {
+    'Mensual General': 100000,
+    'Mensual VIP': 120000,
+    'Trimestral Ahorro': 300000,
+    'Trimestral': 300000,
+    'Anual Black': 950000,
+    'Anual': 950000
+  };
+  const precio = precios[tipoPlan] || 100000;
+
   if (!Auth.isAuthenticated()) {
+    planPendienteCliente = { tipo: tipoPlan, precio };
     mostrarLoginView('registro');
     mostrarModalNotificacion({
       titulo: `Plan ${tipoPlan}`,
-      mensaje: 'Crea tu cuenta de cliente o inicia sesión para adquirir tu plan de membresía.',
+      mensaje: 'Para adquirir tu plan primero debes crear tu cuenta de cliente o iniciar sesión. Al terminar te llevaremos a la pasarela de pago.',
       tipo: 'info'
     });
     return;
@@ -160,7 +241,7 @@ function irAComprarPlan(tipoPlan) {
 
   const user = Auth.getUser();
   if (user && user.rol === 'Cliente') {
-    abrirModalAdquirirPlanCliente(tipoPlan);
+    abrirPasarelaPagoModal(tipoPlan, precio);
   } else {
     mostrarAppLayout();
     cambiarTab('membresias');
@@ -172,152 +253,96 @@ function irAComprarPlan(tipoPlan) {
   }
 }
 
-function abrirModalAdquirirPlanCliente(tipoPlan) {
-  const user = Auth.getUser();
-  const idCliente = user ? user.id_cliente : null;
-
-  if (!idCliente) {
-    mostrarModalNotificacion({
-      titulo: 'Atención',
-      mensaje: 'Tu usuario aún no está vinculado a un perfil de cliente. Solicitalo en recepción.',
-      tipo: 'error'
-    });
-    return;
-  }
-
-  const precios = {
-    'Mensual General': 100000,
-    'Mensual VIP': 120000,
-    'Trimestral Ahorro': 300000,
-    'Trimestral': 300000,
-    'Anual Black': 950000,
-    'Anual': 950000
-  };
-
-  const precio = precios[tipoPlan] || 100000;
-
-  document.getElementById('modalTitle').innerText = `💳 Adquirir Plan ${tipoPlan}`;
-  document.getElementById('modalBody').innerHTML = `
-    <form id="formAdquirirPlan" onsubmit="confirmarAdquisicionPlan(event, '${tipoPlan}', ${precio})">
-      <div style="text-align: center; margin-bottom: 1.2rem;">
-        <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">🔥</div>
-        <h3 style="color: var(--dark-bg); font-weight: 800;">Plan ${tipoPlan}</h3>
-        <p style="font-size: 1.4rem; color: var(--primary-color); font-weight: 900; margin: 0.4rem 0;">
-          $${precio.toLocaleString('es-CO')} COP
-        </p>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">
-          Acceso total a la Sede UniSalamanca Cra 50 #79-155.
-        </p>
-      </div>
-
-      <div style="margin-bottom: 1.2rem;">
-        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--dark-bg);">Método de Pago</label>
-        <select id="planMetodoPago" class="form-control" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:6px;">
-          <option value="Tarjeta de Crédito / PSE">💳 Tarjeta de Crédito / PSE</option>
-          <option value="Transferencia Nequi / Daviplata">📱 Transferencia Nequi / Daviplata</option>
-          <option value="Efectivo en Recepción">💵 Efectivo en Recepción</option>
-        </select>
-      </div>
-
-      <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top: 1.5rem;">
-        <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-        <button type="submit" class="btn btn-primary">🚀 Confirmar y Activar Plan</button>
-      </div>
-    </form>
-  `;
-
-  abrirModal();
-}
-
-async function confirmarAdquisicionPlan(e, tipoPlan, precio) {
-  e.preventDefault();
-  const user = Auth.getUser();
-  const idCliente = user ? user.id_cliente : null;
-  const metodoPago = document.getElementById('planMetodoPago').value;
-
-  if (!idCliente) return;
-
-  const hoy = new Date();
-  const fechaInicio = hoy.toISOString().substring(0, 10);
-  
-  let dias = 30;
-  if (tipoPlan.includes('Trimestral')) dias = 90;
-  if (tipoPlan.includes('Anual')) dias = 365;
-
-  const fechaFinObj = new Date(hoy.getTime() + (dias * 24 * 60 * 60 * 1000));
-  const fechaFin = fechaFinObj.toISOString().substring(0, 10);
-
-  // 1. Crear Membresía para el Cliente
-  const resMem = await Auth.fetchApi('/membresias', {
-    method: 'POST',
-    body: JSON.stringify({
-      id_cliente: idCliente,
-      tipo: tipoPlan,
-      precio: precio,
-      fecha_inicio: fechaInicio,
-      fecha_fin: fechaFin,
-      estado: 'activa'
-    })
-  });
-
-  if (resMem.ok) {
-    // 2. Registrar Pago
-    const idMembresia = resMem.membresia ? resMem.membresia.id_membresia : null;
-    await Auth.fetchApi('/pagos', {
-      method: 'POST',
-      body: JSON.stringify({
-        id_cliente: idCliente,
-        id_membresia: idMembresia,
-        valor: precio,
-        fecha_pago: fechaInicio,
-        metodo_pago: metodoPago,
-        referencia: `PLAN-${Date.now().toString().slice(-6)}`
-      })
-    });
-
-    cerrarModal();
-    mostrarAppLayout();
-    cambiarTab('dashboard-cliente');
-    mostrarModalNotificacion({
-      titulo: '¡Membresía Activada!',
-      mensaje: `Tu plan ${tipoPlan} fue adquirido con éxito. ¡Bienvenido a GalloLeTe!`,
-      tipo: 'exito'
-    });
-  } else {
-    mostrarModalNotificacion({
-      titulo: 'Error',
-      mensaje: resMem.mensaje || 'No se pudo procesar la adquisición del plan.',
-      tipo: 'error'
-    });
-  }
-}
-
 function mostrarAuthTab(tab) {
   const loginForm = document.getElementById('loginForm');
   const registerForm = document.getElementById('registerForm');
-  const btnTabLogin = document.getElementById('btnTabLogin');
-  const btnTabRegistro = document.getElementById('btnTabRegistro');
   const loginError = document.getElementById('loginError');
   const registerSuccess = document.getElementById('registerSuccess');
 
   if (loginError) loginError.classList.add('hidden');
   if (registerSuccess) registerSuccess.classList.add('hidden');
+  if (!loginForm || !registerForm) return;
 
-  if (tab === 'login') {
-    loginForm.classList.remove('hidden');
-    registerForm.classList.add('hidden');
-    btnTabLogin.classList.remove('btn-secondary');
-    btnTabLogin.classList.add('btn-primary');
-    btnTabRegistro.classList.remove('btn-primary');
-    btnTabRegistro.classList.add('btn-secondary');
-  } else {
-    loginForm.classList.add('hidden');
-    registerForm.classList.remove('hidden');
-    btnTabRegistro.classList.remove('btn-secondary');
-    btnTabRegistro.classList.add('btn-primary');
-    btnTabLogin.classList.remove('btn-primary');
-    btnTabLogin.classList.add('btn-secondary');
+  const esLogin = tab === 'login';
+  loginForm.classList.toggle('hidden', !esLogin);
+  registerForm.classList.toggle('hidden', esLogin);
+  actualizarCajaCredencialesStaff(esLogin ? 'login' : 'registro');
+}
+
+// La caja de credenciales solo aparece cuando un rol staff entró desde el menú desplegable.
+function actualizarCajaCredencialesStaff(vista) {
+  const caja = document.getElementById('staffCredBox');
+  const footerCrear = document.getElementById('loginFooterCrearCuenta');
+  const googleBtn = document.getElementById('googleLoginBtn');
+  const dividerCorreo = document.getElementById('dividerCorreo');
+  const cred = CREDENCIALES_STAFF[rolHabilitadoLogin];
+  const esStaff = Boolean(cred);
+
+  // El personal no puede registrarse: solo inicia sesión (las cuentas staff las crea el Administrador).
+  if (footerCrear) footerCrear.classList.toggle('hidden', esStaff);
+
+  // Google y el separador "O CON CORREO" son solo para el ingreso del Cliente.
+  if (googleBtn) googleBtn.classList.toggle('hidden', esStaff);
+  if (dividerCorreo) dividerCorreo.classList.toggle('hidden', esStaff);
+
+  if (!caja) return;
+
+  if (vista !== 'login' || !cred) {
+    caja.classList.add('hidden');
+    caja.innerHTML = '';
+    return;
   }
+
+  caja.innerHTML = `
+    <strong>🔑 Acceso ${rolHabilitadoLogin}</strong><br>
+    Usuario: <code>${cred.usuario}</code><br>
+    Contraseña: <code>${cred.clave}</code>
+  `;
+  caja.classList.remove('hidden');
+}
+
+function toggleVerPassword(idInput, boton) {
+  const input = document.getElementById(idInput);
+  if (!input) return;
+  const mostrar = input.type === 'password';
+  input.type = mostrar ? 'text' : 'password';
+  if (boton) boton.innerText = mostrar ? '🙈' : '👁';
+}
+
+function irARegistroCliente() {
+  // Registro exclusivo de Clientes: el personal solo inicia sesión.
+  if (CREDENCIALES_STAFF[rolHabilitadoLogin]) {
+    mostrarModalNotificacion({
+      titulo: 'Solo para nuevos Clientes',
+      mensaje: 'El personal (Entrenador, Recepcionista y Administrador) no crea cuentas desde aquí, solo inicia sesión. Las cuentas del personal las registra el Administrador desde su panel.',
+      tipo: 'info'
+    });
+    return;
+  }
+
+  const errorDiv = document.getElementById('loginError');
+  if (errorDiv) errorDiv.classList.add('hidden');
+  const userInp = document.getElementById('loginUsuario');
+  const passInp = document.getElementById('loginPassword');
+  if (userInp) userInp.value = '';
+  if (passInp) passInp.value = '';
+  mostrarAuthTab('registro');
+}
+
+function accesoGoogleProximamente() {
+  mostrarModalNotificacion({
+    titulo: 'Continuar con Google',
+    mensaje: 'El acceso con Google estará disponible próximamente. Por ahora puedes crear tu cuenta o iniciar sesión con tu correo y contraseña.',
+    tipo: 'info'
+  });
+}
+
+function solicitarRecuperarPassword() {
+  mostrarModalNotificacion({
+    titulo: '¿Olvidaste tu contraseña?',
+    mensaje: 'Por seguridad, el restablecimiento se realiza en la recepción del gimnasio (Sede UniSalamanca Cra 50 #79-155) presentando tu documento. Si aún no eres miembro, crea tu cuenta desde "Crear cuenta".',
+    tipo: 'info'
+  });
 }
 
 function mostrarLogin() {
@@ -727,18 +752,14 @@ function seleccionarRolDemo(rol) {
   const passInp = document.getElementById('loginPassword');
   if (!userInp || !passInp) return;
 
-  if (rol === 'Administrador') {
-    userInp.value = 'admin';
-    passInp.value = 'admin123';
-  } else if (rol === 'Entrenador') {
-    userInp.value = 'carlos_entrenador';
-    passInp.value = 'admin123';
-  } else if (rol === 'Recepcionista') {
-    userInp.value = 'maria_recep';
-    passInp.value = 'admin123';
-  } else if (rol === 'Cliente') {
-    userInp.value = 'JesusP171';
-    passInp.value = 'admin123';
+  userInp.value = '';
+  passInp.value = '';
+
+  // El Cliente no recibe credenciales de prueba: debe crear su cuenta o iniciar con la suya.
+  const cred = CREDENCIALES_STAFF[rol];
+  if (cred) {
+    userInp.value = cred.usuario;
+    passInp.value = cred.clave;
   }
 }
 
@@ -903,11 +924,8 @@ function seleccionarRolYAcceder(rol) {
   const dropdown = document.getElementById('landingRoleDropdown');
   if (dropdown) dropdown.classList.remove('active');
 
-  const roleSelect = document.getElementById('loginRolSelect');
-  if (roleSelect) {
-    roleSelect.value = rol;
-    seleccionarRolDemo(rol);
-  }
+  rolHabilitadoLogin = rol;
+  seleccionarRolDemo(rol);
   mostrarLoginView('login');
 }
 

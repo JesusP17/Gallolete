@@ -3,6 +3,10 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 let useInMemoryFallback = false;
+const fallbackHabilitado = process.env.ENABLE_MEMORY_FALLBACK === 'true';
+
+// Hash bcrypt real de 'admin123' para los usuarios de demostración del modo en memoria
+const memoryDemoHash = bcrypt.hashSync('admin123', 10);
 
 // Base de datos en memoria para cuando el servicio MySQL local esté apagado
 const memoryData = {
@@ -13,10 +17,10 @@ const memoryData = {
     { id_entrenador: 1, nombre: 'Carlos', apellido: 'Mendoza', documento: '91234567', telefono: '3157778899', correo: 'carlos@gallolete.com', especialidad: 'Musculación', horario: 'Mañana', estado: 'activo' }
   ],
   usuarios: [
-    { id_usuario: 1, nombre_usuario: 'admin', correo: 'admin@gallolete.com', password: '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', rol: 'Administrador', id_cliente: null, id_entrenador: null, estado: 'activo' },
-    { id_usuario: 2, nombre_usuario: 'carlos_entrenador', correo: 'carlos@gallolete.com', password: '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', rol: 'Entrenador', id_cliente: null, id_entrenador: 1, estado: 'activo' },
-    { id_usuario: 3, nombre_usuario: 'maria_recep', correo: 'maria@gallolete.com', password: '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', rol: 'Recepcionista', id_cliente: null, id_entrenador: null, estado: 'activo' },
-    { id_usuario: 4, nombre_usuario: 'JesusP171', correo: 'jesusp171@gmail.com', password: '$2a$10$z7.1w0YJ5uXJqVj.18x4h.rFz2x3a/C5c0j1k2l3m4n5o6p7q8r9s', rol: 'Cliente', id_cliente: 1, id_entrenador: null, estado: 'activo' }
+    { id_usuario: 1, nombre_usuario: 'admin', correo: 'admin@gallolete.com', password: memoryDemoHash, rol: 'Administrador', id_cliente: null, id_entrenador: null, estado: 'activo' },
+    { id_usuario: 2, nombre_usuario: 'carlos_entrenador', correo: 'carlos@gallolete.com', password: memoryDemoHash, rol: 'Entrenador', id_cliente: null, id_entrenador: 1, estado: 'activo' },
+    { id_usuario: 3, nombre_usuario: 'maria_recep', correo: 'maria@gallolete.com', password: memoryDemoHash, rol: 'Recepcionista', id_cliente: null, id_entrenador: null, estado: 'activo' },
+    { id_usuario: 4, nombre_usuario: 'JesusP171', correo: 'jesusp171@gmail.com', password: memoryDemoHash, rol: 'Cliente', id_cliente: 1, id_entrenador: null, estado: 'activo' }
   ],
   membresias: [
     { id_membresia: 1, id_cliente: 1, cliente_nombre: 'Jesus Perez', tipo: 'Mensual VIP', precio: 120000, fecha_inicio: '2026-09-01', fecha_fin: '2026-10-30', estado: 'activa' }
@@ -49,23 +53,23 @@ const checkConnection = async () => {
     console.log('✅ Conexión exitosa a MySQL:', process.env.DB_NAME || 'gallolete_db');
     connection.release();
   } catch (error) {
-    console.warn('⚡ MySQL no detectado. Modo base de datos ligera activado automáticamente.');
-    useInMemoryFallback = true;
+    if (fallbackHabilitado) {
+      console.warn('⚡ MySQL no detectado. Modo base de datos en memoria activado (ENABLE_MEMORY_FALLBACK=true).');
+      useInMemoryFallback = true;
+    } else {
+      console.error('❌ No se pudo conectar a MySQL. Verifique la base de datos o active ENABLE_MEMORY_FALLBACK=true en el .env.', error.message);
+      process.exit(1);
+    }
   }
 };
 
 checkConnection();
 
-// Wrapper seguro para querys que conmuta automáticamente si MySQL no responde
+// Wrapper de consultas: el modo en memoria solo se activa al arrancar y si está habilitado por variable de entorno
 const dbWrapper = {
   query: async (sql, params = []) => {
     if (!useInMemoryFallback) {
-      try {
-        return await pool.query(sql, params);
-      } catch (err) {
-        console.warn('⚡ Derivando consulta a base de datos ligera:', err.message);
-        useInMemoryFallback = true;
-      }
+      return await pool.query(sql, params);
     }
 
     // Adaptador In-Memory

@@ -3,6 +3,12 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+// El servidor no debe arrancar sin un secreto JWT definido (evita firmar tokens con claves por defecto)
+if (!process.env.JWT_SECRET) {
+  console.error('❌ ERROR: La variable JWT_SECRET no está definida en el archivo .env. El servidor no puede iniciar.');
+  process.exit(1);
+}
+
 const errorHandler = require('./middlewares/error.middleware');
 
 // Rutas de la API

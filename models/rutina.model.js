@@ -1,7 +1,7 @@
 const db = require('../config/database');
 
 class RutinaModel {
-  static async obtenerTodas() {
+  static async obtenerTodas(idCliente = null) {
     const query = `
       SELECT r.*, 
              CONCAT(c.nombre, ' ', c.apellido) AS cliente_nombre, c.documento AS cliente_documento,
@@ -9,9 +9,10 @@ class RutinaModel {
       FROM rutinas r
       JOIN clientes c ON r.id_cliente = c.id_cliente
       JOIN entrenadores e ON r.id_entrenador = e.id_entrenador
+      ${idCliente ? 'WHERE r.id_cliente = ?' : ''}
       ORDER BY r.id_rutina DESC
     `;
-    const [filas] = await db.query(query);
+    const [filas] = await db.query(query, idCliente ? [idCliente] : []);
     return filas;
   }
 

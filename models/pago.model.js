@@ -1,7 +1,7 @@
 const db = require('../config/database');
 
 class PagoModel {
-  static async obtenerTodos() {
+  static async obtenerTodos(idCliente = null) {
     const query = `
       SELECT p.*, 
              CONCAT(c.nombre, ' ', c.apellido) AS cliente_nombre, c.documento AS cliente_documento,
@@ -9,9 +9,10 @@ class PagoModel {
       FROM pagos p
       JOIN clientes c ON p.id_cliente = c.id_cliente
       LEFT JOIN membresias m ON p.id_membresia = m.id_membresia
+      ${idCliente ? 'WHERE p.id_cliente = ?' : ''}
       ORDER BY p.id_pago DESC
     `;
-    const [filas] = await db.query(query);
+    const [filas] = await db.query(query, idCliente ? [idCliente] : []);
     return filas;
   }
 

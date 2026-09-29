@@ -6,6 +6,9 @@
   <title>GalloLeTe - Sistema de Gestión para Gimnasios</title>
   <link rel="icon" type="image/png" href="img/logo.png">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     (function() {
@@ -19,58 +22,52 @@
 <body>
 
   <!-- 0. PÁGINA PRINCIPAL / LANDING PAGE (Referencia Sede UniSalamanca) -->
-  <div id="landingView" class="landing-container">
+  <div id="landingView" class="landing-container glx-landing">
     <!-- HEADER NAVEGACIÓN PRINCIPAL -->
-    <header class="landing-header">
-      <div class="landing-header-content">
-        <div class="landing-logo">
-          <img src="img/logo.png" alt="GalloLeTe Logo" class="brand-logo-img">
-          Gallo<span>LeTe</span> <small style="font-size:0.65rem; color:#888; font-weight:normal; margin-left:4px;">GIMNASIO</small>
-        </div>
-        
-        <!-- Botón Hamburguesa para Teléfonos/Móviles -->
-        <button id="btnLandingBurger" class="burger-btn" onclick="toggleLandingMobileMenu(event)" aria-label="Menú de Navegación">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+    <header class="glx-header">
+      <div class="glx-header-inner">
+        <a href="#" class="glx-logo">
+          <img src="img/logo.png" alt="GalloLeTe Logo" class="glx-logo-img">
+          <span class="glx-logo-text">Gallo<b>LeTe</b></span>
+          <small class="glx-logo-sub">GIMNASIO</small>
+        </a>
 
-        <nav class="landing-nav" id="landingNav">
-          <a href="#sede" onclick="scrollASeccion(event, 'sede')">Sede UniSalamanca</a>
-          <a href="#planes" onclick="scrollASeccion(event, 'planes')">Planes y Membresías</a>
+        <nav class="glx-nav" id="landingNav">
+          <a href="#sede" onclick="scrollASeccion(event, 'sede')">Sede</a>
+          <a href="#planes" onclick="scrollASeccion(event, 'planes')">Planes</a>
           <a href="#instalaciones" onclick="scrollASeccion(event, 'instalaciones')">Instalaciones</a>
           <a href="#sede" onclick="scrollASeccion(event, 'sede')">Horarios</a>
-          <div class="mobile-only-action" style="margin-top: 1rem;">
-            <button class="btn btn-primary width-100" onclick="mostrarLoginView(); toggleLandingMobileMenu();">
-              🔐 Acceder a Paneles
+          <div class="mobile-only-action glx-nav-mobile-cta">
+            <button class="glx-btn glx-btn-lime glx-btn-block" onclick="mostrarLoginCliente(); toggleLandingMobileMenu();">
+              🔐 Iniciar Sesión
             </button>
           </div>
         </nav>
 
-        <div class="landing-header-actions" style="position: relative; display: flex; align-items: center; gap: 0.75rem;">
-          <button type="button" class="btn btn-theme-toggle theme-toggle-btn" onclick="toggleTheme()" title="Cambiar Tema de Color">⚡ Modo Eléctrico</button>
-          
+        <div class="glx-actions">
+          <button type="button" class="btn-theme-toggle theme-toggle-btn" onclick="toggleTheme()" title="Cambiar Tema de Color">⚡ Modo Eléctrico</button>
+
           <!-- Cuando NO ha iniciado sesión -->
-          <div id="landingHeaderLoggedOut" style="position: relative;">
-            <button id="btnHeaderAccesoPaneles" class="btn btn-primary" onclick="toggleLandingRoleDropdown(event)">
-              🔐 Acceder a Paneles ▾
+          <div id="landingHeaderLoggedOut" class="glx-actions-rel">
+            <button id="btnHeaderAccesoPaneles" class="glx-btn glx-btn-lime glx-btn-sm" onclick="toggleLandingRoleDropdown(event)">
+              🔐 Iniciar Sesión ▾
             </button>
             <div id="landingRoleDropdown" class="user-dropdown-menu">
               <div class="dropdown-header">
-                <strong>Seleccionar Rol de Acceso</strong>
-                <small>Elige tu rol para ingresar</small>
+                <strong>Ingresar como...</strong>
+                <small>Selecciona tu rol para continuar</small>
               </div>
               <hr style="border: 0; border-top: 1px solid #eee; margin: 0.4rem 0;">
-              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Administrador')">⚙️ Administrador</button>
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Cliente')">👤 Cliente</button>
               <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Entrenador')">🏋️ Entrenador</button>
               <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Recepcionista')">📞 Recepcionista</button>
-              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Cliente')">👤 Cliente</button>
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Administrador')">⚙️ Administrador</button>
             </div>
           </div>
 
           <!-- Cuando SÍ ha iniciado sesión -->
-          <div id="landingHeaderLoggedIn" class="hidden" style="position: relative;">
-            <button id="btnLandingUserMenu" class="btn btn-secondary" onclick="toggleLandingUserDropdown(event)" style="display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.9rem;">
+          <div id="landingHeaderLoggedIn" class="hidden glx-actions-rel">
+            <button id="btnLandingUserMenu" class="glx-btn glx-btn-outline glx-btn-sm" onclick="toggleLandingUserDropdown(event)">
               👤 <strong id="landingUserNombre">Usuario</strong> (<span id="landingUserRol">Rol</span>) ▾
             </button>
             <div id="landingUserDropdown" class="user-dropdown-menu">
@@ -92,283 +89,312 @@
             </div>
           </div>
         </div>
+
+        <!-- Botón Hamburguesa para Teléfonos/Móviles -->
+        <button id="btnLandingBurger" class="burger-btn" onclick="toggleLandingMobileMenu(event)" aria-label="Menú de Navegación">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
     </header>
 
-    <!-- HERO BANNER PRINCIPAL -->
-    <section class="landing-hero" style="background-image: linear-gradient(to right, rgba(15, 23, 42, 0.92) 30%, rgba(15, 23, 42, 0.45)), url('img/hero.jpg');">
-      <div class="landing-hero-content">
-        <div class="landing-badge">📍 SEDE UNISALAMANCA • CRA 50 #79-155</div>
-        <h1 class="landing-hero-title">El Gimnasio Inteligente <span>GalloLeTe</span></h1>
-        <p class="landing-hero-subtitle">
-          Entrena en instalaciones de primer nivel, máquinas de última generación y seguimiento personalizado con entrenadores expertos en UniSalamanca Cra 50 #79-155.
-        </p>
-        <div class="landing-hero-buttons">
-          <a href="#planes" onclick="scrollASeccion(event, 'planes')" class="btn btn-primary btn-lg">🔥 Ver Planes de Membresía</a>
-          <button class="btn btn-secondary btn-lg" onclick="mostrarLoginView()">🔐 Acceso a Paneles de Gestión</button>
+    <!-- HERO PRINCIPAL -->
+    <section class="glx-hero">
+      <div class="glx-hero-grid">
+        <div class="glx-hero-copy">
+          <div class="glx-hero-badge">📍 UniSalamanca · Cra 50 #79-155</div>
+          <h1 class="glx-hero-title">Entre<br><span>na</span><br>Sin<br>Lími<br>tes</h1>
+          <p class="glx-hero-sub">Instalaciones de primer nivel, máquinas de última generación y entrenadores expertos en Barranquilla.</p>
+          <div class="glx-hero-ctas">
+            <button class="glx-btn glx-btn-lime glx-btn-lg" onclick="scrollASeccion(event, 'planes')">🔥 Ver Planes</button>
+            <button class="glx-btn glx-btn-outline glx-btn-lg" onclick="mostrarLoginCliente()">🔒 Iniciar Sesión</button>
+          </div>
+        </div>
+        <div class="glx-hero-media">
+          <img src="img/hero.jpg" alt="Atleta entrenando en GalloLeTe Gimnasio">
+          <div class="glx-hero-media-label"><p>Sede UniSalamanca · Barranquilla</p></div>
         </div>
       </div>
     </section>
 
-    <!-- BARRA DE ESTADÍSTICAS O VALORES DESTACADOS -->
-    <section class="landing-stats-bar">
-      <div class="landing-stats-grid">
-        <div class="landing-stat-item">
-          <strong>+1,500 m²</strong>
-          <span>Instalaciones Modernas</span>
+    <!-- BARRA DE ESTADÍSTICAS -->
+    <section class="glx-stats">
+      <div class="glx-stats-grid">
+        <div class="glx-stat">
+          <strong>+1.500 <span>m²</span></strong>
+          <span class="glx-stat-label">Instalaciones</span>
         </div>
-        <div class="landing-stat-item">
+        <div class="glx-stat">
           <strong>100%</strong>
-          <span>Tecnología & Equipamiento VIP</span>
+          <span class="glx-stat-label">Equipo VIP</span>
         </div>
-        <div class="landing-stat-item">
-          <strong>4 Paneles</strong>
-          <span>Gestión Integral por Rol</span>
+        <div class="glx-stat">
+          <strong>4</strong>
+          <span class="glx-stat-label">Paneles de Gestión</span>
         </div>
-        <div class="landing-stat-item">
-          <strong>5:00 AM - 10:00 PM</strong>
-          <span>Horario Extendido</span>
+        <div class="glx-stat">
+          <strong>17h</strong>
+          <span class="glx-stat-label">Diarias de Operación</span>
         </div>
       </div>
     </section>
 
-    <!-- SECCIÓN PLANES Y MEMBRESÍAS (Estilo Smart Fit) -->
-    <section id="planes" class="landing-section">
-      <div class="landing-section-header">
-        <span class="landing-section-tag">NUESTROS PLANES</span>
-        <h2>Membresías Adaptadas a Tus Metas</h2>
-        <p>Elige el plan ideal para ti y comienza a entrenar hoy mismo en nuestra Sede UniSalamanca Cra 50 #79-155.</p>
-      </div>
-
-      <div class="landing-plans-grid">
-        <!-- Plan 1 -->
-        <div class="landing-plan-card">
-          <div class="landing-plan-header">
-            <h3>Mensual General</h3>
-            <div class="landing-plan-price">$100.000 <span>/ mes</span></div>
+    <!-- SECCIÓN PLANES Y MEMBRESÍAS -->
+    <section id="planes" class="glx-section">
+      <div class="glx-section-inner">
+        <div class="glx-section-head">
+          <div>
+            <p class="glx-kicker">Nuestros Planes</p>
+            <h2 class="glx-h2">Membresías Adaptadas<br>a Tus Metas</h2>
           </div>
-          <ul class="landing-plan-features">
-            <li>✅ Acceso a zona de musculación y peso libre</li>
-            <li>✅ Área cardio y resistencia ilimitada</li>
-            <li>✅ Duchas con agua caliente y vestieres VIP</li>
-            <li>✅ App móvil para control de entrenamiento</li>
-          </ul>
-          <button class="btn btn-primary width-100" onclick="irAComprarPlan('Mensual General')">Elegir Mensual General</button>
+          <p class="glx-section-note">UniSalamanca · Cra 50 #79-155, Barranquilla</p>
         </div>
 
-        <!-- Plan 2 (Destacado VIP) -->
-        <div class="landing-plan-card featured">
-          <div class="landing-plan-badge">RECOMENDADO ⭐</div>
-          <div class="landing-plan-header">
-            <h3>Mensual VIP</h3>
-            <div class="landing-plan-price">$120.000 <span>/ mes</span></div>
-          </div>
-          <ul class="landing-plan-features">
-            <li>✅ <strong>Todo lo del Plan General</strong></li>
-            <li>✅ Evaluación física y seguimiento con Entrenador</li>
-            <li>✅ Rutinas personalizadas por objetivo</li>
-            <li>✅ Invitado gratis 4 días al mes</li>
-            <li>✅ Lockers preferenciales de seguridad</li>
-          </ul>
-          <button class="btn btn-primary width-100" onclick="irAComprarPlan('Mensual VIP')">Inscribirme Plan VIP</button>
-        </div>
+        <div class="glx-plans-grid">
+          <!-- Plan 1 -->
+          <article class="glx-plan">
+            <span class="glx-plan-tag">Básico</span>
+            <h3 class="glx-plan-name">Mensual General</h3>
+            <p class="glx-plan-price">$100.000</p>
+            <p class="glx-plan-period">/ mes</p>
+            <ul class="glx-plan-features">
+              <li><span class="tick">✓</span>Acceso a zona de musculación y peso libre</li>
+              <li><span class="tick">✓</span>Área cardio y resistencia ilimitada</li>
+              <li><span class="tick">✓</span>Duchas con agua caliente y vestieres VIP</li>
+              <li><span class="tick">✓</span>App móvil para control de entrenamiento</li>
+            </ul>
+            <button class="glx-btn" onclick="irAComprarPlan('Mensual General')">Elegir Plan →</button>
+          </article>
 
-        <!-- Plan 3 -->
-        <div class="landing-plan-card">
-          <div class="landing-plan-header">
-            <h3>Trimestral Ahorro</h3>
-            <div class="landing-plan-price">$300.000 <span>/ 3 meses</span></div>
-          </div>
-          <ul class="landing-plan-features">
-            <li>✅ Ahorro garantizado del 15%</li>
-            <li>✅ Acceso a todas las zonas del gimnasio</li>
-            <li>✅ Asesoría en nutrición deportiva básica</li>
-            <li>✅ Clases grupales y funcional</li>
-          </ul>
-          <button class="btn btn-primary width-100" onclick="irAComprarPlan('Trimestral')">Elegir Plan Trimestral</button>
-        </div>
+          <!-- Plan 2 (Destacado VIP) -->
+          <article class="glx-plan accent">
+            <span class="glx-plan-tag">Más Popular</span>
+            <h3 class="glx-plan-name">Mensual VIP</h3>
+            <p class="glx-plan-price">$120.000</p>
+            <p class="glx-plan-period">/ mes</p>
+            <ul class="glx-plan-features">
+              <li><span class="tick">✓</span>Todo lo del Plan General</li>
+              <li><span class="tick">✓</span>Evaluación física y seguimiento con Entrenador</li>
+              <li><span class="tick">✓</span>Rutinas personalizadas por objetivo</li>
+              <li><span class="tick">✓</span>Invitado gratis 4 días al mes</li>
+              <li><span class="tick">✓</span>Lockers preferenciales de seguridad</li>
+            </ul>
+            <button class="glx-btn" onclick="irAComprarPlan('Mensual VIP')">Elegir Plan →</button>
+          </article>
 
-        <!-- Plan 4 -->
-        <div class="landing-plan-card">
-          <div class="landing-plan-header">
-            <h3>Anual Black</h3>
-            <div class="landing-plan-price">$950.000 <span>/ año</span></div>
-          </div>
-          <ul class="landing-plan-features">
-            <li>✅ Máximo ahorro y tarifa fija asegurada</li>
-            <li>✅ Congelamiento de membresía hasta por 30 días</li>
-            <li>✅ Acceso prioritario a eventos y talleres</li>
-            <li>✅ Regalo de bienvenida kit GalloLeTe</li>
-          </ul>
-          <button class="btn btn-primary width-100" onclick="irAComprarPlan('Anual')">Elegir Plan Anual</button>
+          <!-- Plan 3 -->
+          <article class="glx-plan">
+            <span class="glx-plan-tag">Ahorro</span>
+            <h3 class="glx-plan-name">Trimestral Ahorro</h3>
+            <p class="glx-plan-price">$300.000</p>
+            <p class="glx-plan-period">/ 3 meses</p>
+            <ul class="glx-plan-features">
+              <li><span class="tick">✓</span>Ahorro garantizado del 15%</li>
+              <li><span class="tick">✓</span>Acceso a todas las zonas del gimnasio</li>
+              <li><span class="tick">✓</span>Asesoría en nutrición deportiva básica</li>
+              <li><span class="tick">✓</span>Clases grupales y funcional</li>
+            </ul>
+            <button class="glx-btn" onclick="irAComprarPlan('Trimestral')">Elegir Plan →</button>
+          </article>
+
+          <!-- Plan 4 -->
+          <article class="glx-plan">
+            <span class="glx-plan-tag">Élite</span>
+            <h3 class="glx-plan-name">Anual Black</h3>
+            <p class="glx-plan-price">$950.000</p>
+            <p class="glx-plan-period">/ año</p>
+            <ul class="glx-plan-features">
+              <li><span class="tick">✓</span>Máximo ahorro y tarifa fija asegurada</li>
+              <li><span class="tick">✓</span>Congelamiento de membresía hasta por 30 días</li>
+              <li><span class="tick">✓</span>Acceso prioritario a eventos y talleres</li>
+              <li><span class="tick">✓</span>Regalo de bienvenida kit GalloLeTe</li>
+            </ul>
+            <button class="glx-btn" onclick="irAComprarPlan('Anual')">Elegir Plan →</button>
+          </article>
         </div>
       </div>
     </section>
 
     <!-- SECCIÓN INSTALACIONES Y ZONAS -->
-    <section id="instalaciones" class="landing-section bg-alt">
-      <div class="landing-section-header">
-        <span class="landing-section-tag">NUESTRA SEDE</span>
-        <h2>Instalaciones de Última Generación</h2>
-        <p>Espacios amplios y equipamiento moderno diseñados para maximizar tu rendimiento.</p>
-      </div>
-
-      <div class="landing-zones-grid">
-        <div class="landing-zone-card">
-          <div class="landing-zone-img" style="background-image: url('img/hero.jpg');"></div>
-          <div class="landing-zone-info">
-            <h3>Zona Musculación & Peso Libre</h3>
-            <p>Racks de sentadilla, mancuernas de alto gramaje, bancos ajustables y máquinas biomecánicas de precisión.</p>
+    <section id="instalaciones" class="glx-section glx-section-alt">
+      <div class="glx-section-inner">
+        <div class="glx-section-head">
+          <div>
+            <p class="glx-kicker">Nuestra Sede</p>
+            <h2 class="glx-h2">Instalaciones de<br>Última Generación</h2>
           </div>
         </div>
 
-        <div class="landing-zone-card">
-          <div class="landing-zone-img" style="background-image: url('img/cardio.jpg');"></div>
-          <div class="landing-zone-info">
-            <h3>Zona Cardio & Resistencia</h3>
-            <p>Caminadoras de última generación con pantallas interactivas, elípticas, escaladoras y bicicletas de spinning.</p>
+        <div class="glx-zones">
+          <div class="glx-zone">
+            <img src="img/hero.jpg" alt="Zona de musculación y peso libre">
+            <div class="glx-zone-overlay"></div>
+            <div class="glx-zone-info">
+              <span class="glx-zone-tag">01</span>
+              <h3>Musculación &amp; Peso Libre</h3>
+              <p>Racks de sentadilla, mancuernas de alto gramaje y máquinas biomecánicas de precisión.</p>
+            </div>
           </div>
-        </div>
 
-        <div class="landing-zone-card">
-          <div class="landing-zone-img" style="background-image: url('img/crossfit.jpg');"></div>
-          <div class="landing-zone-info">
-            <h3>Área Funcional & Crossfit</h3>
-            <p>Cuerdas de batalla, kettlebells, cajones pliométricos, estructuras de calistenia y zona de césped sintético.</p>
+          <div class="glx-zones-right">
+            <div class="glx-zone small">
+              <img src="img/cardio.jpg" alt="Zona cardio y resistencia">
+              <div class="glx-zone-overlay"></div>
+              <div class="glx-zone-info">
+                <span class="glx-zone-tag">02</span>
+                <h3>Cardio &amp; Resistencia</h3>
+              </div>
+            </div>
+
+            <div class="glx-zone small">
+              <img src="img/crossfit.jpg" alt="Área funcional y crossfit">
+              <div class="glx-zone-overlay"></div>
+              <div class="glx-zone-info">
+                <span class="glx-zone-tag">03</span>
+                <h3>Funcional &amp; Crossfit</h3>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SECCIÓN SEDE & HORARIOS (Reference Sede UniSalamanca Cra 50 #79-155) -->
-    <section id="sede" class="landing-section">
-      <div class="landing-location-card">
-        <div class="landing-location-info">
-          <div class="landing-badge">📍 INFORMACIÓN DE LA SEDE</div>
-          <h2>Sede UniSalamanca</h2>
-          <p class="address">🏢 Cra 50 #79-155, Barranquilla</p>
-          
-          <div class="schedule-box">
-            <h4>⏰ Horarios de Atención:</h4>
-            <ul>
-              <li><strong>Lunes a Viernes:</strong> 5:00 AM – 10:00 PM</li>
-              <li><strong>Sábados:</strong> 6:00 AM – 6:00 PM</li>
-              <li><strong>Domingos y Festivos:</strong> 7:00 AM – 4:00 PM</li>
-            </ul>
+    <!-- SECCIÓN SEDE & HORARIOS -->
+    <section id="sede" class="glx-section">
+      <div class="glx-section-inner">
+        <div class="glx-sede-grid">
+          <div class="glx-sede-media">
+            <img src="img/cardio.jpg" alt="Interior GalloLeTe Sede UniSalamanca">
+            <div class="glx-sede-badge">
+              <strong>Barranquilla</strong>
+              <span>Cra 50 #79-155</span>
+            </div>
           </div>
 
-          <div class="amenities-list">
-            <span>❄️ Aire Acondicionado</span>
-            <span>🚿 Duchas de Agua Caliente</span>
-            <span>🔒 Lockers de Seguridad</span>
-            <span>🅿️ Parqueadero Gratis (2 hrs)</span>
-          </div>
+          <div>
+            <p class="glx-kicker">📍 Información de la Sede</p>
+            <h2 class="glx-h2 glx-sede-title">Sede<br>UniSalamanca</h2>
 
-          <div style="margin-top:1.5rem;">
-            <button class="btn btn-primary" onclick="mostrarLoginView()">🚀 Ingresar al Sistema de Gestión</button>
+            <div class="glx-schedule">
+              <p class="glx-schedule-label">⏰ Horarios de Atención</p>
+              <div class="glx-schedule-row">
+                <span>Lunes – Viernes</span>
+                <span>5:00 AM – 10:00 PM</span>
+              </div>
+              <div class="glx-schedule-row">
+                <span>Sábados</span>
+                <span>6:00 AM – 6:00 PM</span>
+              </div>
+              <div class="glx-schedule-row">
+                <span>Domingos &amp; Festivos</span>
+                <span>7:00 AM – 4:00 PM</span>
+              </div>
+            </div>
+
+            <div class="glx-amenities">
+              <span>❄️ Aire Acondicionado</span>
+              <span>🚿 Duchas Calientes</span>
+              <span>🔒 Lockers VIP</span>
+              <span>🅿️ Parqueadero 2h</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- FOOTER PRINCIPAL -->
-    <footer class="landing-footer">
-      <div class="landing-footer-content">
-        <div style="display: flex; align-items: center; gap: 0.8rem;">
-          <img src="img/logo.png" alt="GalloLeTe Logo" style="height: 48px; width: auto; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));">
+    <footer class="glx-footer">
+      <div class="glx-footer-inner">
+        <div class="glx-footer-brand">
+          <img src="img/logo.png" alt="GalloLeTe Logo">
           <div>
-            <h3 style="margin: 0; font-size: 1.4rem;">Gallo<span>LeTe</span> Gimnasio</h3>
-            <p style="margin: 0.2rem 0 0 0; color: #94a3b8; font-size: 0.85rem;">Sistema Integral de Gestión de Gimnasio - Sede UniSalamanca Cra 50 #79-155.</p>
+            <h3>Gallo<b>LeTe</b> Gimnasio</h3>
+            <p>Sistema Integral de Gestión de Gimnasio · Sede UniSalamanca Cra 50 #79-155.</p>
           </div>
         </div>
-        <div>
-          <button class="btn btn-primary" onclick="mostrarLoginView()">🔐 Acceso a Paneles de Gestión</button>
-        </div>
       </div>
-      <div class="landing-footer-bottom">
+      <div class="glx-footer-bottom">
         <p>&copy; 2026 GalloLeTe Gimnasio Sede UniSalamanca Cra 50 #79-155. Todos los derechos reservados.</p>
       </div>
     </footer>
   </div>
 
-  <!-- VISTA DE LOGIN Y REGISTRO -->
+  <!-- VISTA DE LOGIN Y REGISTRO (ÁREA DE MIEMBROS) -->
   <div id="loginView" class="login-container hidden">
-    <div class="login-card" style="max-width: 480px;">
-      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="mostrarLandingView()" style="flex: 1;">← Volver a Principal</button>
+    <div class="login-card login-card-sf">
+      <div class="sf-topbar">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="mostrarLandingView()">← Volver a Principal</button>
         <button type="button" class="btn btn-theme-toggle theme-toggle-btn" onclick="toggleTheme()">⚡ Modo Eléctrico</button>
       </div>
+
       <div class="login-logo-container">
         <img src="img/logo.png" alt="GalloLeTe Mascot Logo" class="login-brand-logo">
       </div>
-      <h2>Gallo<span>LeTe</span></h2>
-      <p>Sistema de Gestión de Gimnasio</p>
-      
-      <!-- Pestañas para elegir Iniciar Sesión o Registrarse -->
-      <div class="auth-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.2rem;">
-        <button id="btnTabLogin" type="button" class="btn btn-primary" style="flex: 1; padding: 0.5rem;" onclick="mostrarAuthTab('login')">Iniciar Sesión</button>
-        <button id="btnTabRegistro" type="button" class="btn btn-secondary" style="flex: 1; padding: 0.5rem;" onclick="mostrarAuthTab('registro')">Registrarse</button>
-      </div>
 
-      <div id="loginError" class="badge badge-vencida hidden" style="margin-bottom: 1rem; width: 100%; text-align: center;"></div>
-      <div id="registerSuccess" class="badge badge-activa hidden" style="margin-bottom: 1rem; width: 100%; text-align: center;"></div>
+      <span class="sf-kicker">Área de Miembros</span>
+      <h2 class="sf-title">Bienvenido de vuelta</h2>
+      <p class="sf-subtitle">Accede a tu plan y continúa avanzando.</p>
 
-      <!-- FORMULARIO LOGIN -->
+      <button type="button" id="googleLoginBtn" class="sf-google-btn" onclick="accesoGoogleProximamente()">
+        <svg viewBox="0 0 48 48" class="sf-google-icon" aria-hidden="true">
+          <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+          <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+          <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+          <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+        </svg>
+        Continuar con Google
+      </button>
+
+      <div class="sf-divider" id="dividerCorreo"><span>O CON CORREO</span></div>
+
+      <div id="loginError" class="sf-alert sf-alert-error hidden"></div>
+      <div id="registerSuccess" class="sf-alert sf-alert-success hidden"></div>
+
+      <!-- FORMULARIO LOGIN (CLIENTES) -->
       <form id="loginForm">
         <div class="form-group">
-          <label>Seleccionar Rol de Acceso (Demo Rápido)</label>
-          <select id="loginRolSelect" class="form-control" onchange="seleccionarRolDemo(this.value)" style="background:#f0f4f8; font-weight:600; border-color:var(--primary-color);">
-            <option value="Administrador">⚙️ Administrador (admin)</option>
-            <option value="Entrenador">🏋️ Entrenador (carlos_entrenador)</option>
-            <option value="Recepcionista">📞 Recepcionista (maria_recep)</option>
-            <option value="Cliente" selected>👤 Cliente (JesusP171)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Usuario o Correo</label>
-          <input type="text" id="loginUsuario" class="form-control" value="JesusP171" placeholder="Ej: admin, carlos_entrenador, maria_recep, JesusP171" required>
+          <label>Correo electrónico</label>
+          <input type="text" id="loginUsuario" class="form-control" placeholder="tucorreo@gmail.com" autocomplete="username" required>
         </div>
         <div class="form-group">
           <label>Contraseña</label>
-          <input type="password" id="loginPassword" class="form-control" value="admin123" placeholder="••••••••" required>
+          <div class="sf-pass-wrap">
+            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="sf-pass-toggle" onclick="toggleVerPassword('loginPassword', this)" aria-label="Mostrar u ocultar contraseña">👁</button>
+          </div>
+          <a class="sf-forgot" onclick="solicitarRecuperarPassword()">¿La olvidaste?</a>
         </div>
-        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Iniciar Sesión</button>
+        <button type="submit" class="sf-btn-primary">Iniciar sesión</button>
+        <p class="sf-footer" id="loginFooterCrearCuenta">¿Aún no eres miembro? <a onclick="irARegistroCliente()">Crear cuenta</a></p>
       </form>
 
-      <!-- FORMULARIO REGISTRO -->
+      <!-- FORMULARIO REGISTRO (NUEVOS CLIENTES) -->
       <form id="registerForm" class="hidden">
         <div class="form-group">
-          <label>Nombre y Apellido * (máx 60)</label>
-          <input type="text" id="regNombreCompleto" class="form-control" placeholder="Ej: Carlos Mendoza" maxlength="60" required>
+          <label>Nombre y apellido *</label>
+          <input type="text" id="regNombreCompleto" class="form-control" placeholder="Ej: Carlos Andrés Mendoza" maxlength="30" pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(\s+[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$" required>
         </div>
 
         <div class="form-group">
-          <label>Correo Electrónico * (máx 70)</label>
-          <input type="email" id="regCorreo" class="form-control" placeholder="Ej: carlos@ejemplo.com" maxlength="70" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" title="Ingrese un correo válido con @ y dominio con punto (ej: usuario@correo.com)" required>
+          <label>Correo electrónico *</label>
+          <input type="email" id="regCorreo" class="form-control" placeholder="tucorreo@gmail.com" maxlength="70" pattern="^[^\s@]+@gmail\.com$" required>
         </div>
 
         <div class="form-group">
-          <label>Contraseña * (8 - 12 carát.)</label>
-          <input type="password" id="regPassword" class="form-control" placeholder="••••••••" minlength="8" maxlength="12" title="La contraseña debe tener entre 8 y 12 caracteres" required>
+          <label>Contraseña *</label>
+          <div class="sf-pass-wrap">
+            <input type="password" id="regPassword" class="form-control" placeholder="••••••••" minlength="8" maxlength="30" required>
+            <button type="button" class="sf-pass-toggle" onclick="toggleVerPassword('regPassword', this)" aria-label="Mostrar u ocultar contraseña">👁</button>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>Nombre de Usuario * (máx 30)</label>
-          <input type="text" id="regUsuario" class="form-control" placeholder="Ej: carlos_cliente" maxlength="30" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Crear Cuenta de Cliente</button>
+        <button type="submit" class="sf-btn-primary">Crear cuenta</button>
+        <p class="sf-footer">¿Ya eres miembro? <a onclick="mostrarAuthTab('login')">Inicia sesión</a></p>
       </form>
 
-      <div id="demoUsersBox" style="margin-top: 1.5rem; text-align: left; background: #f8f9fa; padding: 0.8rem; border-radius: 6px; font-size: 0.8rem;">
-        <strong>Cuentas disponibles (clave: admin123):</strong>
-        <ul style="margin-left: 1.2rem; margin-top: 0.3rem;">
-          <li><code>admin</code> (Administrador)</li>
-          <li><code>carlos_entrenador</code> (Entrenador)</li>
-          <li><code>maria_recep</code> (Recepcionista)</li>
-          <li><code>JesusP171</code> (Cliente)</li>
-        </ul>
-      </div>
+      <!-- Credenciales del rol elegido en el menú desplegable (nunca para Cliente) -->
+      <div id="staffCredBox" class="sf-cred-box hidden"></div>
     </div>
   </div>
 

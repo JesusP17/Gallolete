@@ -76,9 +76,11 @@ Una vez iniciado el servidor, abre tu navegador web de preferencia e ingresa a:
 
 | Rol | Usuario / Correo | Contraseña |
 | --- | --- | --- |
-| **Administrador** | `admin` | `admin123` |
-| **Entrenador** | `carlos_entrenador` | `admin123` |
-| **Recepcionista** | `maria_recep` | `admin123` |
+| **Administrador** | `admin@gallolete.com` | `admin2026` |
+| **Entrenador** | `carlos@gallolete.com` | `entrenador2026` |
+| **Recepcionista** | `maria@gallolete.com` | `recepcion2026` |
+
+El personal entra eligiendo su rol en la pantalla de inicio de sesión (ahí ve su contraseña). Los clientes crean su cuenta con su correo de Gmail; el registro no está disponible para el personal.
 
 ---
 

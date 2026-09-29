@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'gallolete_secreto_super_seguro_2026';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middleware para verificar si el usuario tiene un Token válido
 const verificarToken = (req, res, next) => {

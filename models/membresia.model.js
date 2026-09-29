@@ -1,14 +1,15 @@
 const db = require('../config/database');
 
 class MembresiaModel {
-  static async obtenerTodas() {
+  static async obtenerTodas(idCliente = null) {
     const query = `
       SELECT m.*, CONCAT(c.nombre, ' ', c.apellido) AS cliente_nombre, c.documento AS cliente_documento
       FROM membresias m
       LEFT JOIN clientes c ON m.id_cliente = c.id_cliente
+      ${idCliente ? 'WHERE m.id_cliente = ?' : ''}
       ORDER BY m.id_membresia DESC
     `;
-    const [filas] = await db.query(query);
+    const [filas] = await db.query(query, idCliente ? [idCliente] : []);
     return filas;
   }
 

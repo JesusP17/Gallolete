@@ -23,7 +23,7 @@ const permitirAdminOMismoUsuario = (req, res, next) => {
 };
 
 router.get('/', verificarToken, verificarRol('Administrador'), usuarioController.obtenerUsuarios);
-router.get('/:id', verificarToken, usuarioController.obtenerUsuarioPorId);
+router.get('/:id', verificarToken, permitirAdminOMismoUsuario, usuarioController.obtenerUsuarioPorId);
 router.post('/', verificarToken, verificarRol('Administrador'), usuarioController.crearUsuario);
 router.put('/:id', verificarToken, permitirAdminOMismoUsuario, usuarioController.actualizarUsuario);
 router.delete('/:id', verificarToken, verificarRol('Administrador'), usuarioController.eliminarUsuario);

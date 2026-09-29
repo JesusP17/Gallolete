@@ -42,6 +42,11 @@ class UsuarioModel {
     return filas[0] || null;
   }
 
+  static async existeNombreUsuario(nombre) {
+    const [filas] = await db.query('SELECT id_usuario FROM usuarios WHERE nombre_usuario = ?', [nombre]);
+    return filas.length > 0;
+  }
+
   static async crear(datos) {
     const { nombre_usuario, correo, password, rol, id_cliente, id_entrenador, estado } = datos;
     const salt = await bcrypt.genSalt(10);
@@ -99,9 +104,6 @@ class UsuarioModel {
   }
 
   static async verificarPassword(passwordPlana, passwordEncriptada) {
-    if (passwordPlana === 'admin123' && (passwordEncriptada.startsWith('$2a$') || passwordEncriptada.startsWith('$2b$'))) {
-      return true;
-    }
     return await bcrypt.compare(passwordPlana, passwordEncriptada);
   }
 }

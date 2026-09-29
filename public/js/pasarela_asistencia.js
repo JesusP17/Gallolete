@@ -230,17 +230,20 @@ function abrirPasarelaPagoModal(nombrePlan = 'Mensual VIP', precioPlan = 120000,
 }
 
 function seleccionarMetodoPago(metodo) {
-  ['Tarjeta', 'Nequi', 'PSE', 'Efectivo'].forEach(m => {
-    const btn = document.getElementById(`btnPagoTab${m}`);
-    const form = document.getElementById(`formMetodo${m}`);
-    if (btn) btn.className = 'btn btn-secondary';
-    if (form) form.classList.add('hidden');
-  });
+  const metodos = [
+    { key: 'tarjeta', btn: 'btnPagoTabCard', form: 'formMetodoTarjeta' },
+    { key: 'nequi', btn: 'btnPagoTabNequi', form: 'formMetodoNequi' },
+    { key: 'pse', btn: 'btnPagoTabPSE', form: 'formMetodoPSE' },
+    { key: 'efectivo', btn: 'btnPagoTabEfectivo', form: 'formMetodoEfectivo' }
+  ];
 
-  const btnSel = document.getElementById(`btnPagoTab${metodo.charAt(0).toUpperCase() + metodo.slice(1)}`);
-  const formSel = document.getElementById(`formMetodo${metodo.charAt(0).toUpperCase() + metodo.slice(1)}`);
-  if (btnSel) btnSel.className = 'btn btn-primary';
-  if (formSel) formSel.classList.remove('hidden');
+  metodos.forEach(m => {
+    const btn = document.getElementById(m.btn);
+    const form = document.getElementById(m.form);
+    const activo = m.key === metodo;
+    if (btn) btn.className = activo ? 'btn btn-primary' : 'btn btn-secondary';
+    if (form) form.classList.toggle('hidden', !activo);
+  });
 }
 
 function actualizarPreviewTarjeta() {
@@ -259,12 +262,89 @@ function actualizarPreviewTarjeta() {
 
 async function procesarPagoPasarela(e, nombrePlan, precioPlan, metodo) {
   e.preventDefault();
-  
+
   const user = Auth.getUser();
+  const idCliente = user ? user.id_cliente : null;
   const clienteNombre = user ? (user.nombre_usuario || user.correo) : 'Cliente Registrado';
   const ref = `GLT-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
-  const datosPago = {
+  if (!idCliente) {
+    mostrarModalNotificacion({
+      titulo: 'Atención',
+      mensaje: 'Tu usuario no está vinculado a un perfil de cliente. Solicítalo en recepción.',
+      tipo: 'error'
+    });
+    return;
+  }
+
+  // Estado de procesamiento de la pasarela
+  document.getElementById('modalTitle').innerText = '💳 Pasarela de Pago Seguro GalloLeTe';
+  document.getElementById('modalBody').innerHTML = `
+    <div style="text-align: center; padding: 2.5rem 1rem;">
+      <div class="pago-spinner"></div>
+      <h3 style="color: var(--text-dark); margin-bottom: 0.5rem;">Procesando pago seguro...</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Validando tu pago de <strong>$${parseFloat(precioPlan).toLocaleString('es-CO')} COP</strong> con la pasarela de la Sede UniSalamanca. No cierres esta ventana.
+      </p>
+    </div>
+  `;
+
+  await new Promise(r => setTimeout(r, 1400));
+
+  const hoy = new Date();
+  const fechaInicio = hoy.toISOString().substring(0, 10);
+
+  let dias = 30;
+  if (nombrePlan.includes('Trimestral')) dias = 90;
+  if (nombrePlan.includes('Anual')) dias = 365;
+  const fechaFin = new Date(hoy.getTime() + (dias * 24 * 60 * 60 * 1000)).toISOString().substring(0, 10);
+
+  // 1. Activar la membresía del cliente
+  const resMem = await Auth.fetchApi('/membresias', {
+    method: 'POST',
+    body: JSON.stringify({
+      id_cliente: idCliente,
+      tipo: nombrePlan,
+      precio: precioPlan,
+      fecha_inicio: fechaInicio,
+      fecha_fin: fechaFin,
+      estado: 'activa'
+    })
+  });
+
+  if (!resMem.ok) {
+    mostrarModalNotificacion({
+      titulo: 'Pago Rechazado',
+      mensaje: resMem.mensaje || 'No se pudo activar la membresía. Verifica tus datos e intenta nuevamente.',
+      tipo: 'error'
+    });
+    return;
+  }
+
+  // 2. Registrar el pago aprobado
+  const resPago = await Auth.fetchApi('/pagos', {
+    method: 'POST',
+    body: JSON.stringify({
+      id_cliente: idCliente,
+      id_membresia: resMem.membresia ? resMem.membresia.id_membresia : null,
+      valor: precioPlan,
+      fecha_pago: fechaInicio,
+      metodo_pago: metodo,
+      referencia: ref
+    })
+  });
+
+  if (!resPago.ok) {
+    mostrarModalNotificacion({
+      titulo: 'Pago con Observaciones',
+      mensaje: 'Tu membresía quedó activa, pero el pago no se pudo registrar en el sistema. Recepción verificará el movimiento.',
+      tipo: 'info'
+    });
+    return;
+  }
+
+  // Mostrar Comprobante Digital
+  generarComprobanteDigital({
     facturaNo: ref,
     fecha: new Date().toLocaleString('es-CO'),
     cliente: clienteNombre,
@@ -272,10 +352,7 @@ async function procesarPagoPasarela(e, nombrePlan, precioPlan, metodo) {
     monto: precioPlan,
     metodo: metodo,
     sede: 'UniSalamanca Cra 50 #79-155'
-  };
-
-  // Mostrar Comprobante Digital
-  generarComprobanteDigital(datosPago);
+  });
 }
 
 function generarComprobanteDigital(pago) {

@@ -2,7 +2,8 @@ const RutinaModel = require('../models/rutina.model');
 
 const obtenerRutinas = async (req, res, next) => {
   try {
-    const rutinas = await RutinaModel.obtenerTodas();
+    const filtroCliente = req.usuario.rol === 'Cliente' ? req.usuario.id_cliente : null;
+    const rutinas = await RutinaModel.obtenerTodas(filtroCliente);
     res.json({ ok: true, rutinas });
   } catch (error) {
     next(error);
@@ -16,6 +17,11 @@ const obtenerRutinaPorId = async (req, res, next) => {
     if (!rutina) {
       return res.status(404).json({ ok: false, mensaje: 'Rutina no encontrada.' });
     }
+
+    if (req.usuario.rol === 'Cliente' && parseInt(rutina.id_cliente) !== parseInt(req.usuario.id_cliente)) {
+      return res.status(403).json({ ok: false, mensaje: 'Acceso no autorizado a esta rutina.' });
+    }
+
     res.json({ ok: true, rutina });
   } catch (error) {
     next(error);

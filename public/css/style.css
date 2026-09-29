@@ -520,6 +520,21 @@ tr:hover {
   gap: 1rem;
 }
 
+/* Indicador de procesamiento de la pasarela de pago */
+.pago-spinner {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 1.2rem;
+  border: 5px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: girarPago 0.9s linear infinite;
+}
+
+@keyframes girarPago {
+  to { transform: rotate(360deg); }
+}
+
 .hidden {
   display: none !important;
 }
@@ -601,6 +616,252 @@ tr:hover {
 
 .login-brand-logo:hover {
   transform: scale(1.08) rotate(-2deg);
+}
+
+/* ============================================================
+   Vista "Área de Miembros" (login estilo membresía tipo Smart Fit)
+   ============================================================ */
+.login-card-sf {
+  max-width: 440px;
+  text-align: left;
+  background: #ffffff;
+  color: #111827;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 1.4rem 2.2rem 2rem;
+}
+
+.sf-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.sf-topbar .btn {
+  width: auto;
+  margin-top: 0;
+}
+
+.sf-kicker {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-top: 0.4rem;
+}
+
+.login-card-sf h2.sf-title {
+  color: #111827;
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin: 0.25rem 0 0.35rem;
+}
+
+.login-card .sf-subtitle {
+  color: #4b5563;
+  font-size: 0.95rem;
+  margin-bottom: 1.3rem;
+}
+
+.sf-google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.sf-google-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.sf-google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.sf-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.3rem 0;
+  color: #9ca3af;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.sf-divider::before,
+.sf-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.sf-alert {
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.sf-alert-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.sf-alert-success {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.login-card-sf .form-group label {
+  color: #111827;
+  font-weight: 700;
+}
+
+.login-card-sf .form-control {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #111827;
+}
+
+.login-card-sf .form-control:focus {
+  border-color: #E4002B;
+  box-shadow: 0 0 0 3px rgba(228, 0, 43, 0.12);
+}
+
+.sf-pass-wrap {
+  position: relative;
+}
+
+.sf-pass-wrap .form-control {
+  padding-right: 2.6rem;
+}
+
+.sf-pass-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.55rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1;
+  padding: 0.15rem;
+  color: #6b7280;
+}
+
+.sf-pass-toggle:hover {
+  color: #111827;
+}
+
+.sf-forgot {
+  display: block;
+  text-align: right;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.sf-forgot:hover {
+  color: #E4002B;
+}
+
+.sf-btn-primary {
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.85rem 1rem;
+  background: #E4002B;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.12s;
+}
+
+.sf-btn-primary:hover {
+  background: #C40024;
+}
+
+.sf-btn-primary:active {
+  transform: translateY(1px);
+}
+
+.login-card .sf-footer {
+  margin-top: 1.2rem;
+  margin-bottom: 0;
+  font-size: 0.88rem;
+  color: #4b5563;
+  text-align: center;
+}
+
+.sf-footer a {
+  color: #E4002B;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.sf-footer a:hover {
+  text-decoration: underline;
+}
+
+.sf-cred-box {
+  margin-top: 1.2rem;
+  padding: 0.8rem 0.9rem;
+  background: #fffbeb;
+  border: 1px dashed #f59e0b;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #92400e;
+  text-align: left;
+}
+
+.sf-cred-box code {
+  background: #fef3c7;
+  border-radius: 4px;
+  padding: 0.05rem 0.35rem;
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .login-card-sf {
+    padding: 1.25rem 1.15rem 1.5rem;
+    border-radius: 12px;
+  }
+
+  .login-card-sf h2.sf-title {
+    font-size: 1.45rem;
+  }
 }
 
 .landing-logo span {
@@ -1224,6 +1485,1049 @@ html {
   }
   .landing-location-card {
     padding: 1.5rem 1rem;
+  }
+}
+
+/* ============================================================
+   REDISEÑO LANDING EDITORIAL (lima #c8ff00 + negro, Barlow)
+   Referencia de diseño: "Modificar página web".
+   Todo está anclado a #landingView para no afectar la vista de
+   login, los paneles internos ni los modales.
+   ============================================================ */
+#landingView.glx-landing {
+  --glx-lime: #c8ff00;
+  --glx-ink: #111111;
+  --glx-paper: #ffffff;
+  --glx-alt: #f5f5f2;
+  --glx-line: rgba(17, 17, 17, 0.14);
+  --glx-muted: #6b7280;
+  --glx-body-text: #444444;
+  --glx-header-bg: rgba(255, 255, 255, 0.96);
+  font-family: 'Barlow', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--glx-paper);
+  color: var(--glx-ink);
+}
+
+[data-theme="electric"] #landingView.glx-landing {
+  --glx-ink: #f8fafc;
+  --glx-paper: #060b19;
+  --glx-alt: #0a1428;
+  --glx-line: rgba(0, 210, 255, 0.22);
+  --glx-muted: #94a3b8;
+  --glx-body-text: #cbd5e1;
+  --glx-header-bg: rgba(10, 18, 42, 0.95);
+}
+
+/* Encabezado fijo con navegación */
+#landingView .glx-header {
+  position: sticky;
+  top: 0;
+  z-index: 950;
+  background: var(--glx-header-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--glx-line);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#landingView .glx-header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+}
+
+#landingView .burger-btn span {
+  background-color: var(--glx-ink);
+}
+
+#landingView .glx-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--glx-ink);
+}
+
+#landingView .glx-logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+#landingView .glx-logo-text {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: 1.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+#landingView .glx-logo-text b {
+  color: var(--glx-lime);
+  -webkit-text-stroke: 1px var(--glx-ink);
+}
+
+#landingView .glx-logo-sub {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--glx-muted);
+  margin-top: 4px;
+}
+
+#landingView .glx-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+#landingView .glx-nav a {
+  color: var(--glx-muted);
+  text-decoration: none;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+#landingView .glx-nav a:hover {
+  color: var(--glx-ink);
+}
+
+#landingView .glx-nav-mobile-cta {
+  display: none;
+}
+
+/* Acciones del encabezado */
+#landingView .glx-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#landingView .glx-actions-rel {
+  position: relative;
+}
+
+#landingView .btn-theme-toggle {
+  background: transparent !important;
+  color: var(--glx-ink) !important;
+  box-shadow: none !important;
+  border: 2px solid var(--glx-ink) !important;
+  border-radius: 0 !important;
+  padding: 0.5rem 0.95rem !important;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 0.85rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease !important;
+}
+
+#landingView .btn-theme-toggle:hover {
+  background: var(--glx-ink) !important;
+  color: var(--glx-paper) !important;
+  transform: translateY(-2px);
+  filter: none;
+}
+
+/* Botones editoriales */
+#landingView .glx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.8rem 1.7rem;
+  border: 2px solid var(--glx-ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--glx-ink);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease, color 0.2s ease, filter 0.2s ease;
+}
+
+#landingView .glx-btn:hover {
+  background: var(--glx-ink);
+  color: var(--glx-paper);
+  transform: scale(1.03);
+}
+
+#landingView .glx-btn-lime {
+  background: var(--glx-lime);
+  border-color: var(--glx-lime);
+  color: #111111;
+}
+
+#landingView .glx-btn-lime:hover {
+  background: var(--glx-lime);
+  color: #111111;
+  filter: brightness(1.06);
+  transform: scale(1.04);
+}
+
+#landingView .glx-btn-sm {
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+}
+
+#landingView .glx-btn-lg {
+  padding: 1rem 2.1rem;
+  font-size: 1.05rem;
+}
+
+#landingView .glx-btn-block {
+  width: 100%;
+}
+
+/* Hero principal */
+#landingView .glx-hero {
+  background: var(--glx-paper);
+  overflow: hidden;
+}
+
+#landingView .glx-hero-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+}
+
+#landingView .glx-hero-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3.5rem 0 3rem;
+}
+
+#landingView .glx-hero-badge {
+  align-self: flex-start;
+  background: var(--glx-lime);
+  color: #111111;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 2rem;
+}
+
+#landingView .glx-hero-title {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: clamp(5rem, 15vw, 13rem);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--glx-ink);
+  margin: 0;
+}
+
+#landingView .glx-hero-title span {
+  color: var(--glx-lime);
+  -webkit-text-stroke: 2px var(--glx-ink);
+}
+
+#landingView .glx-hero-sub {
+  margin: 2rem 0 0;
+  max-width: 28rem;
+  color: var(--glx-muted);
+  font-size: 1.125rem;
+  line-height: 1.65;
+}
+
+#landingView .glx-hero-ctas {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+#landingView .glx-hero-media {
+  display: none;
+}
+
+#landingView .glx-hero-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+#landingView .glx-hero-media-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(200, 255, 0, 0.92), transparent);
+}
+
+#landingView .glx-hero-media-label p {
+  margin: 0;
+  color: #111111;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Barra de estadísticas */
+#landingView .glx-stats {
+  background: #111111;
+  padding: 3rem 1.25rem;
+}
+
+#landingView .glx-stats-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+#landingView .glx-stat {
+  background: #111111;
+  padding: 2.25rem 1.5rem;
+  text-align: center;
+}
+
+#landingView .glx-stat strong {
+  display: block;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1;
+  color: var(--glx-lime);
+}
+
+#landingView .glx-stat strong span {
+  color: #ffffff;
+  font-size: 1.5rem;
+}
+
+#landingView .glx-stat-label {
+  display: block;
+  margin-top: 0.6rem;
+  color: #9ca3af;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Secciones generales */
+#landingView .glx-section {
+  padding: 4rem 1.25rem;
+  scroll-margin-top: 72px;
+}
+
+#landingView .glx-section-alt {
+  background: var(--glx-alt);
+}
+
+#landingView .glx-section-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+#landingView .glx-kicker {
+  margin: 0 0 0.5rem;
+  color: var(--glx-muted);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+#landingView .glx-h2 {
+  margin: 0;
+  color: var(--glx-ink);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+#landingView .glx-section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 2px solid var(--glx-ink);
+  padding-bottom: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+#landingView .glx-section-note {
+  display: none;
+  margin: 0;
+  color: var(--glx-muted);
+  font-size: 0.875rem;
+  text-align: right;
+  max-width: 20rem;
+}
+
+/* Planes y membresías */
+#landingView .glx-plans-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--glx-line);
+}
+
+#landingView .glx-plan {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  background: var(--glx-paper);
+}
+
+#landingView .glx-plan.accent {
+  background: var(--glx-lime);
+}
+
+#landingView .glx-plan-tag {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--glx-muted);
+  margin-bottom: 1.5rem;
+}
+
+#landingView .glx-plan.accent .glx-plan-tag {
+  color: rgba(17, 17, 17, 0.6);
+}
+
+#landingView .glx-plan-name {
+  margin: 0 0 1rem;
+  color: var(--glx-ink);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: 1.15rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+#landingView .glx-plan-price {
+  margin: 0;
+  color: var(--glx-ink);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: 3rem;
+  line-height: 1;
+}
+
+#landingView .glx-plan-period {
+  margin: 0.5rem 0 2rem;
+  color: var(--glx-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+#landingView .glx-plan-features {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+#landingView .glx-plan-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: var(--glx-body-text);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+#landingView .glx-plan-features .tick {
+  font-weight: 700;
+  color: #9fce00;
+  line-height: 1.45;
+}
+
+#landingView .glx-plan.accent .glx-plan-name,
+#landingView .glx-plan.accent .glx-plan-price {
+  color: #111111;
+}
+
+#landingView .glx-plan.accent .glx-plan-period {
+  color: rgba(17, 17, 17, 0.75);
+}
+
+#landingView .glx-plan.accent .glx-plan-features li {
+  color: rgba(17, 17, 17, 0.82);
+}
+
+#landingView .glx-plan.accent .glx-plan-features .tick {
+  color: #111111;
+}
+
+#landingView .glx-plan .glx-btn {
+  width: 100%;
+  margin-top: auto;
+}
+
+#landingView .glx-plan.accent .glx-btn {
+  background: #111111;
+  border-color: #111111;
+  color: var(--glx-lime);
+}
+
+#landingView .glx-plan.accent .glx-btn:hover {
+  background: #111111;
+  color: var(--glx-lime);
+  transform: scale(1.03);
+}
+
+/* Instalaciones (grilla asimétrica) */
+#landingView .glx-zones {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--glx-line);
+}
+
+#landingView .glx-zones-right {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
+  background: var(--glx-line);
+}
+
+#landingView .glx-zone {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  background: #1a1a1a;
+}
+
+#landingView .glx-zone.small {
+  min-height: 230px;
+}
+
+#landingView .glx-zone img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+
+#landingView .glx-zone:hover img {
+  transform: scale(1.05);
+}
+
+#landingView .glx-zone-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, transparent 55%);
+}
+
+#landingView .glx-zone-info {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 1.5rem;
+  color: #ffffff;
+}
+
+#landingView .glx-zone-tag {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--glx-lime);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+}
+
+#landingView .glx-zone-info h3 {
+  margin: 0;
+  color: #ffffff;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+}
+
+#landingView .glx-zone-info p {
+  margin: 0.35rem 0 0;
+  color: #d1d5db;
+  font-size: 0.9rem;
+  max-width: 24rem;
+}
+
+/* Sede, horarios y comodidades */
+#landingView .glx-sede-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+#landingView .glx-sede-media {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  background: var(--glx-alt);
+}
+
+#landingView .glx-sede-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#landingView .glx-sede-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1.1rem 1.25rem;
+  background: var(--glx-lime);
+  text-align: right;
+}
+
+#landingView .glx-sede-badge strong {
+  display: block;
+  color: #111111;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: 1.15rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+#landingView .glx-sede-badge span {
+  display: block;
+  margin-top: 0.25rem;
+  color: #111111;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+#landingView .glx-sede-title {
+  margin-bottom: 2.5rem;
+}
+
+#landingView .glx-schedule {
+  border-top: 2px solid var(--glx-ink);
+}
+
+#landingView .glx-schedule-label {
+  margin: 0;
+  padding: 0.75rem 0;
+  color: var(--glx-muted);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+#landingView .glx-schedule-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--glx-line);
+}
+
+#landingView .glx-schedule-row span {
+  color: var(--glx-ink);
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+#landingView .glx-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+#landingView .glx-amenities span {
+  border: 1px solid var(--glx-line);
+  padding: 0.4rem 0.8rem;
+  color: var(--glx-ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* Footer */
+#landingView .glx-footer {
+  background: #111111;
+  color: #f8fafc;
+  padding: 3rem 1.25rem 1.5rem;
+}
+
+#landingView .glx-footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+#landingView .glx-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+#landingView .glx-footer-brand img {
+  height: 48px;
+  width: auto;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+#landingView .glx-footer-brand h3 {
+  margin: 0;
+  color: #ffffff;
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-weight: 900;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+}
+
+#landingView .glx-footer-brand h3 b {
+  color: var(--glx-lime);
+}
+
+#landingView .glx-footer-brand p {
+  margin: 0.25rem 0 0;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+#landingView .glx-footer-bottom {
+  max-width: 1280px;
+  margin: 0 auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 1.5rem;
+  text-align: center;
+}
+
+#landingView .glx-footer-bottom p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+/* Rediseño: adaptación a pantallas medianas y grandes */
+@media (min-width: 640px) {
+  #landingView .glx-plans-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  #landingView .glx-header-inner {
+    padding: 0 2rem;
+  }
+
+  #landingView .glx-stats {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  #landingView .glx-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  #landingView .glx-hero-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: calc(100vh - 64px);
+    max-width: none;
+    padding: 0;
+  }
+
+  #landingView .glx-hero-copy {
+    padding: 3rem 2rem;
+  }
+
+  #landingView .glx-hero-media {
+    display: block;
+    position: relative;
+  }
+
+  #landingView .glx-section {
+    padding: 6rem 2rem;
+  }
+
+  #landingView .glx-section-head {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  #landingView .glx-section-note {
+    display: block;
+  }
+
+  #landingView .glx-zones {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  #landingView .glx-zone {
+    min-height: 420px;
+  }
+
+  #landingView .glx-zone.small {
+    min-height: 208px;
+  }
+
+  #landingView .glx-sede-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+
+  #landingView .glx-sede-media {
+    min-height: 480px;
+  }
+
+  #landingView .glx-footer {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  #landingView .glx-plans-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Cabecera y navegación más grandes y legibles */
+  #landingView .glx-header-inner {
+    height: 76px;
+  }
+
+  #landingView .glx-logo-img {
+    height: 52px;
+  }
+
+  #landingView .glx-logo-text {
+    font-size: 1.8rem;
+  }
+
+  #landingView .glx-logo-sub {
+    font-size: 0.72rem;
+  }
+
+  #landingView .glx-nav {
+    gap: 1.25rem;
+  }
+
+  #landingView .glx-nav a {
+    font-size: 1.15rem;
+  }
+
+  #landingView .btn-theme-toggle {
+    font-size: 0.9rem !important;
+    padding: 0.5rem 0.95rem !important;
+  }
+
+  #landingView .glx-actions .glx-btn {
+    font-size: 1rem;
+  }
+
+  /* --glx-ft = tamaño del titular: gana el menor de
+     13.736vw - 8.2px (llena el 80vw con las letras a ~16px de la foto),
+     211.58px (tope del bloque de 1280px) y
+     22.727vh - 118px (deja ver los botones, Iniciar Sesión incluido, sin bajar:
+     118 = (76 de cabecera + 443.2 del resto del bloque) / 4.4 líneas).
+     Las columnas se despejan de ahí: 4.4 líneas de titular = 1.25 × ancho de foto,
+     y la columna de texto = 2.305em de "ENTRE" + 32px de padding + 16px de hueco */
+  #landingView .glx-hero-grid {
+    --glx-ft: clamp(5rem, min(13.736vw - 8.2px, 211.58px, 22.727vh - 118px), 211.58px);
+    grid-template-columns: calc(2.305 * var(--glx-ft) + 48px) calc(3.52 * var(--glx-ft));
+    justify-content: center;
+    max-width: min(80vw, 1280px);
+    min-height: calc(100vh - 76px);
+  }
+
+  /* La foto ya no se estira a lo alto: tarjeta ancha y corta, centrada */
+  #landingView .glx-hero-media {
+    align-self: center;
+  }
+
+  #landingView .glx-hero-media img {
+    position: static;
+    display: block;
+    height: auto;
+    aspect-ratio: 4 / 5;
+  }
+
+  #landingView .glx-hero-copy {
+    padding: 2rem 0 2rem 2rem;
+  }
+
+  #landingView .glx-hero-badge {
+    margin-bottom: 1.5rem;
+  }
+
+  #landingView .glx-hero-title {
+    font-size: var(--glx-ft);
+  }
+
+  #landingView .glx-hero-sub {
+    margin-top: 1.5rem;
+  }
+
+  #landingView .glx-hero-ctas {
+    margin-top: 2rem;
+  }
+}
+
+/* Portátiles bajos (900px o menos de alto): se acortan los espacios del hero
+   para que el titular no tenga que encogerse de más y los botones sigan a la vista */
+@media (min-width: 1024px) and (max-height: 899px) {
+  #landingView .glx-hero-grid {
+    /* 110 = (76 de cabecera + 395.2 del resto ya compactado) / 4.4 líneas */
+    --glx-ft: clamp(5rem, min(13.736vw - 8.2px, 211.58px, 22.727vh - 110px), 211.58px);
+  }
+
+  #landingView .glx-hero-copy {
+    padding: 1.25rem 0 1.25rem 2rem;
+  }
+
+  #landingView .glx-hero-badge {
+    margin-bottom: 1rem;
+  }
+
+  #landingView .glx-hero-sub {
+    margin-top: 1rem;
+  }
+
+  #landingView .glx-hero-ctas {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Pantallas muy bajas: el párrafo de apoyo se oculta y todo cabe igual */
+@media (min-width: 1024px) and (max-height: 840px) {
+  #landingView .glx-hero-grid {
+    /* 78 = (76 de cabecera + 260.4 sin el párrafo) / 4.4 líneas */
+    --glx-ft: clamp(5rem, min(13.736vw - 8.2px, 211.58px, 22.727vh - 78px), 211.58px);
+  }
+
+  #landingView .glx-hero-sub {
+    display: none;
+  }
+}
+
+/* Portátiles pequeños: mismos tamaños grandes pero con menos separación */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  #landingView .glx-header-inner {
+    padding: 0 1.25rem;
+  }
+
+  #landingView .glx-nav {
+    gap: 0.9rem;
+  }
+}
+
+/* Rediseño: navegación de escritorio alineada a la izquierda */
+@media (min-width: 901px) {
+  #landingView .glx-nav {
+    flex: 1;
+    padding-left: 2.5rem;
+  }
+}
+
+/* Rediseño: navegación móvil */
+@media (max-width: 900px) {
+  #landingView .glx-actions {
+    display: none;
+  }
+
+  #landingView .glx-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    padding: 1.25rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    z-index: 1000;
+  }
+
+  #landingView .glx-nav.active {
+    display: flex;
+  }
+
+  #landingView .glx-nav a {
+    color: #e5e7eb;
+    font-size: 1rem;
+  }
+
+  #landingView .glx-nav a:hover {
+    color: var(--glx-lime);
+  }
+
+  #landingView .glx-nav-mobile-cta {
+    display: block;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #landingView .glx-logo-sub {
+    display: none;
   }
 }
 
