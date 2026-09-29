@@ -739,7 +739,7 @@
           <!-- TARJETA DEL ENTRENADOR ASIGNADO -->
           <div class="clx-card clx-trainer" id="clxTrainerCard">
             <div class="clx-card-kicker">Entrenador asignado</div>
-            <div class="clx-trainer-row">
+            <div class="clx-trainer-row hidden" id="clxTrainerOk">
               <div class="clx-trainer-id">
                 <div class="clx-avatar sm" id="clxTrainerAvatar">?</div>
                 <div>
@@ -758,6 +758,15 @@
                   <div class="clx-trainer-stat-l">Nivel</div>
                 </div>
                 <a class="clx-btn-ghost hidden" id="clxContactar" href="#">Contactar →</a>
+              </div>
+            </div>
+            <div class="clx-trainer-row" id="clxTrainerVacio">
+              <div class="clx-trainer-id">
+                <div class="clx-avatar sm ghost">?</div>
+                <div>
+                  <div class="clx-trainer-name">Aún no tienes entrenador asignado</div>
+                  <p class="clx-trainer-note">El entrenador se asigna junto con tu rutina. Pide en recepción que te evalúen y te asignen uno para ver aquí su especialidad, horario y correo de contacto.</p>
+                </div>
               </div>
             </div>
           </div>

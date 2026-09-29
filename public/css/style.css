@@ -2548,24 +2548,51 @@ html {
 
 /* ============================================================
    PORTAL DEL ATLETA (dashboard del Cliente)
-   Editorial oscuro, fijo: no cambia con el tema claro/eléctrico
-   y no afecta a las demás vistas (todo va aislado por #id).
+   Mismo lenguaje editorial del landing, pero siguiendo el tema
+   global: claro por defecto y oscuro en modo eléctrico.
+   Todo va aislado por #id para no tocar las demás vistas.
    ============================================================ */
 #tab-dashboard-cliente {
-  --clx-bg: #0a0a0a;
-  --clx-card: #111111;
-  --clx-inset: #171717;
-  --clx-border: #242424;
+  --clx-bg: #f3f4f6;
+  --clx-card: #ffffff;
+  --clx-inset: #f7f8fa;
+  --clx-border: #e3e5ea;
+  --clx-text: #14161a;
+  --clx-muted: #565c68;
+  --clx-fade: #8b919d;
   --clx-lime: #c8f135;
-  --clx-text: #f2f2f0;
-  --clx-muted: #9a9a9a;
-  --clx-fade: #666666;
+  --clx-on-lime: #0a0a0a;
+  /* Lima como TEXTO: en claro debe ser oliva para que se lea sobre blanco */
+  --clx-accent: #5f7a00;
+  --clx-accent-soft: rgba(200, 241, 53, .26);
+  --clx-accent-line: rgba(112, 140, 0, .45);
+  --clx-hero-a: #ffffff;
+  --clx-hero-b: #eceef2;
+  --clx-danger: #a51414;
+  --clx-danger-soft: rgba(180, 60, 60, .12);
   background: var(--clx-bg);
   color: var(--clx-text);
   margin: -2rem;
   padding: 2rem;
   min-height: 100vh;
   font-family: 'Barlow', system-ui, sans-serif;
+}
+
+[data-theme="electric"] #tab-dashboard-cliente {
+  --clx-bg: #0a0a0a;
+  --clx-card: #111111;
+  --clx-inset: #171717;
+  --clx-border: #242424;
+  --clx-text: #f2f2f0;
+  --clx-muted: #9a9a9a;
+  --clx-fade: #666666;
+  --clx-accent: #c8f135;
+  --clx-accent-soft: rgba(200, 241, 53, .13);
+  --clx-accent-line: rgba(200, 241, 53, .3);
+  --clx-hero-a: #141414;
+  --clx-hero-b: #0c0c0c;
+  --clx-danger: #ff9a9a;
+  --clx-danger-soft: rgba(255, 100, 100, .14);
 }
 
 #tab-dashboard-cliente .clx-portal {
@@ -2581,7 +2608,7 @@ html {
   grid-template-columns: 1fr auto;
   gap: 1.5rem;
   align-items: center;
-  background: linear-gradient(135deg, #141414, #0c0c0c);
+  background: linear-gradient(135deg, var(--clx-hero-a), var(--clx-hero-b));
   border: 1px solid var(--clx-border);
   border-radius: 18px;
   padding: 1.6rem 1.8rem;
@@ -2601,7 +2628,7 @@ html {
   display: grid;
   place-items: center;
   background: var(--clx-lime);
-  color: #0a0a0a;
+  color: var(--clx-on-lime);
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
   font-size: 1.9rem;
@@ -2612,6 +2639,20 @@ html {
   width: 52px;
   height: 52px;
   font-size: 1.35rem;
+}
+
+#tab-dashboard-cliente .clx-avatar.ghost {
+  background: transparent;
+  border: 1px dashed var(--clx-border);
+  color: var(--clx-fade);
+}
+
+#tab-dashboard-cliente .clx-trainer-note {
+  margin: .35rem 0 0;
+  max-width: 62ch;
+  color: var(--clx-muted);
+  font-size: .84rem;
+  line-height: 1.5;
 }
 
 #tab-dashboard-cliente .clx-hero-name-row {
@@ -2633,9 +2674,9 @@ html {
 }
 
 #tab-dashboard-cliente .clx-plan-badge {
-  background: rgba(200, 241, 53, .13);
-  border: 1px solid rgba(200, 241, 53, .35);
-  color: var(--clx-lime);
+  background: var(--clx-accent-soft);
+  border: 1px solid var(--clx-accent-line);
+  color: var(--clx-accent);
   padding: .22rem .6rem;
   border-radius: 999px;
   font-size: .7rem;
@@ -2666,7 +2707,7 @@ html {
 
 #tab-dashboard-cliente .clx-streak {
   background: var(--clx-lime);
-  color: #0a0a0a;
+  color: var(--clx-on-lime);
   border-radius: 14px;
   padding: 1rem 1.3rem;
   text-align: center;
@@ -2714,7 +2755,7 @@ html {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--clx-lime);
+  color: var(--clx-accent);
 }
 
 #tab-dashboard-cliente .clx-card {
@@ -2766,7 +2807,7 @@ html {
 }
 
 #tab-dashboard-cliente .clx-trainer-spec {
-  color: var(--clx-lime);
+  color: var(--clx-accent);
   font-size: .85rem;
   font-weight: 600;
 }
@@ -2805,7 +2846,7 @@ html {
 
 #tab-dashboard-cliente .clx-btn {
   background: var(--clx-lime);
-  color: #0a0a0a;
+  color: var(--clx-on-lime);
   border: 1px solid var(--clx-lime);
   border-radius: 10px;
   padding: .68rem 1.1rem;
@@ -2840,8 +2881,8 @@ html {
 }
 
 #tab-dashboard-cliente .clx-btn-ghost:hover {
-  border-color: var(--clx-lime);
-  color: var(--clx-lime);
+  border-color: var(--clx-accent);
+  color: var(--clx-accent);
 }
 
 #tab-dashboard-cliente .clx-stats {
@@ -2862,7 +2903,7 @@ html {
   font-size: 2.6rem;
   font-weight: 900;
   line-height: 1;
-  color: var(--clx-lime);
+  color: var(--clx-accent);
 }
 
 #tab-dashboard-cliente .clx-stat-l {
@@ -2906,8 +2947,8 @@ html {
 }
 
 #tab-dashboard-cliente .clx-tab.active {
-  color: var(--clx-lime);
-  border-bottom-color: var(--clx-lime);
+  color: var(--clx-accent);
+  border-bottom-color: var(--clx-accent);
 }
 
 #tab-dashboard-cliente .clx-grid-2 {
@@ -2929,7 +2970,7 @@ html {
 }
 
 #tab-dashboard-cliente .clx-empty strong {
-  color: var(--clx-lime);
+  color: var(--clx-accent);
 }
 
 #tab-dashboard-cliente .clx-mem-tipo {
@@ -2959,7 +3000,7 @@ html {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--clx-lime);
+  color: var(--clx-accent);
 }
 
 #tab-dashboard-cliente .clx-mem-estado {
@@ -2972,13 +3013,13 @@ html {
 }
 
 #tab-dashboard-cliente .clx-mem-estado.ok {
-  background: rgba(200, 241, 53, .15);
-  color: var(--clx-lime);
+  background: var(--clx-accent-soft);
+  color: var(--clx-accent);
 }
 
 #tab-dashboard-cliente .clx-mem-estado.off {
-  background: rgba(255, 100, 100, .14);
-  color: #ff9a9a;
+  background: var(--clx-danger-soft);
+  color: var(--clx-danger);
 }
 
 #tab-dashboard-cliente .clx-mem-dias {
@@ -3020,7 +3061,7 @@ html {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 1.3rem;
   font-weight: 800;
-  color: var(--clx-lime);
+  color: var(--clx-accent);
   white-space: nowrap;
 }
 
@@ -3077,8 +3118,8 @@ html {
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
-  background: linear-gradient(120deg, rgba(200, 241, 53, .13), rgba(200, 241, 53, .02));
-  border: 1px solid rgba(200, 241, 53, .3);
+  background: linear-gradient(120deg, var(--clx-accent-soft), transparent);
+  border: 1px solid var(--clx-accent-line);
   border-radius: 16px;
   padding: 1.2rem 1.5rem;
   margin-bottom: 1.5rem;
@@ -3088,7 +3129,7 @@ html {
   font-size: .68rem;
   text-transform: uppercase;
   letter-spacing: .15em;
-  color: var(--clx-lime);
+  color: var(--clx-accent);
 }
 
 #tab-dashboard-cliente .clx-plan-activo-n {
@@ -3131,7 +3172,7 @@ html {
 }
 
 #tab-dashboard-cliente .clx-plan-card.actual {
-  border-color: rgba(200, 241, 53, .55);
+  border-color: var(--clx-accent-line);
 }
 
 #tab-dashboard-cliente .clx-plan-card-head {
@@ -3158,7 +3199,7 @@ html {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .09em;
-  color: #0a0a0a;
+  color: var(--clx-on-lime);
   background: var(--clx-lime);
   padding: .22rem .5rem;
   border-radius: 999px;
@@ -3178,7 +3219,7 @@ html {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 1.9rem;
   font-weight: 900;
-  color: var(--clx-lime);
+  color: var(--clx-accent);
 }
 
 #tab-dashboard-cliente .clx-plan-precio span {
@@ -3208,7 +3249,7 @@ html {
 }
 
 #tab-dashboard-cliente .clx-tick {
-  color: var(--clx-lime);
+  color: var(--clx-accent);
   font-weight: 900;
   flex: none;
 }

@@ -817,32 +817,32 @@ async function cargarDashboardCliente() {
     : (idCliente ? 'sin membresía activa' : 'días restantes'));
   clxSetText('clxVencimiento', membresiaActual ? (clxFmtFecha(membresiaActual.fecha_fin) || '—') : '—');
 
-  // Tarjeta de entrenador (solo hay datos cuando existe una rutina asignada)
-  const trainerCard = document.getElementById('clxTrainerCard');
-  if (trainerCard) {
-    if (rutinaActual && rutinaActual.entrenador_nombre) {
-      trainerCard.classList.remove('hidden');
-      const tAvatar = document.getElementById('clxTrainerAvatar');
-      if (tAvatar) tAvatar.textContent = rutinaActual.entrenador_nombre.split(' ').filter(Boolean).map(p => p[0]).slice(0, 2).join('').toUpperCase();
-      clxSetText('clxTrainerNombre', rutinaActual.entrenador_nombre);
-      clxSetText('clxTrainerEspecialidad', rutinaActual.entrenador_especialidad || 'Entrenador GalloLeTe');
-      const metaBits = [];
-      if (rutinaActual.entrenador_horario) metaBits.push(rutinaActual.entrenador_horario);
-      metaBits.push('Sede UniSalamanca');
-      clxSetText('clxTrainerMeta', metaBits.join(' · '));
-      clxSetText('clxRutinaNombre', rutinaActual.nombre_rutina);
-      clxSetText('clxRutinaNivel', rutinaActual.nivel);
-      const mail = document.getElementById('clxContactar');
-      if (mail) {
-        if (rutinaActual.entrenador_correo) {
-          mail.href = 'mailto:' + rutinaActual.entrenador_correo;
-          mail.classList.remove('hidden');
-        } else {
-          mail.classList.add('hidden');
-        }
+  // Tarjeta de entrenador: siempre se muestra. El vínculo cliente↔entrenador solo
+  // existe a través de la rutina, así que sin rutina = sin entrenador asignado todavía.
+  const hayEntrenador = !!(rutinaActual && rutinaActual.entrenador_nombre);
+  const trainerOk = document.getElementById('clxTrainerOk');
+  const trainerVacio = document.getElementById('clxTrainerVacio');
+  if (trainerOk) trainerOk.classList.toggle('hidden', !hayEntrenador);
+  if (trainerVacio) trainerVacio.classList.toggle('hidden', hayEntrenador);
+  if (hayEntrenador) {
+    const tAvatar = document.getElementById('clxTrainerAvatar');
+    if (tAvatar) tAvatar.textContent = rutinaActual.entrenador_nombre.split(' ').filter(Boolean).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+    clxSetText('clxTrainerNombre', rutinaActual.entrenador_nombre);
+    clxSetText('clxTrainerEspecialidad', rutinaActual.entrenador_especialidad || 'Entrenador GalloLeTe');
+    const metaBits = [];
+    if (rutinaActual.entrenador_horario) metaBits.push(rutinaActual.entrenador_horario);
+    metaBits.push('Sede UniSalamanca');
+    clxSetText('clxTrainerMeta', metaBits.join(' · '));
+    clxSetText('clxRutinaNombre', rutinaActual.nombre_rutina);
+    clxSetText('clxRutinaNivel', rutinaActual.nivel);
+    const mail = document.getElementById('clxContactar');
+    if (mail) {
+      if (rutinaActual.entrenador_correo) {
+        mail.href = 'mailto:' + rutinaActual.entrenador_correo;
+        mail.classList.remove('hidden');
+      } else {
+        mail.classList.add('hidden');
       }
-    } else {
-      trainerCard.classList.add('hidden');
     }
   }
 
