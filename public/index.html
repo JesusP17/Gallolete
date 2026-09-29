@@ -709,54 +709,119 @@
 
       <!-- 4. DASHBOARD CLIENTE (PORTAL DEL ATLETA) -->
       <section id="tab-dashboard-cliente" class="tab-content hidden">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <span class="title">Estado de Mi Membresía</span>
-            <span class="value" id="statClienteMembresiaEstado">-</span>
-          </div>
-          <div class="stat-card">
-            <span class="title">Vencimiento</span>
-            <span class="value" id="statClienteMembresiaFin" style="font-size: 1.2rem;">-</span>
-          </div>
-          <div class="stat-card">
-            <span class="title">Mi Rutina Asignada</span>
-            <span class="value" id="statClienteRutinaNombre" style="font-size: 1.2rem; color: var(--primary-color);">-</span>
-          </div>
-        </div>
+        <div class="clx-portal">
 
-        <div style="margin-top: 2rem;">
-          <h3>💪 Mi Plan de Entrenamiento Asignado</h3>
-          <div class="table-container" style="margin-top: 1rem;">
-            <table>
-              <thead>
-                <tr>
-                  <th>Ejercicio</th>
-                  <th>Grupo Muscular</th>
-                  <th>Series x Repeticiones</th>
-                  <th>Peso (Kg)</th>
-                  <th>Descanso</th>
-                </tr>
-              </thead>
-              <tbody id="tableClienteRutina"></tbody>
-            </table>
+          <!-- HERO: identidad del atleta -->
+          <div class="clx-hero">
+            <div class="clx-hero-id">
+              <div class="clx-avatar" id="clxAvatar">?</div>
+              <div class="clx-hero-info">
+                <div class="clx-hero-name-row">
+                  <h2 class="clx-hero-name" id="clxNombre">Atleta GalloLeTe</h2>
+                  <span class="clx-plan-badge" id="clxPlanBadge">—</span>
+                </div>
+                <p class="clx-hero-line" id="clxHeroLine"></p>
+                <p class="clx-hero-mono" id="clxHeroMono"></p>
+              </div>
+            </div>
+            <div class="clx-hero-side">
+              <div class="clx-streak">
+                <div class="clx-streak-num" id="clxDiasRestantes">—</div>
+                <div class="clx-streak-label" id="clxDiasRestantesLabel">días restantes</div>
+              </div>
+              <div class="clx-next">
+                <div class="clx-next-label">Próximo vencimiento</div>
+                <div class="clx-next-val" id="clxVencimiento">—</div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div style="margin-top: 2rem;">
-          <h3>💳 Mi Historial de Pagos</h3>
-          <div class="table-container" style="margin-top: 1rem;">
-            <table>
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Monto</th>
-                  <th>Método</th>
-                  <th>Referencia</th>
-                </tr>
-              </thead>
-              <tbody id="tableClientePagos"></tbody>
-            </table>
+          <!-- TARJETA DEL ENTRENADOR ASIGNADO -->
+          <div class="clx-card clx-trainer" id="clxTrainerCard">
+            <div class="clx-card-kicker">Entrenador asignado</div>
+            <div class="clx-trainer-row">
+              <div class="clx-trainer-id">
+                <div class="clx-avatar sm" id="clxTrainerAvatar">?</div>
+                <div>
+                  <div class="clx-trainer-name" id="clxTrainerNombre">—</div>
+                  <div class="clx-trainer-spec" id="clxTrainerEspecialidad">Sin entrenador asignado</div>
+                  <div class="clx-trainer-meta" id="clxTrainerMeta"></div>
+                </div>
+              </div>
+              <div class="clx-trainer-stats">
+                <div class="clx-trainer-stat">
+                  <div class="clx-trainer-stat-v" id="clxRutinaNombre">—</div>
+                  <div class="clx-trainer-stat-l">Rutina activa</div>
+                </div>
+                <div class="clx-trainer-stat">
+                  <div class="clx-trainer-stat-v" id="clxRutinaNivel">—</div>
+                  <div class="clx-trainer-stat-l">Nivel</div>
+                </div>
+                <a class="clx-btn-ghost hidden" id="clxContactar" href="#">Contactar →</a>
+              </div>
+            </div>
           </div>
+
+          <!-- FILA DE ESTADÍSTICAS REALES -->
+          <div class="clx-stats">
+            <div class="clx-stat">
+              <div class="clx-stat-v" id="clxStatRutinas">0</div>
+              <div class="clx-stat-l">Rutinas asignadas</div>
+              <div class="clx-stat-n">por tu entrenador</div>
+            </div>
+            <div class="clx-stat">
+              <div class="clx-stat-v" id="clxStatPagos">0</div>
+              <div class="clx-stat-l">Pagos registrados</div>
+              <div class="clx-stat-n">en recepción</div>
+            </div>
+            <div class="clx-stat">
+              <div class="clx-stat-v" id="clxStatDias">0</div>
+              <div class="clx-stat-l">Días como miembro</div>
+              <div class="clx-stat-n" id="clxStatDiasNota">desde tu primer plan</div>
+            </div>
+          </div>
+
+          <!-- PESTAÑAS INTERNAS DEL PORTAL -->
+          <div class="clx-tabs">
+            <button type="button" class="clx-tab active" data-clxtab="resumen" onclick="cambiarTabPortalCliente('resumen')">Resumen</button>
+            <button type="button" class="clx-tab" data-clxtab="entrenamiento" onclick="cambiarTabPortalCliente('entrenamiento')">Entrenamiento</button>
+            <button type="button" class="clx-tab" data-clxtab="miplan" onclick="cambiarTabPortalCliente('miplan')">Mi Plan</button>
+          </div>
+
+          <!-- RESUMEN -->
+          <div class="clx-panel" id="clxPanelResumen">
+            <div class="clx-grid-2">
+              <div class="clx-card">
+                <h3 class="clx-card-title">Mi membresía</h3>
+                <div id="clxResumenMembresia"></div>
+              </div>
+              <div class="clx-card">
+                <h3 class="clx-card-title">Últimos pagos</h3>
+                <div id="clxResumenPagos"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENTRENAMIENTO -->
+          <div class="clx-panel hidden" id="clxPanelEntrenamiento">
+            <div class="clx-card">
+              <h3 class="clx-card-title" id="clxRutinaTitulo">Mi rutina</h3>
+              <p class="clx-rutina-obj" id="clxRutinaObjetivo"></p>
+              <div id="clxEjercicios"></div>
+            </div>
+          </div>
+
+          <!-- MI PLAN -->
+          <div class="clx-panel hidden" id="clxPanelMiPlan">
+            <div id="clxPlanActivo"></div>
+            <h3 class="clx-section-title">Membresías adaptadas a tus metas</h3>
+            <div class="clx-plans" id="clxPlanesGrid"></div>
+            <div class="clx-card" style="margin-top: 1.5rem;">
+              <h3 class="clx-card-title">Historial de pagos</h3>
+              <div id="clxHistorialPagos"></div>
+            </div>
+          </div>
+
         </div>
       </section>
 

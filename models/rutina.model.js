@@ -5,7 +5,8 @@ class RutinaModel {
     const query = `
       SELECT r.*, 
              CONCAT(c.nombre, ' ', c.apellido) AS cliente_nombre, c.documento AS cliente_documento,
-             CONCAT(e.nombre, ' ', e.apellido) AS entrenador_nombre
+             CONCAT(e.nombre, ' ', e.apellido) AS entrenador_nombre,
+             e.especialidad AS entrenador_especialidad, e.horario AS entrenador_horario, e.correo AS entrenador_correo
       FROM rutinas r
       JOIN clientes c ON r.id_cliente = c.id_cliente
       JOIN entrenadores e ON r.id_entrenador = e.id_entrenador
@@ -20,7 +21,8 @@ class RutinaModel {
     const query = `
       SELECT r.*, 
              CONCAT(c.nombre, ' ', c.apellido) AS cliente_nombre, c.documento AS cliente_documento,
-             CONCAT(e.nombre, ' ', e.apellido) AS entrenador_nombre
+             CONCAT(e.nombre, ' ', e.apellido) AS entrenador_nombre,
+             e.especialidad AS entrenador_especialidad, e.horario AS entrenador_horario, e.correo AS entrenador_correo
       FROM rutinas r
       JOIN clientes c ON r.id_cliente = c.id_cliente
       JOIN entrenadores e ON r.id_entrenador = e.id_entrenador

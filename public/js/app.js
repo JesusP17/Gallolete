@@ -616,76 +616,324 @@ async function cargarDashboardRecepcionista() {
   `).join('') || '<tr><td colspan="5" style="text-align:center;">¡Excelente! No hay membresías vencidas pendientes.</td></tr>';
 }
 
-// 4. Cargar Dashboard Cliente (Portal de Atleta)
+// 4. Dashboard Cliente (Portal de Atleta)
+// Catálogo real de planes: los mismos 4 de la landing. La pasarela crea la membresía y el pago.
+const CLX_PLANES = [
+  {
+    nombre: 'Mensual General', precio: 100000, periodo: '/ mes', etiqueta: 'Básico',
+    pasarela: 'Mensual General', claves: ['general'],
+    features: ['Acceso a zona de musculación y peso libre', 'Área cardio y resistencia ilimitada', 'Duchas con agua caliente y vestieres VIP', 'App móvil para control de entrenamiento']
+  },
+  {
+    nombre: 'Mensual VIP', precio: 120000, periodo: '/ mes', etiqueta: 'Más Popular',
+    pasarela: 'Mensual VIP', claves: ['vip'],
+    features: ['Todo lo del Plan General', 'Evaluación física y seguimiento con Entrenador', 'Rutinas personalizadas por objetivo', 'Invitado gratis 4 días al mes', 'Lockers preferenciales de seguridad']
+  },
+  {
+    nombre: 'Trimestral Ahorro', precio: 300000, periodo: '/ 3 meses', etiqueta: 'Ahorro',
+    pasarela: 'Trimestral', claves: ['trimestral'],
+    features: ['Ahorro garantizado del 15%', 'Acceso a todas las zonas del gimnasio', 'Asesoría en nutrición deportiva básica', 'Clases grupales y funcional']
+  },
+  {
+    nombre: 'Anual Black', precio: 950000, periodo: '/ año', etiqueta: 'Élite',
+    pasarela: 'Anual', claves: ['anual', 'black'],
+    features: ['Máximo ahorro y tarifa fija asegurada', 'Congelamiento de membresía hasta por 30 días', 'Acceso prioritario a eventos y talleres', 'Regalo de bienvenida kit GalloLeTe']
+  }
+];
+
+function cambiarTabPortalCliente(tab) {
+  const paneles = { resumen: 'clxPanelResumen', entrenamiento: 'clxPanelEntrenamiento', miplan: 'clxPanelMiPlan' };
+  document.querySelectorAll('.clx-tab').forEach(b => b.classList.toggle('active', b.dataset.clxtab === tab));
+  Object.keys(paneles).forEach(t => {
+    const p = document.getElementById(paneles[t]);
+    if (p) p.classList.toggle('hidden', t !== tab);
+  });
+}
+
+function clxSetText(id, texto) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = texto;
+}
+
+function clxMoneda(v) {
+  return '$' + parseFloat(v || 0).toLocaleString('es-CO');
+}
+
+function clxFmtFecha(s) {
+  if (!s) return null;
+  const d = new Date(String(s).substring(0, 10) + 'T00:00:00');
+  if (isNaN(d)) return null;
+  return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function clxEdad(fechaNac) {
+  if (!fechaNac) return null;
+  const n = new Date(String(fechaNac).substring(0, 10) + 'T00:00:00');
+  if (isNaN(n)) return null;
+  const hoy = new Date();
+  let edad = hoy.getFullYear() - n.getFullYear();
+  const m = hoy.getMonth() - n.getMonth();
+  if (m < 0 || (m === 0 && hoy.getDate() < n.getDate())) edad--;
+  return edad >= 0 ? edad : null;
+}
+
+function clxDiasHasta(fechaFin) {
+  if (!fechaFin) return null;
+  const fin = new Date(String(fechaFin).substring(0, 10) + 'T00:00:00');
+  if (isNaN(fin)) return null;
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  return Math.round((fin - hoy) / 86400000);
+}
+
+function clxFilaPago(p) {
+  return `
+    <div class="clx-pago">
+      <div>
+        <div class="clx-pago-fecha">${clxFmtFecha(p.fecha_pago) || 'Sin fecha'}</div>
+        <div class="clx-pago-detalle">${p.metodo_pago || 'Pago en recepción'}${p.referencia ? ' · Ref. ' + p.referencia : ''}</div>
+      </div>
+      <div class="clx-pago-valor">${clxMoneda(p.valor)}</div>
+    </div>`;
+}
+
+function clxTarjetaMembresia(m) {
+  const dias = clxDiasHasta(m.fecha_fin);
+  return `
+    <div class="clx-mem-tipo">${m.tipo}</div>
+    <div class="clx-mem-fechas">${clxFmtFecha(m.fecha_inicio) || '—'} → ${clxFmtFecha(m.fecha_fin) || '—'}</div>
+    <div class="clx-mem-pie">
+      <span class="clx-mem-precio">${clxMoneda(m.precio)}</span>
+      <span class="clx-mem-estado ${m.estado === 'activa' ? 'ok' : 'off'}">${m.estado === 'activa' ? 'Activa' : 'Vencida'}</span>
+    </div>
+    ${dias !== null ? `<div class="clx-mem-dias">${dias >= 0 ? `Te quedan <strong>${dias} días</strong> de entrenamiento` : 'Esta membresía ya venció'}</div>` : ''}`;
+}
+
+function clxBannerPlan(m, planCat) {
+  const dias = clxDiasHasta(m.fecha_fin);
+  const detalle = dias !== null ? `${dias} ${dias === 1 ? 'día restante' : 'días restantes'} · vence el ${clxFmtFecha(m.fecha_fin) || '—'}` : '';
+  return `
+    <div class="clx-plan-activo">
+      <div>
+        <div class="clx-plan-activo-k">Tu plan actual</div>
+        <div class="clx-plan-activo-n">${m.tipo}</div>
+        <div class="clx-plan-activo-d">${detalle}</div>
+      </div>
+      ${planCat ? `<button class="clx-btn" onclick="irAComprarPlan('${planCat.pasarela}')">Renovar →</button>` : ''}
+    </div>`;
+}
+
+function clxFilaEjercicio(e) {
+  return `
+    <div class="clx-ej">
+      <div class="clx-ej-info">
+        <div class="clx-ej-nombre">${e.ejercicio_nombre}</div>
+        <div class="clx-ej-grupo">${e.grupo_muscular || ''}${e.ejercicio_nivel ? ' · ' + e.ejercicio_nivel : ''}</div>
+      </div>
+      <div class="clx-ej-serie">
+        <div class="clx-ej-serie-v">${e.series} × ${e.repeticiones}</div>
+        <div class="clx-ej-serie-l">series × reps</div>
+      </div>
+      <div class="clx-ej-serie">
+        <div class="clx-ej-serie-v">${parseFloat(e.peso) > 0 ? parseFloat(e.peso) + ' kg' : 'Peso corporal'}</div>
+        <div class="clx-ej-serie-l">peso sugerido</div>
+      </div>
+      <div class="clx-ej-serie">
+        <div class="clx-ej-serie-v">${e.descanso || '60 seg'}</div>
+        <div class="clx-ej-serie-l">descanso</div>
+      </div>
+    </div>`;
+}
+
 async function cargarDashboardCliente() {
-  const user = Auth.getUser();
-  const idCliente = user ? user.id_cliente : null;
+  const user = Auth.getUser() || {};
+  const idCliente = user.id_cliente || null;
+
+  let perfil = null, membresias = [], rutinas = [], pagos = [];
+
+  if (idCliente) {
+    const [resPerfil, resMem, resRut, resPag] = await Promise.all([
+      Auth.fetchApi('/clientes/perfil'),
+      Auth.fetchApi('/membresias'),
+      Auth.fetchApi('/rutinas'),
+      Auth.fetchApi('/pagos')
+    ]);
+    if (resPerfil.ok) perfil = resPerfil.cliente;
+    if (resMem.ok) membresias = resMem.membresias || [];
+    if (resRut.ok) rutinas = resRut.rutinas || [];
+    if (resPag.ok) pagos = resPag.pagos || [];
+  }
+
+  // HERO: identidad del atleta
+  clxSetText('clxNombre', perfil ? `${perfil.nombre} ${perfil.apellido}`.trim() : (user.nombre_usuario || 'Atleta GalloLeTe'));
+  const avatarEl = document.getElementById('clxAvatar');
+  if (avatarEl) {
+    avatarEl.textContent = perfil
+      ? `${(perfil.nombre || '?')[0]}${(perfil.apellido || '')[0]}`.toUpperCase()
+      : (user.nombre_usuario || '?')[0].toUpperCase();
+  }
+
+  const membresiaActual = membresias.find(m => m.estado === 'activa') || null;
+  const rutinaActual = rutinas.find(r => r.estado === 'activa') || rutinas[0] || null;
+
+  const planBadge = document.getElementById('clxPlanBadge');
+  if (planBadge) {
+    if (membresiaActual) {
+      planBadge.textContent = membresiaActual.tipo;
+      planBadge.classList.remove('hidden');
+    } else {
+      planBadge.classList.add('hidden');
+    }
+  }
 
   if (!idCliente) {
-    document.getElementById('statClienteMembresiaEstado').innerText = 'SIN VÍNCULO';
-    document.getElementById('statClienteMembresiaFin').innerText = '-';
-    document.getElementById('statClienteRutinaNombre').innerText = 'Sin Perfil Vinculado';
-    document.getElementById('tableClienteRutina').innerHTML = '<tr><td colspan="5" style="text-align:center; color: #d32f2f; font-weight: bold;">⚠️ Tu usuario no está vinculado a ningún perfil de cliente.<br><small style="color: var(--text-muted); font-weight: normal;">Solicita al administrador vincular tu usuario con tu registro de cliente en el módulo de Usuarios.</small></td></tr>';
-    document.getElementById('tableClientePagos').innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin registro de cliente vinculado.</td></tr>';
-    return;
-  }
-
-  const [resMem, resRut, resPag] = await Promise.all([
-    Auth.fetchApi('/membresias'),
-    Auth.fetchApi('/rutinas'),
-    Auth.fetchApi('/pagos')
-  ]);
-
-  const membresias = resMem.ok ? resMem.membresias.filter(m => m.id_cliente === idCliente) : [];
-  const rutinas = resRut.ok ? resRut.rutinas.filter(r => r.id_cliente === idCliente) : [];
-  const pagos = resPag.ok ? resPag.pagos.filter(p => p.id_cliente === idCliente) : [];
-
-  // Membresía
-  const membresiaActual = membresias.find(m => m.estado === 'activa') || membresias[0];
-  if (membresiaActual) {
-    document.getElementById('statClienteMembresiaEstado').innerText = membresiaActual.estado.toUpperCase();
-    document.getElementById('statClienteMembresiaFin').innerText = membresiaActual.fecha_fin ? membresiaActual.fecha_fin.substring(0,10) : '-';
+    clxSetText('clxHeroLine', 'Usuario sin perfil de cliente vinculado');
+    clxSetText('clxHeroMono', 'Solicita al administrador vincular tu usuario en el módulo de Usuarios');
   } else {
-    document.getElementById('statClienteMembresiaEstado').innerText = 'SIN MEMBRESÍA';
-    document.getElementById('statClienteMembresiaFin').innerText = '-';
-  }
-
-  // Rutina (prioriza la activa)
-  const rutinaActual = rutinas.find(r => r.estado === 'activa') || rutinas[0];
-  if (rutinaActual) {
-    document.getElementById('statClienteRutinaNombre').innerText = `${rutinaActual.nombre_rutina} (${rutinaActual.nivel})`;
-    
-    // Cargar detalle completo de la rutina con sus ejercicios
-    const resDetalle = await Auth.fetchApi(`/rutinas/${rutinaActual.id_rutina}`);
-    if (resDetalle.ok && resDetalle.rutina && resDetalle.rutina.ejercicios && resDetalle.rutina.ejercicios.length > 0) {
-      const tbodyRutina = document.getElementById('tableClienteRutina');
-      tbodyRutina.innerHTML = resDetalle.rutina.ejercicios.map(e => `
-        <tr>
-          <td><strong>${e.ejercicio_nombre}</strong></td>
-          <td><span class="badge" style="background:#e3f2fd; color:#1565c0;">${e.grupo_muscular}</span></td>
-          <td>${e.series} series x ${e.repeticiones} reps</td>
-          <td>${e.peso} kg</td>
-          <td>${e.descanso || '-'}</td>
-        </tr>
-      `).join('');
-    } else {
-      document.getElementById('tableClienteRutina').innerHTML = '<tr><td colspan="5" style="text-align:center;">La rutina asignada no tiene ejercicios agregados aún.</td></tr>';
+    const partesLinea = [];
+    if (perfil) {
+      const edad = clxEdad(perfil.fecha_nacimiento);
+      if (edad !== null) partesLinea.push(`${edad} años`);
+      if (perfil.fecha_registro) partesLinea.push('Miembro desde ' + clxFmtFecha(perfil.fecha_registro));
     }
-  } else {
-    document.getElementById('statClienteRutinaNombre').innerText = 'Sin Rutina Asignada';
-    document.getElementById('tableClienteRutina').innerHTML = '<tr><td colspan="5" style="text-align:center;">Aún no tienes una rutina asignada por tu entrenador.</td></tr>';
+    if (rutinaActual && rutinaActual.objetivo) partesLinea.push('Objetivo: ' + rutinaActual.objetivo);
+    clxSetText('clxHeroLine', partesLinea.join(' · '));
+
+    const partesMono = [];
+    if (perfil) {
+      if (perfil.documento) partesMono.push('DOC ' + perfil.documento);
+      if (perfil.telefono) partesMono.push(perfil.telefono);
+      if (perfil.correo) partesMono.push(perfil.correo);
+    }
+    clxSetText('clxHeroMono', partesMono.join(' · '));
   }
 
-  // Pagos
-  const tbodyPagos = document.getElementById('tableClientePagos');
-  tbodyPagos.innerHTML = pagos.map(p => `
-    <tr>
-      <td>${p.fecha_pago ? p.fecha_pago.substring(0,10) : ''}</td>
-      <td style="color:var(--success); font-weight:bold;">$${parseFloat(p.valor).toLocaleString('es-CO')}</td>
-      <td>${p.metodo_pago}</td>
-      <td>${p.referencia || '-'}</td>
-    </tr>
-  `).join('') || '<tr><td colspan="4" style="text-align:center;">No registras pagos.</td></tr>';
+  // HERO (lado derecho): días restantes y próximo vencimiento
+  // El backend ya marca 'vencida' la membresía expirada, así que aquí solo llegan planes vigentes.
+  const diasRestantes = membresiaActual ? clxDiasHasta(membresiaActual.fecha_fin) : null;
+  clxSetText('clxDiasRestantes', diasRestantes !== null ? String(diasRestantes) : '—');
+  clxSetText('clxDiasRestantesLabel', diasRestantes !== null
+    ? (diasRestantes === 1 ? 'día restante' : 'días restantes')
+    : (idCliente ? 'sin membresía activa' : 'días restantes'));
+  clxSetText('clxVencimiento', membresiaActual ? (clxFmtFecha(membresiaActual.fecha_fin) || '—') : '—');
+
+  // Tarjeta de entrenador (solo hay datos cuando existe una rutina asignada)
+  const trainerCard = document.getElementById('clxTrainerCard');
+  if (trainerCard) {
+    if (rutinaActual && rutinaActual.entrenador_nombre) {
+      trainerCard.classList.remove('hidden');
+      const tAvatar = document.getElementById('clxTrainerAvatar');
+      if (tAvatar) tAvatar.textContent = rutinaActual.entrenador_nombre.split(' ').filter(Boolean).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+      clxSetText('clxTrainerNombre', rutinaActual.entrenador_nombre);
+      clxSetText('clxTrainerEspecialidad', rutinaActual.entrenador_especialidad || 'Entrenador GalloLeTe');
+      const metaBits = [];
+      if (rutinaActual.entrenador_horario) metaBits.push(rutinaActual.entrenador_horario);
+      metaBits.push('Sede UniSalamanca');
+      clxSetText('clxTrainerMeta', metaBits.join(' · '));
+      clxSetText('clxRutinaNombre', rutinaActual.nombre_rutina);
+      clxSetText('clxRutinaNivel', rutinaActual.nivel);
+      const mail = document.getElementById('clxContactar');
+      if (mail) {
+        if (rutinaActual.entrenador_correo) {
+          mail.href = 'mailto:' + rutinaActual.entrenador_correo;
+          mail.classList.remove('hidden');
+        } else {
+          mail.classList.add('hidden');
+        }
+      }
+    } else {
+      trainerCard.classList.add('hidden');
+    }
+  }
+
+  // Fila de estadísticas (solo datos reales de la base de datos)
+  clxSetText('clxStatRutinas', String(rutinas.length));
+  clxSetText('clxStatPagos', String(pagos.length));
+  const inicioMasAntiguo = membresias.map(m => m.fecha_inicio).filter(Boolean).sort()[0]
+    || (perfil && perfil.fecha_registro) || null;
+  let diasMiembro = null;
+  if (inicioMasAntiguo) {
+    const d = new Date(String(inicioMasAntiguo).substring(0, 10) + 'T00:00:00');
+    if (!isNaN(d)) {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      diasMiembro = Math.max(0, Math.round((hoy - d) / 86400000));
+    }
+  }
+  clxSetText('clxStatDias', diasMiembro !== null ? String(diasMiembro) : '0');
+  clxSetText('clxStatDiasNota', inicioMasAntiguo ? 'desde el ' + clxFmtFecha(inicioMasAntiguo) : 'desde tu primer plan');
+
+  // PESTAÑA RESUMEN
+  const resMemb = document.getElementById('clxResumenMembresia');
+  if (resMemb) {
+    resMemb.innerHTML = membresiaActual
+      ? clxTarjetaMembresia(membresiaActual)
+      : `<div class="clx-empty">${idCliente
+          ? 'No tienes una membresía activa. Elige tu plan en la pestaña <strong>Mi Plan</strong> para empezar a entrenar.'
+          : 'Sin perfil de cliente vinculado.'}</div>`;
+  }
+  const resPagos = document.getElementById('clxResumenPagos');
+  if (resPagos) {
+    const ultimos = pagos.slice(0, 4);
+    resPagos.innerHTML = ultimos.length
+      ? ultimos.map(clxFilaPago).join('')
+      : '<div class="clx-empty">Aún no registras pagos en recepción.</div>';
+  }
+
+  // PESTAÑA ENTRENAMIENTO
+  clxSetText('clxRutinaTitulo', rutinaActual ? `Mi rutina · ${rutinaActual.nombre_rutina}` : 'Mi rutina');
+  clxSetText('clxRutinaObjetivo', rutinaActual && rutinaActual.objetivo ? rutinaActual.objetivo : '');
+  const ejCont = document.getElementById('clxEjercicios');
+  if (ejCont) {
+    if (!idCliente) {
+      ejCont.innerHTML = '<div class="clx-empty">Sin perfil de cliente vinculado.</div>';
+    } else if (!rutinaActual) {
+      ejCont.innerHTML = '<div class="clx-empty">Aún no tienes una rutina asignada. Tu entrenador la creará según tu objetivo.</div>';
+    } else {
+      ejCont.innerHTML = '<div class="clx-empty">Cargando ejercicios…</div>';
+      const resDetalle = await Auth.fetchApi(`/rutinas/${rutinaActual.id_rutina}`);
+      const ejercicios = resDetalle.ok && resDetalle.rutina ? (resDetalle.rutina.ejercicios || []) : [];
+      ejCont.innerHTML = ejercicios.length
+        ? ejercicios.map(clxFilaEjercicio).join('')
+        : '<div class="clx-empty">Tu rutina aún no tiene ejercicios agregados.</div>';
+    }
+  }
+
+  // PESTAÑA MI PLAN
+  let planCatalogoActual = null;
+  if (membresiaActual && membresiaActual.tipo) {
+    const t = String(membresiaActual.tipo).toLowerCase();
+    planCatalogoActual = CLX_PLANES.find(p => p.claves.some(k => t.includes(k))) || null;
+  }
+  const planActivo = document.getElementById('clxPlanActivo');
+  if (planActivo) {
+    planActivo.innerHTML = membresiaActual ? clxBannerPlan(membresiaActual, planCatalogoActual) : '';
+  }
+  const grid = document.getElementById('clxPlanesGrid');
+  if (grid) {
+    grid.innerHTML = CLX_PLANES.map(p => {
+      const esActual = planCatalogoActual && p.nombre === planCatalogoActual.nombre;
+      return `
+        <article class="clx-plan-card${esActual ? ' actual' : ''}">
+          <div class="clx-plan-card-head">
+            <span class="clx-plan-tag">${p.etiqueta}</span>
+            ${esActual ? '<span class="clx-plan-yours">Tu plan actual</span>' : ''}
+          </div>
+          <h4 class="clx-plan-nombre">${p.nombre}</h4>
+          <div class="clx-plan-precio">${clxMoneda(p.precio)} <span>${p.periodo}</span></div>
+          <ul class="clx-plan-feats">
+            ${p.features.map(f => `<li><span class="clx-tick">✓</span>${f}</li>`).join('')}
+          </ul>
+          <button class="${esActual ? 'clx-btn-ghost' : 'clx-btn'}" onclick="irAComprarPlan('${p.pasarela}')">${esActual ? 'Extender este plan →' : 'Elegir Plan →'}</button>
+        </article>`;
+    }).join('');
+  }
+  const hist = document.getElementById('clxHistorialPagos');
+  if (hist) {
+    hist.innerHTML = pagos.length
+      ? pagos.map(clxFilaPago).join('')
+      : '<div class="clx-empty">Aún no registras pagos.</div>';
+  }
 }
 
 // Utilidades para Modales

@@ -68,9 +68,28 @@ const eliminarCliente = async (req, res, next) => {
   }
 };
 
+// Perfil propio del usuario autenticado (cualquier rol vinculado a un cliente).
+// El cliente no tiene acceso a GET /clientes ni a GET /clientes/:id, así que este
+// endpoint es la única vía para que el portal del atleta muestre sus datos reales.
+const obtenerMiPerfil = async (req, res, next) => {
+  try {
+    if (!req.usuario.id_cliente) {
+      return res.status(403).json({ ok: false, mensaje: 'Tu usuario no está vinculado a un perfil de cliente.' });
+    }
+    const cliente = await ClienteModel.obtenerPorId(req.usuario.id_cliente);
+    if (!cliente) {
+      return res.status(404).json({ ok: false, mensaje: 'Perfil de cliente no encontrado.' });
+    }
+    res.json({ ok: true, cliente });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   obtenerClientes,
   obtenerClientePorId,
+  obtenerMiPerfil,
   crearCliente,
   actualizarCliente,
   eliminarCliente
