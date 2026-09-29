@@ -24,7 +24,7 @@ function initApp() {
   // Login Form Event Listener
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const usuario = document.getElementById('loginUsuario').value;
+    const usuario = document.getElementById('loginUsuario').value.trim();
     const password = document.getElementById('loginPassword').value;
     const errorDiv = document.getElementById('loginError');
 

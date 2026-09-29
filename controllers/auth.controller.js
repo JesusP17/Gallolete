@@ -7,7 +7,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const login = async (req, res, next) => {
   try {
-    const { usuario, password } = req.body;
+    const usuario = (req.body.usuario || '').trim();
+    const password = req.body.password || '';
 
     if (!usuario || !password) {
       return res.status(400).json({ ok: false, mensaje: 'Debe ingresar el usuario/correo y la contraseña.' });
