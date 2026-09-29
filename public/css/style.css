@@ -175,25 +175,50 @@ body {
   outline: none;
 }
 
-.btn-theme-toggle {
-  background: var(--btn-electric-bg) !important;
-  color: var(--btn-electric-text) !important;
-  box-shadow: var(--btn-electric-shadow);
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  padding: 0.45rem 1rem !important;
-  font-weight: 700 !important;
-  border-radius: 50px !important;
-  cursor: pointer;
-  display: inline-flex;
+/* Botón flotante de accesibilidad: modo eléctrico (circulito arrastrable) */
+.theme-fab {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #c8ff00;
+  background: #111111;
+  color: #c8ff00;
+  font-size: 1.45rem;
+  line-height: 1;
+  cursor: grab;
+  z-index: 99999;
+  display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem !important;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
-.btn-theme-toggle:hover {
-  transform: translateY(-2px) scale(1.06);
+.theme-fab:hover {
   filter: brightness(1.15);
+  transform: scale(1.08);
+}
+
+.theme-fab:active,
+.theme-fab.dragging {
+  cursor: grabbing;
+  transform: scale(1.12);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="electric"] .theme-fab {
+  border-color: #ffffff;
+  background: linear-gradient(135deg, #0066ff 0%, #00d2ff 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 22px rgba(0, 210, 255, 0.6);
 }
 
 .btn {
@@ -1619,28 +1644,6 @@ html {
   position: relative;
 }
 
-#landingView .btn-theme-toggle {
-  background: transparent !important;
-  color: var(--glx-ink) !important;
-  box-shadow: none !important;
-  border: 2px solid var(--glx-ink) !important;
-  border-radius: 0 !important;
-  padding: 0.5rem 0.95rem !important;
-  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif !important;
-  font-weight: 800 !important;
-  font-size: 0.85rem !important;
-  letter-spacing: 0.08em !important;
-  text-transform: uppercase;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease !important;
-}
-
-#landingView .btn-theme-toggle:hover {
-  background: var(--glx-ink) !important;
-  color: var(--glx-paper) !important;
-  transform: translateY(-2px);
-  filter: none;
-}
-
 /* Botones editoriales */
 #landingView .glx-btn {
   display: inline-flex;
@@ -2367,11 +2370,6 @@ html {
 
   #landingView .glx-nav a {
     font-size: 1.15rem;
-  }
-
-  #landingView .btn-theme-toggle {
-    font-size: 0.9rem !important;
-    padding: 0.5rem 0.95rem !important;
   }
 
   #landingView .glx-actions .glx-btn {

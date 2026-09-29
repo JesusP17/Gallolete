@@ -45,8 +45,6 @@
         </nav>
 
         <div class="glx-actions">
-          <button type="button" class="btn-theme-toggle theme-toggle-btn" onclick="toggleTheme()" title="Cambiar Tema de Color">⚡ Modo Eléctrico</button>
-
           <!-- Cuando NO ha iniciado sesión -->
           <div id="landingHeaderLoggedOut" class="glx-actions-rel">
             <button id="btnHeaderAccesoPaneles" class="glx-btn glx-btn-lime glx-btn-sm" onclick="toggleLandingRoleDropdown(event)">
@@ -325,7 +323,6 @@
     <div class="login-card login-card-sf">
       <div class="sf-topbar">
         <button type="button" class="btn btn-secondary btn-sm" onclick="mostrarLandingView()">← Volver a Principal</button>
-        <button type="button" class="btn btn-theme-toggle theme-toggle-btn" onclick="toggleTheme()">⚡ Modo Eléctrico</button>
       </div>
 
       <div class="login-logo-container">
@@ -436,8 +433,6 @@
         </div>
         
         <div style="display:flex; align-items:center; gap:0.75rem;">
-          <button type="button" class="btn btn-theme-toggle theme-toggle-btn" onclick="toggleTheme()" title="Cambiar Tema de Color">⚡ Modo Eléctrico</button>
-
           <!-- MENU DESPLEGABLE DE PERFIL Y CONFIGURACIÓN EN HEADER -->
           <div class="user-header-menu-container" style="position: relative;">
             <button id="btnUserMenuToggle" class="btn btn-secondary" onclick="toggleUserDropdownMenu(event)" style="display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.9rem;">
@@ -948,6 +943,9 @@
       </section>
     </main>
   </div>
+
+  <!-- BOTÓN FLOTANTE DE ACCESIBILIDAD: MODO ELÉCTRICO (arrastrable; presionar para cambiar) -->
+  <button type="button" id="themeFab" class="theme-fab" title="Modo Eléctrico — presiona para cambiar, arrastra para mover" aria-label="Cambiar modo eléctrico">⚡</button>
 
   <!-- CONTENEDOR DE MODALES -->
   <div id="modalOverlay" class="modal-overlay">

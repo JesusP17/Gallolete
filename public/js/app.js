@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initApp() {
   initTheme();
+  initThemeFab();
   mostrarLandingView();
 
   // Login Form Event Listener
@@ -980,10 +981,90 @@ function applyTheme(theme) {
 }
 
 function updateThemeButtons(isElectric) {
-  const buttons = document.querySelectorAll('.theme-toggle-btn');
-  buttons.forEach(btn => {
-    btn.innerHTML = isElectric ? '☀️ Modo Claro' : '⚡ Modo Eléctrico';
+  const fab = document.getElementById('themeFab');
+  if (fab) fab.textContent = isElectric ? '☀️' : '⚡';
+}
+
+/* ------------------------------------------------------------
+   BOTÓN FLOTANTE DE ACCESIBILIDAD (circulito del modo eléctrico)
+   Se arrastra con el puntero a cualquier parte de la pantalla y
+   la posición se guarda; al presionarlo (sin arrastrar) cambia
+   el tema.
+   ------------------------------------------------------------ */
+function initThemeFab() {
+  const fab = document.getElementById('themeFab');
+  if (!fab) return;
+
+  try {
+    const saved = JSON.parse(localStorage.getItem('gallolete_themebtn_pos') || 'null');
+    if (saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)) {
+      placeThemeFab(fab, saved.left, saved.top);
+    }
+  } catch (e) { /* posición inválida: se queda en la esquina */ }
+
+  let startX = 0, startY = 0, origLeft = 0, origTop = 0;
+  let dragging = false, moved = false, activePointer = null, suppressClick = false;
+
+  fab.addEventListener('pointerdown', (e) => {
+    if (activePointer !== null) return;
+    activePointer = e.pointerId;
+    try { fab.setPointerCapture(e.pointerId); } catch (err) { /* puntero sintético: no esencial */ }
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = fab.getBoundingClientRect();
+    origLeft = rect.left;
+    origTop = rect.top;
+    dragging = true;
+    moved = false;
+    fab.classList.add('dragging');
   });
+
+  fab.addEventListener('pointermove', (e) => {
+    if (!dragging || e.pointerId !== activePointer) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (!moved && Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+    moved = true;
+    placeThemeFab(fab, origLeft + dx, origTop + dy);
+  });
+
+  const endDrag = (e) => {
+    if (!dragging || (e && e.pointerId !== undefined && e.pointerId !== activePointer)) return;
+    dragging = false;
+    fab.classList.remove('dragging');
+    if (activePointer !== null) {
+      try { fab.releasePointerCapture(activePointer); } catch (err) { /* ya liberado */ }
+      activePointer = null;
+    }
+    if (moved) {
+      const rect = fab.getBoundingClientRect();
+      localStorage.setItem('gallolete_themebtn_pos', JSON.stringify({ left: rect.left, top: rect.top }));
+      suppressClick = true;
+    }
+  };
+
+  fab.addEventListener('pointerup', endDrag);
+  fab.addEventListener('pointercancel', endDrag);
+
+  fab.addEventListener('click', (e) => {
+    if (suppressClick) {
+      suppressClick = false;
+      e.preventDefault();
+      return;
+    }
+    toggleTheme();
+  });
+}
+
+function placeThemeFab(fab, left, top) {
+  const maxLeft = Math.max(0, window.innerWidth - fab.offsetWidth);
+  const maxTop = Math.max(0, window.innerHeight - fab.offsetHeight);
+  const x = Math.min(Math.max(0, left), maxLeft);
+  const y = Math.min(Math.max(0, top), maxTop);
+  fab.style.left = x + 'px';
+  fab.style.top = y + 'px';
+  fab.style.right = 'auto';
+  fab.style.bottom = 'auto';
 }
 
 
