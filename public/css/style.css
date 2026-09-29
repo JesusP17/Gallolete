@@ -13,6 +13,7 @@
   --warning: #ffb703;
   --danger: #d90429;
   --sidebar-width: 250px;
+  --bg-sidebar: #1a2a3a;
 
   /* Variables específicas de temas */
   --bg-body: #f8fafc;
@@ -255,6 +256,11 @@ body {
 
 .btn-primary:hover {
   background-color: var(--primary-hover);
+}
+
+/* En el tema eléctrico el primario es cian muy claro: el texto blanco no se lee */
+[data-theme="electric"] .btn-primary {
+  color: #04222e;
 }
 
 .btn-secondary {
@@ -1271,7 +1277,7 @@ html {
   top: 100%;
   right: 0;
   margin-top: 0.5rem;
-  background: white;
+  background: var(--card-bg);
   min-width: 230px;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
@@ -1293,7 +1299,7 @@ html {
 .dropdown-header strong {
   display: block;
   font-size: 0.95rem;
-  color: var(--dark-bg);
+  color: var(--text-dark);
 }
 
 .dropdown-header small {
@@ -1319,7 +1325,7 @@ html {
 }
 
 .dropdown-item:hover {
-  background-color: #f1f5f9;
+  background-color: var(--section-alt);
 }
 
 .dropdown-item.text-danger {
@@ -1521,6 +1527,7 @@ html {
    ============================================================ */
 #landingView.glx-landing {
   --glx-lime: #c8ff00;
+  --glx-lime-ink: #5f7a00;
   --glx-ink: #111111;
   --glx-paper: #ffffff;
   --glx-alt: #f5f5f2;
@@ -1534,6 +1541,7 @@ html {
 }
 
 [data-theme="electric"] #landingView.glx-landing {
+  --glx-lime-ink: #c8ff00;
   --glx-ink: #f8fafc;
   --glx-paper: #060b19;
   --glx-alt: #0a1428;
@@ -1594,7 +1602,7 @@ html {
 }
 
 #landingView .glx-logo-text b {
-  color: var(--glx-lime);
+  color: var(--glx-lime-ink);
   -webkit-text-stroke: 1px var(--glx-ink);
 }
 
@@ -1746,7 +1754,7 @@ html {
 }
 
 #landingView .glx-hero-title span {
-  color: var(--glx-lime);
+  color: var(--glx-lime-ink);
   -webkit-text-stroke: 2px var(--glx-ink);
 }
 
@@ -1978,7 +1986,7 @@ html {
 
 #landingView .glx-plan-features .tick {
   font-weight: 700;
-  color: #9fce00;
+  color: var(--glx-lime-ink);
   line-height: 1.45;
 }
 

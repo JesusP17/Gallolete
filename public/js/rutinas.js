@@ -196,7 +196,7 @@ async function verDetalleRutina(idRutina) {
     </div>
 
     <h4>Agregar Nuevo Ejercicio a la Rutina</h4>
-    <form onsubmit="agregarEjercicioARutina(event, ${idRutina})" style="margin-bottom: 1.5rem; background:#f8f9fa; padding:1rem; border-radius:6px;">
+    <form onsubmit="agregarEjercicioARutina(event, ${idRutina})" style="margin-bottom: 1.5rem; background:var(--section-alt); padding:1rem; border-radius:6px;">
       <div class="form-group">
         <label>Ejercicio</label>
         <select id="addEjId" class="form-control" required>

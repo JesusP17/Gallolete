@@ -625,7 +625,7 @@ async function cargarDashboardCliente() {
     document.getElementById('statClienteMembresiaEstado').innerText = 'SIN VÍNCULO';
     document.getElementById('statClienteMembresiaFin').innerText = '-';
     document.getElementById('statClienteRutinaNombre').innerText = 'Sin Perfil Vinculado';
-    document.getElementById('tableClienteRutina').innerHTML = '<tr><td colspan="5" style="text-align:center; color: #d32f2f; font-weight: bold;">⚠️ Tu usuario no está vinculado a ningún perfil de cliente.<br><small style="color: #666; font-weight: normal;">Solicita al administrador vincular tu usuario con tu registro de cliente en el módulo de Usuarios.</small></td></tr>';
+    document.getElementById('tableClienteRutina').innerHTML = '<tr><td colspan="5" style="text-align:center; color: #d32f2f; font-weight: bold;">⚠️ Tu usuario no está vinculado a ningún perfil de cliente.<br><small style="color: var(--text-muted); font-weight: normal;">Solicita al administrador vincular tu usuario con tu registro de cliente en el módulo de Usuarios.</small></td></tr>';
     document.getElementById('tableClientePagos').innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin registro de cliente vinculado.</td></tr>';
     return;
   }
@@ -703,7 +703,7 @@ function mostrarModalConfirmacion({ titulo = 'Confirmar Acción', mensaje, texto
   document.getElementById('modalBody').innerHTML = `
     <div style="text-align: center; padding: 1rem 0;">
       <div style="font-size: 3.2rem; margin-bottom: 0.8rem; line-height: 1;">⚠️</div>
-      <h4 style="margin-bottom: 0.5rem; color: var(--dark-bg); font-weight: 700;">${titulo}</h4>
+      <h4 style="margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 700;">${titulo}</h4>
       <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 1.8rem; line-height: 1.5;">${mensaje}</p>
       <div style="display: flex; gap: 1rem; justify-content: center;">
         <button type="button" class="btn btn-secondary" style="flex: 1; padding: 0.65rem 1rem;" onclick="cerrarModal()">Cancelar</button>
@@ -728,7 +728,7 @@ function mostrarModalNotificacion({ titulo = 'Aviso', mensaje, tipo = 'exito' })
   document.getElementById('modalBody').innerHTML = `
     <div style="text-align: center; padding: 1rem 0;">
       <div style="font-size: 3.2rem; margin-bottom: 0.8rem; line-height: 1;">${icono}</div>
-      <h4 style="margin-bottom: 0.5rem; color: var(--dark-bg); font-weight: 700;">${titulo}</h4>
+      <h4 style="margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 700;">${titulo}</h4>
       <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 1.8rem; line-height: 1.5;">${mensaje}</p>
       <button type="button" class="btn btn-primary" style="width: 100%; max-width: 200px;" onclick="cerrarModal()">Aceptar</button>
     </div>
@@ -798,15 +798,15 @@ function abrirModalMiPerfil() {
   document.getElementById('modalBody').innerHTML = `
     <form id="formMiPerfil" onsubmit="guardarMiPerfil(event)">
       <div style="margin-bottom: 1rem;">
-        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--dark-bg);">Nombre de Usuario *</label>
+        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--text-dark);">Nombre de Usuario *</label>
         <input type="text" id="perfilUsuario" class="form-control" value="${user.nombre_usuario || ''}" required maxlength="30">
       </div>
       <div style="margin-bottom: 1rem;">
-        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--dark-bg);">Correo Electrónico *</label>
+        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--text-dark);">Correo Electrónico *</label>
         <input type="email" id="perfilCorreo" class="form-control" value="${user.correo || ''}" required maxlength="70">
       </div>
       <div style="margin-bottom: 1.5rem;">
-        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--dark-bg);">Nueva Contraseña (Opcional)</label>
+        <label style="display:block; margin-bottom:0.4rem; font-weight:600; color:var(--text-dark);">Nueva Contraseña (Opcional)</label>
         <input type="password" id="perfilPassword" class="form-control" placeholder="Dejar en blanco para conservar actual (8-12 carát.)" minlength="8" maxlength="12">
       </div>
       <div style="display:flex; gap:1rem; justify-content:flex-end;">

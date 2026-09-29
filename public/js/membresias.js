@@ -216,11 +216,11 @@ function abrirModalPagarMembresia(id_membresia) {
 
   document.getElementById('modalTitle').innerText = '💳 Realizar Pago de Membresía';
   document.getElementById('modalBody').innerHTML = `
-    <div style="background:#f8f9fa; border-radius:10px; padding:1rem; display:flex; gap:1rem; align-items:center; margin-bottom:1.2rem; border:1px solid #e9ecef;">
+    <div style="background:var(--section-alt); border-radius:10px; padding:1rem; display:flex; gap:1rem; align-items:center; margin-bottom:1.2rem; border:1px solid var(--border-color);">
       ${imgHtml}
       <div>
-        <h4 style="margin:0; color:var(--dark-bg); font-size:1.1rem;">${m.tipo}</h4>
-        <p style="margin:0.2rem 0; font-size:0.9rem; color:#555;">Cliente: <strong>${m.cliente_nombre || 'Cliente General'}</strong></p>
+        <h4 style="margin:0; color:var(--text-dark); font-size:1.1rem;">${m.tipo}</h4>
+        <p style="margin:0.2rem 0; font-size:0.9rem; color:var(--text-muted);">Cliente: <strong>${m.cliente_nombre || 'Cliente General'}</strong></p>
         <span style="font-size:1.2rem; font-weight:bold; color:var(--primary-color);">$${parseFloat(m.precio).toLocaleString('es-CO')}</span>
       </div>
     </div>
