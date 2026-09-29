@@ -2382,14 +2382,16 @@ html {
      columna de texto 42%, columna de foto 52%, 2vw de margen a la izquierda
      de las letras, 2vw para que la foto no toque el borde derecho y 2vw de
      separación entre las columnas.
-     --glx-ft = tamaño del titular: gana el menor de
-     18.22vw ("ENTRE" mide 2.305em y debe caber justo en la columna del 42%,
-     que arranca 2vw del borde izquierdo y tiene 2vw de separación de la foto),
-     22.727vh - 118px (deja ver los botones, Iniciar Sesión incluido, sin bajar:
-     118 = (76 de cabecera + 443.2 del resto del bloque) / 4.4 líneas) y
-     el tope de 22rem */
+     --glx-ft = tamaño del titular, estirado para que no quede espacio en
+     blanco: gana el menor de
+     18.8vw ("ENTRE" mide 2.305em; cabe en su columna de 42vw usando ~0.7vw
+     de la separación, de modo que las letras casi tocan la foto),
+     calc((max(65vw, 100vh - 76px) - 330px) * 0.2273) (llena de alto el
+     bloque: la fila mide lo mismo que la foto 4/5 de 52vw = 65vw, o el alto
+     de la ventana si es mayor; 330px = badge + párrafo + botones + paddings
+     del copy; 0.2273 = 1/4.4 líneas del titular) y el tope de 22rem */
   #landingView .glx-hero-grid {
-    --glx-ft: clamp(5rem, min(18.22vw, 22.727vh - 118px), 22rem);
+    --glx-ft: clamp(5rem, min(18.8vw, calc((max(65vw, 100vh - 76px) - 330px) * 0.2273)), 22rem);
     grid-template-columns: 42vw 52vw;
     column-gap: 2vw;
     justify-content: center;
@@ -2437,8 +2439,8 @@ html {
    para que el titular no tenga que encogerse de más y los botones sigan a la vista */
 @media (min-width: 1024px) and (max-height: 899px) {
   #landingView .glx-hero-grid {
-    /* 110 = (76 de cabecera + 395.2 del resto ya compactado) / 4.4 líneas */
-    --glx-ft: clamp(5rem, min(18.22vw, 22.727vh - 110px), 22rem);
+    /* Mismo tope vertical con el copy compactado: el "resto" baja a 280px */
+    --glx-ft: clamp(5rem, min(18.8vw, calc((max(65vw, 100vh - 76px) - 280px) * 0.2273)), 22rem);
   }
 
   #landingView .glx-hero-copy {
@@ -2461,8 +2463,8 @@ html {
 /* Pantallas muy bajas: el párrafo de apoyo se oculta y todo cabe igual */
 @media (min-width: 1024px) and (max-height: 840px) {
   #landingView .glx-hero-grid {
-    /* 78 = (76 de cabecera + 260.4 sin el párrafo) / 4.4 líneas */
-    --glx-ft: clamp(5rem, min(18.22vw, 22.727vh - 78px), 22rem);
+    /* Sin párrafo el "resto" baja a 200px */
+    --glx-ft: clamp(5rem, min(18.8vw, calc((max(65vw, 100vh - 76px) - 200px) * 0.2273)), 22rem);
   }
 
   #landingView .glx-hero-sub {
