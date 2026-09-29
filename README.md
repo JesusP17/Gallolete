@@ -19,6 +19,17 @@ Antes de ejecutar la aplicación, asegúrate de tener instalado en tu computador
 
 ## 🗄️ Configuración de la Base de Datos (MySQL)
 
+**Opción recomendada (una sola línea):** enciende MySQL (en XAMPP, el módulo **MySQL**) y ejecuta en la raíz del proyecto:
+
+```bash
+npm run init-db
+```
+
+Esto crea la base de datos `gallolete_db` con sus 8 tablas y mete los datos de prueba, todo en el orden correcto.
+
+<details>
+<summary><b>Opción manual (solo si no puedes usar npm)</b></summary>
+
 1. Abre tu gestor de base de datos MySQL (MySQL Workbench, phpMyAdmin o consola MySQL).
 2. Ejecuta en primer lugar el script de creación de estructura ubicado en:
    `database/schema.sql`
@@ -26,6 +37,15 @@ Antes de ejecutar la aplicación, asegúrate de tener instalado en tu computador
 3. Ejecuta el script de datos iniciales de prueba ubicado en:
    `database/seed.sql`
    *(Esto insertará datos de prueba para clientes, membresías, entrenadores, ejercicios, rutinas y usuarios)*.
+
+</details>
+
+> ⚠️ **`seed.sql` VACIA la base de datos antes de insertar.** Solo sirve para una instalación
+> nueva. Si ya tienes clientes registrados con membresías o pagos reales, no lo importes:
+> el script tiene una protección que cancela la ejecución y muestra
+> `Table 'gallolete_db.glx_seed_bloqueado_datos_reales_use_npm_init_db' doesn't exist`.
+> Ese error **es la protección funcionando**: deja tus datos intactos. Para empezar de cero
+> usa `npm run init-db`, que recrea la base completa.
 
 ---
 
