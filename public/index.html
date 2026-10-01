@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GalloLeTe - Sistema de Gestión para Gimnasios</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('gallolete_theme') || 'light';
+      if (savedTheme === 'electric') {
+        document.documentElement.setAttribute('data-theme', 'electric');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- 0. PÁGINA PRINCIPAL / LANDING PAGE (Referencia Sede UniSalamanca) -->
+  <div id="landingView" class="landing-container glx-landing">
+    <!-- HEADER NAVEGACIÓN PRINCIPAL -->
+    <header class="glx-header">
+      <div class="glx-header-inner">
+        <a href="#" class="glx-logo">
+          <img src="img/logo.png" alt="GalloLeTe Logo" class="glx-logo-img">
+          <span class="glx-logo-text">Gallo<b>LeTe</b></span>
+          <small class="glx-logo-sub">GIMNASIO</small>
+        </a>
+
+        <nav class="glx-nav" id="landingNav">
+          <a href="#sede" onclick="scrollASeccion(event, 'sede')">Sede</a>
+          <a href="#planes" onclick="scrollASeccion(event, 'planes')">Planes</a>
+          <a href="#instalaciones" onclick="scrollASeccion(event, 'instalaciones')">Instalaciones</a>
+          <a href="#horarios" onclick="scrollASeccion(event, 'horarios')">Horarios</a>
+          <div class="mobile-only-action glx-nav-mobile-cta">
+            <button class="glx-btn glx-btn-lime glx-btn-block" onclick="mostrarLoginCliente(); toggleLandingMobileMenu();">
+              <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Iniciar Sesión
+            </button>
+          </div>
+        </nav>
+
+        <div class="glx-actions">
+          <!-- Cuando NO ha iniciado sesión -->
+          <div id="landingHeaderLoggedOut" class="glx-actions-rel">
+            <button id="btnHeaderAccesoPaneles" class="glx-btn glx-btn-lime glx-btn-sm" onclick="toggleLandingRoleDropdown(event)">
+              <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Iniciar Sesión ▾
+            </button>
+            <div id="landingRoleDropdown" class="user-dropdown-menu">
+              <div class="dropdown-header">
+                <strong>Ingresar como...</strong>
+                <small>Selecciona tu rol para continuar</small>
+              </div>
+              <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 0.4rem 0;">
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Cliente')"><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Cliente</button>
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Entrenador')"><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 6.29 3.43 7.71 4.86 4.86 7.71 3.43 6.29 2 7.71 3.43 9.14 2 10.57 3.43 12 7 15.57 10.57 12 12 13.43 13.43 12 14.86 13.43 16.29 12 17.71 13.43 19.14 12 20.57 13.43 22 14.86z"/></svg> Entrenador</button>
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Recepcionista')"><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg> Recepcionista</button>
+              <button type="button" class="dropdown-item" onclick="seleccionarRolYAcceder('Administrador')"><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg> Administrador</button>
+            </div>
+          </div>
+
+          <!-- Cuando SÍ ha iniciado sesión -->
+          <div id="landingHeaderLoggedIn" class="hidden glx-actions-rel">
+            <button id="btnLandingUserMenu" class="glx-btn glx-btn-outline glx-btn-sm" onclick="toggleLandingUserDropdown(event)">
+              <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> <strong id="landingUserNombre">Usuario</strong> (<span id="landingUserRol">Rol</span>) ▾
+            </button>
+            <div id="landingUserDropdown" class="user-dropdown-menu">
+              <div class="dropdown-header">
+                <strong id="landingDropdownNombre">Cuenta de Usuario</strong>
+                <small id="landingDropdownCorreo">usuario@gallolete.com</small>
+              </div>
+              <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 0.4rem 0;">
+              <button type="button" class="dropdown-item" onclick="abrirModalMiPerfil()">
+                <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> Modificar Mis Datos
+              </button>
+              <button type="button" class="dropdown-item" onclick="mostrarAppLayout()">
+                <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg> Ir a Mi Panel
+              </button>
+              <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 0.4rem 0;">
+              <button type="button" class="dropdown-item text-danger" onclick="ejecutarCerrarSesion()">
+                <svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg> Cerrar Sesión
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón Hamburguesa para Teléfonos/Móviles -->
+        <button id="btnLandingBurger" class="burger-btn" onclick="toggleLandingMobileMenu(event)" aria-label="Menú de Navegación">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- HERO PRINCIPAL -->
+    <section class="glx-hero">
+      <div class="glx-hero-grid">
+        <div class="glx-hero-copy">
+          <div class="glx-hero-badge"><svg class="icon-svg" viewBox="0 0 24 24" width="15" height="15"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> UniSalamanca · Cra 50 #79-155</div>
+          <h1 class="glx-hero-title">Entre<br><span>na</span><br>Sin<br>Lími<br>tes</h1>
+          <p class="glx-hero-sub">Instalaciones de primer nivel, máquinas de última generación y entrenadores expertos en Barranquilla.</p>
+          <div class="glx-hero-ctas">
+            <button class="glx-btn glx-btn-lime glx-btn-lg" onclick="scrollASeccion(event, 'planes')"><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M13.5 1.5c-.84 2.87-3.84 5.37-3.84 8.5 0 2.22 1.41 4.14 3.4 4.81-1.39-.77-2.06-2.54-1.56-4.06.67 1.83 2.5 2.25 3.5 1.25 1-1 1-3.5 0-5.5 1.5 1.5 3.5 3.5 3.5 6.5 0 4.42-3.58 8-8 8s-8-3.58-8-8c0-4.66 3.67-8.5 8-9.5z"/></svg> Ver Planes</button>
+            <button class="glx-btn glx-btn-outline glx-btn-lg" onclick="mostrarLoginCliente()"><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Iniciar Sesión</button>
+          </div>
+        </div>
+        <div class="glx-hero-media">
+          <img src="img/hero.jpg" alt="Atleta entrenando en GalloLeTe Gimnasio">
+          <div class="glx-hero-media-label"><p>Sede UniSalamanca · Barranquilla</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN SEDE & HORARIOS -->
+    <section id="sede" class="glx-section">
+      <div class="glx-section-inner">
+        <div class="glx-sede-grid">
+          <div class="glx-sede-media">
+            <img src="img/cardio.jpg" alt="Interior GalloLeTe Sede UniSalamanca">
+            <div class="glx-sede-badge">
+              <strong>Barranquilla</strong>
+              <span>Cra 50 #79-155</span>
+            </div>
+          </div>
+
+          <div>
+            <p class="glx-kicker"><svg class="icon-svg" viewBox="0 0 24 24" width="15" height="15"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Información de la Sede</p>
+            <h2 class="glx-h2 glx-sede-title">Sede<br>UniSalamanca</h2>
+
+            <div id="horarios" class="glx-schedule">
+              <p class="glx-schedule-label"><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> Horarios de Atención</p>
+              <div class="glx-schedule-row">
+                <span>Lunes – Viernes</span>
+                <span>5:00 AM – 10:00 PM</span>
+              </div>
+              <div class="glx-schedule-row">
+                <span>Sábados</span>
+                <span>6:00 AM – 6:00 PM</span>
+              </div>
+              <div class="glx-schedule-row">
+                <span>Domingos &amp; Festivos</span>
+                <span>7:00 AM – 4:00 PM</span>
+              </div>
+            </div>
+
+            <div class="glx-amenities">
+              <span><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22v-2z"/></svg> Aire Acondicionado</span>
+              <span><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M12 4c-4.41 0-8 3.59-8 8v1h16v-1c0-4.41-3.59-8-8-8zm-4 11c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm-8 4c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm4 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg> Duchas Calientes</span>
+              <span><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Lockers VIP</span>
+              <span><svg class="icon-svg" viewBox="0 0 24 24" width="16" height="16"><path d="M13.2 11H10V7h3.2c1.1 0 2 .9 2 2s-.9 2-2 2zM19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5.8 10H10v4H8V5h5.2c2.3 0 4.2 1.9 4.2 4s-1.9 4-4.2 4z"/></svg> Parqueadero 2h</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BARRA DE ESTADÍSTICAS -->
+    <section class="glx-stats">
+      <div class="glx-stats-grid">
+        <div class="glx-stat">
+          <strong>+1.500 <span>m²</span></strong>
+          <span class="glx-stat-label">Instalaciones</span>
+        </div>
+        <div class="glx-stat">
+          <strong>100%</strong>
+          <span class="glx-stat-label">Equipo VIP</span>
+        </div>
+        <div class="glx-stat">
+          <strong>4</strong>
+          <span class="glx-stat-label">Paneles de Gestión</span>
+        </div>
+        <div class="glx-stat">
+          <strong>17h</strong>
+          <span class="glx-stat-label">Diarias de Operación</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN PLANES Y MEMBRESÍAS -->
+    <section id="planes" class="glx-section">
+      <div class="glx-section-inner">
+        <div class="glx-section-head">
+          <div>
+            <p class="glx-kicker">Nuestros Planes</p>
+            <h2 class="glx-h2">Membresías Adaptadas<br>a Tus Metas</h2>
+          </div>
+          <p class="glx-section-note">UniSalamanca · Cra 50 #79-155, Barranquilla</p>
+        </div>
+
+        <div class="glx-plans-grid">
+          <!-- Plan 1 -->
+          <article class="glx-plan">
+            <span class="glx-plan-tag">Básico</span>
+            <h3 class="glx-plan-name">Mensual General</h3>
+            <p class="glx-plan-price">$100.000</p>
+            <p class="glx-plan-period">/ mes</p>
+            <ul class="glx-plan-features">
+              <li><span class="tick">✓</span>Acceso a zona de musculación y peso libre</li>
+              <li><span class="tick">✓</span>Área cardio y resistencia ilimitada</li>
+              <li><span class="tick">✓</span>Duchas con agua caliente y vestieres VIP</li>
+              <li><span class="tick">✓</span>App móvil para control de entrenamiento</li>
+            </ul>
+            <button class="glx-btn" onclick="irAComprarPlan('Mensual General')">Elegir Plan →</button>
+          </article>
+
+          <!-- Plan 2 (Destacado VIP) -->
+          <article class="glx-plan accent">
+            <span class="glx-plan-tag">Más Popular</span>
+            <h3 class="glx-plan-name">Mensual VIP</h3>
+            <p class="glx-plan-price">$120.000</p>
+            <p class="glx-plan-period">/ mes</p>
+            <ul class="glx-plan-features">
+              <li><span class="tick">✓</span>Todo lo del Plan General</li>
+              <li><span class="tick">✓</span>Evaluación física y seguimiento con Entrenador</li>
+              <li><span class="tick">✓</span>Rutinas personalizadas por objetivo</li>
+              <li><span class="tick">✓</span>Invitado gratis 4 días al mes</li>
+              <li><span class="tick">✓</span>Lockers preferenciales de seguridad</li>
+            </ul>
+            <button class="glx-btn" onclick="irAComprarPlan('Mensual VIP')">Elegir Plan →</button>
+          </article>
+
+          <!-- Plan 3 -->
+          <article class="glx-plan">
+            <span class="glx-plan-tag">Ahorro</span>
+            <h3 class="glx-plan-name">Trimestral Ahorro</h3>
+            <p class="glx-plan-price">$300.000</p>
+            <p class="glx-plan-period">/ 3 meses</p>
+            <ul class="glx-plan-features">
+              <li><span class="tick">✓</span>Ahorro garantizado del 15%</li>
+              <li><span class="tick">✓</span>Acceso a todas las zonas del gimnasio</li>
+              <li><span class="tick">✓</span>Asesoría en nutrición deportiva básica</li>
+              <li><span class="tick">✓</span>Clases grupales y funcional</li>
+            </ul>
+            <button class="glx-btn" onclick="irAComprarPlan('Trimestral')">Elegir Plan →</button>
+          </article>
+
+          <!-- Plan 4 -->
+          <article class="glx-plan">
+            <span class="glx-plan-tag">Élite</span>
+            <h3 class="glx-plan-name">Anual Black</h3>
+            <p class="glx-plan-price">$950.000</p>
+            <p class="glx-plan-period">/ año</p>
+            <ul class="glx-plan-features">
+              <li><span class="tick">✓</span>Máximo ahorro y tarifa fija asegurada</li>
+              <li><span class="tick">✓</span>Congelamiento de membresía hasta por 30 días</li>
+              <li><span class="tick">✓</span>Acceso prioritario a eventos y talleres</li>
+              <li><span class="tick">✓</span>Regalo de bienvenida kit GalloLeTe</li>
+            </ul>
+            <button class="glx-btn" onclick="irAComprarPlan('Anual')">Elegir Plan →</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN INSTALACIONES Y ZONAS -->
+    <section id="instalaciones" class="glx-section glx-section-alt">
+      <div class="glx-section-inner">
+        <div class="glx-section-head">
+          <div>
+            <p class="glx-kicker">Nuestra Sede</p>
+            <h2 class="glx-h2">Instalaciones de<br>Última Generación</h2>
+          </div>
+        </div>
+
+        <div class="glx-zones">
+          <div class="glx-zone">
+            <img src="img/hero.jpg" alt="Zona de musculación y peso libre">
+            <div class="glx-zone-overlay"></div>
+            <div class="glx-zone-info">
+              <span class="glx-zone-tag">01</span>
+              <h3>Musculación &amp; Peso Libre</h3>
+              <p>Racks de sentadilla, mancuernas de alto gramaje y máquinas biomecánicas de precisión.</p>
+            </div>
+          </div>
+
+          <div class="glx-zones-right">
+            <div class="glx-zone small">
+              <img src="img/cardio.jpg" alt="Zona cardio y resistencia">
+              <div class="glx-zone-overlay"></div>
+              <div class="glx-zone-info">
+                <span class="glx-zone-tag">02</span>
+                <h3>Cardio &amp; Resistencia</h3>
+              </div>
+            </div>
+
+            <div class="glx-zone small">
+              <img src="img/crossfit.jpg" alt="Área funcional y crossfit">
+              <div class="glx-zone-overlay"></div>
+              <div class="glx-zone-info">
+                <span class="glx-zone-tag">03</span>
+                <h3>Funcional &amp; Crossfit</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER PRINCIPAL -->
+    <footer class="glx-footer">
+      <div class="glx-footer-inner">
+        <div class="glx-footer-brand">
+          <img src="img/logo.png" alt="GalloLeTe Logo">
+          <div>
+            <h3>Gallo<b>LeTe</b> Gimnasio</h3>
+            <p>Sistema Integral de Gestión de Gimnasio · Sede UniSalamanca Cra 50 #79-155.</p>
+          </div>
+        </div>
+      </div>
+      <div class="glx-footer-bottom">
+        <p>&copy; 2026 GalloLeTe Gimnasio Sede UniSalamanca Cra 50 #79-155. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- VISTA DE LOGIN Y REGISTRO (ÁREA DE MIEMBROS) -->
+  <div id="loginView" class="login-container hidden">
+    <div class="login-card login-card-sf">
+      <div class="sf-topbar">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="mostrarLandingView()">← Volver a Principal</button>
+      </div>
+
+      <div class="login-logo-container">
+        <img src="img/logo.png" alt="GalloLeTe Mascot Logo" class="login-brand-logo">
+      </div>
+
+      <span class="sf-kicker">Área de Miembros</span>
+      <h2 class="sf-title">Bienvenido de vuelta</h2>
+      <p class="sf-subtitle">Accede a tu plan y continúa avanzando.</p>
+
+      <button type="button" id="googleLoginBtn" class="sf-google-btn" onclick="accesoGoogleProximamente()">
+        <svg viewBox="0 0 48 48" class="sf-google-icon" aria-hidden="true">
+          <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+          <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+          <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+          <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+        </svg>
+        Continuar con Google
+      </button>
+
+      <div class="sf-divider" id="dividerCorreo"><span>O CON CORREO</span></div>
+
+      <div id="loginError" class="sf-alert sf-alert-error hidden"></div>
+      <div id="registerSuccess" class="sf-alert sf-alert-success hidden"></div>
+
+      <!-- FORMULARIO LOGIN (CLIENTES) -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="text" id="loginUsuario" class="form-control" placeholder="tucorreo@gmail.com" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <div class="sf-pass-wrap">
+            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="sf-pass-toggle" onclick="toggleVerPassword('loginPassword', this)" aria-label="Mostrar u ocultar contraseña">👁</button>
+          </div>
+          <a class="sf-forgot" onclick="solicitarRecuperarPassword()">¿La olvidaste?</a>
+        </div>
+        <button type="submit" class="sf-btn-primary">Iniciar sesión</button>
+        <p class="sf-footer" id="loginFooterCrearCuenta">¿Aún no eres miembro? <a onclick="irARegistroCliente()">Crear cuenta</a></p>
+      </form>
+
+      <!-- FORMULARIO REGISTRO (NUEVOS CLIENTES) -->
+      <form id="registerForm" class="hidden">
+        <div class="form-group">
+          <label>Nombre y apellido *</label>
+          <input type="text" id="regNombreCompleto" class="form-control" placeholder="Ej: Carlos Andrés Mendoza" maxlength="30" pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(\s+[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*$" required>
+        </div>
+
+        <div class="form-group">
+          <label>Correo electrónico *</label>
+          <input type="email" id="regCorreo" class="form-control" placeholder="tucorreo@gmail.com" maxlength="70" pattern="^[^\s@]+@gmail\.com$" required>
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña *</label>
+          <div class="sf-pass-wrap">
+            <input type="password" id="regPassword" class="form-control" placeholder="••••••••" minlength="8" maxlength="30" required>
+            <button type="button" class="sf-pass-toggle" onclick="toggleVerPassword('regPassword', this)" aria-label="Mostrar u ocultar contraseña">👁</button>
+          </div>
+        </div>
+
+        <button type="submit" class="sf-btn-primary">Crear cuenta</button>
+        <p class="sf-footer">¿Ya eres miembro? <a onclick="mostrarAuthTab('login')">Inicia sesión</a></p>
+      </form>
+
+      <!-- Credenciales del rol elegido en el menú desplegable (nunca para Cliente) -->
+      <div id="staffCredBox" class="sf-cred-box hidden"></div>
+    </div>
+  </div>
+
+  <!-- PANEL PRINCIPAL (APP LAYOUT) -->
+  <div id="appLayout" class="app-layout hidden">
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="img/logo.png" alt="GalloLeTe Logo" class="brand-logo-img sidebar-logo">
+        Gallo<span>LeTe</span>
+      </div>
+      <ul class="nav-list" id="sidebarNav">
+        <!-- Las pestañas se renderizan dinámicamente según el ROL -->
+      </ul>
+      <div class="user-profile">
+        <div>
+          <strong id="userNombre">Usuario</strong><br>
+          <small id="userRol" style="color: #a8dedc; font-weight: bold;">Rol</small>
+        </div>
+        <button id="btnLogout" class="btn btn-danger btn-sm" onclick="ejecutarCerrarSesion()" title="Cerrar Sesión">
+          <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:white;"><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- BACKDROP CAPA DE FONDO PARA NAVEGACIÓN MÓVIL EN PANELES -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop hidden" onclick="toggleSidebarMobile()"></div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+      <div class="top-bar" style="display:flex; justify-content:space-between; align-items:center; gap:0.8rem;">
+        <div style="display:flex; align-items:center; gap:0.8rem;">
+          <button id="btnSidebarBurger" class="burger-btn burger-dark" onclick="toggleSidebarMobile(event)" aria-label="Menú Lateral">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <h1 id="tabTitle">Dashboard Principal</h1>
+        </div>
+        
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <!-- MENU DESPLEGABLE DE PERFIL Y CONFIGURACIÓN EN HEADER -->
+          <div class="user-header-menu-container" style="position: relative;">
+            <button id="btnUserMenuToggle" class="btn btn-secondary" onclick="toggleUserDropdownMenu(event)" style="display:flex; align-items:center; gap:0.5rem; padding:0.5rem 0.9rem;">
+              👤 <strong id="headerUserNombre">Usuario</strong> (<span id="headerUserRol">Rol</span>) ▾
+            </button>
+
+            <div id="userHeaderDropdown" class="user-dropdown-menu">
+              <div class="dropdown-header">
+                <strong id="dropdownUserNombre">Cuenta de Usuario</strong>
+                <small id="dropdownUserCorreo">usuario@gallolete.com</small>
+              </div>
+              <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 0.5rem 0;">
+              <button type="button" class="dropdown-item" onclick="abrirModalMiPerfil()">
+                ✏️ Modificar Mis Datos
+              </button>
+              <button type="button" class="dropdown-item" onclick="mostrarLandingView()">
+                🏠 Página Principal
+              </button>
+              <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 0.5rem 0;">
+              <button type="button" class="dropdown-item text-danger" onclick="ejecutarCerrarSesion()">
+                🚪 Cerrar Sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTAS DASHBOARD ESPECÍFICAS SEGÚN EL ROL -->
+
+      <!-- 1. DASHBOARD ADMINISTRADOR -->
+      <section id="tab-dashboard-admin" class="tab-content hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="title">Total Clientes</span>
+            <span class="value" id="statAdminClientes">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Membresías Activas</span>
+            <span class="value" id="statAdminMembresiasActivas" style="color: var(--success);">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Membresías Vencidas</span>
+            <span class="value" id="statAdminMembresiasVencidas" style="color: var(--danger);">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Ingresos Totales</span>
+            <span class="value" id="statAdminTotalPagos" style="color: var(--primary-color);">$0</span>
+          </div>
+        </div>
+
+        <!-- PANEL DE GRÁFICOS Y ANALÍTICA DE VENTAS / AFLUENCIA -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
+          <div class="stat-card" style="padding: 1.4rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+              <h4 style="margin:0; font-size:1.1rem; color:var(--text-dark);">📈 Días Pico de Recaudación y Asistencia</h4>
+              <span class="badge badge-activa">EN VIVO</span>
+            </div>
+            <div style="position: relative; height: 260px; width: 100%;">
+              <canvas id="chartAfluenciaPagos"></canvas>
+            </div>
+          </div>
+
+          <div class="stat-card" style="padding: 1.4rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+              <h4 style="margin:0; font-size:1.1rem; color:var(--text-dark);">📊 Ventas por Tipo de Membresía</h4>
+              <span class="badge" style="background:#e0f2fe; color:#0369a1;">DISTRIBUCIÓN</span>
+            </div>
+            <div style="position: relative; height: 260px; width: 100%;">
+              <canvas id="chartTiposMembresia"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA ANALÍTICA DE DÍAS PICO -->
+        <div style="margin-top: 1.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.8rem;">
+            <h3>🔥 Análisis de Ingresos y Afluencia por Día de la Semana</h3>
+            <button class="btn btn-secondary btn-sm" onclick="cargarGraficosDashboardAdmin()">🔄 Actualizar Analítica</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Día de la Semana</th>
+                  <th>Total Recaudado ($)</th>
+                  <th>Transacciones</th>
+                  <th>Promedio Atletas</th>
+                  <th>Nivel de Carga</th>
+                </tr>
+              </thead>
+              <tbody id="tableAdminDiasPico"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <h3>Resumen Global de Membresías</h3>
+          <div class="table-container" style="margin-top: 0.8rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Tipo</th>
+                  <th>Inicio</th>
+                  <th>Fin</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="tableAdminDashboard"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. DASHBOARD ENTRENADOR -->
+      <section id="tab-dashboard-entrenador" class="tab-content hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="title">Rutinas Activas</span>
+            <span class="value" id="statEntrenadorRutinas" style="color: var(--primary-color);">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Ejercicios Disponibles</span>
+            <span class="value" id="statEntrenadorEjercicios">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Clientes a Cargo</span>
+            <span class="value" id="statEntrenadorClientes" style="color: var(--success);">0</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <h3>👥 Clientes Recientes Registrados</h3>
+            <button class="btn btn-secondary btn-sm" onclick="cambiarTab('clientes')">Ver Todos los Clientes</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Teléfono</th>
+                  <th>Correo</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tableEntrenadorNuevosClientes"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <h3>📋 Rutinas Recientes de Mis Atletas</h3>
+            <button class="btn btn-primary btn-sm" onclick="cambiarTab('rutinas'); abrirModalRutina();">+ Asignar Nueva Rutina</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Rutina</th>
+                  <th>Cliente</th>
+                  <th>Nivel</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tableEntrenadorDashboard"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. DASHBOARD RECEPCIONISTA -->
+      <section id="tab-dashboard-recepcionista" class="tab-content hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="title">Atletas en Sede Ahora</span>
+            <span class="value" id="statRecepAtletasEnSede" style="color: var(--primary-color);">0 / 200</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Entradas Registradas Hoy</span>
+            <span class="value" id="statRecepEntradasHoy" style="color: var(--success);">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Membresías Vigentes</span>
+            <span class="value" id="statRecepActivas" style="color: var(--success);">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="title">Membresías por Renovar</span>
+            <span class="value" id="statRecepVencidas" style="color: var(--danger);">0</span>
+          </div>
+        </div>
+
+        <!-- MÓDULO DE ASISTENCIA Y CONTROL DE ACCESO EN RECEPCIÓN -->
+        <div class="stat-card" style="margin-top: 1.5rem; padding: 1.8rem; border-top: 4px solid var(--primary-color);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="margin: 0; font-size: 1.3rem; color: var(--text-dark);">⚡ Registro de Asistencia y Torniquete Sede UniSalamanca</h3>
+              <p style="margin: 0.3rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Busca al atleta por su nombre de usuario (ej: <strong>JesusP171</strong>) para validar su entrada.</p>
+            </div>
+            <div>
+              <button class="btn btn-primary" onclick="cambiarTab('clientes'); abrirModalCliente();">+ Registrar Nuevo Cliente</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; align-items: center;">
+            <div style="flex: 1; min-width: 280px; position: relative;">
+              <input type="text" id="inputAsistenciaBuscar" class="form-control" placeholder="🔍 Buscar por nombre de usuario (Ej: JesusP171...)" onkeyup="buscarClienteAsistencia(this.value)" autocomplete="off" style="padding: 0.8rem 1rem; font-size: 1rem;">
+              <div id="resultadosAsistenciaBuscar" class="user-dropdown-menu" style="width: 100%; top: 100%; display: none; max-height: 250px; overflow-y: auto;"></div>
+            </div>
+          </div>
+
+          <!-- TARJETA DE VERIFICACIÓN DE ATLETA SELECCIONADO -->
+          <div id="boxVerificacionAtleta" class="hidden" style="margin-top: 1.5rem; background: var(--section-alt); padding: 1.4rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.2rem;">
+              <div style="display: flex; align-items: center; gap: 1.2rem;">
+                <img src="img/logo.png" alt="Mascota" style="height: 65px; width: auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));">
+                <div>
+                  <h3 id="verifNombreCliente" style="margin: 0; font-size: 1.3rem; color: var(--text-dark);">Nombre del Cliente</h3>
+                  <p id="verifPlanCliente" style="margin: 0.3rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">Plan General • Vencimiento: 2026-10-30</p>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <span id="verifBadgeEstado" class="badge badge-activa" style="font-size: 0.95rem; padding: 0.6rem 1.2rem;">🟢 MEMBRESÍA VIGENTE</span>
+                <button id="btnMarcarAsistencia" class="btn btn-primary btn-lg" onclick="ejecutarMarcacionAsistencia()">⚡ Marcar Entrada (Torniquete)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA REAL DE REGISTRO DE ASISTENCIA -->
+        <div style="margin-top: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <h3>📋 Registro Real de Asistencia y Entradas del Día (Sede UniSalamanca)</h3>
+            <button class="btn btn-secondary btn-sm" onclick="cargarRegistroAsistencia()">🔄 Actualizar Asistencia</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Hora de Ingreso</th>
+                  <th>Atleta / Cliente</th>
+                  <th>Membresía</th>
+                  <th>Puerta / Punto</th>
+                  <th>Estado de Acceso</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tableRegistroAsistencia"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <h3>Membresías Vencidas / Alertas de Renovación</h3>
+          <div class="table-container" style="margin-top: 0.8rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Tipo</th>
+                  <th>Vencimiento</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tableRecepDashboard"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. DASHBOARD CLIENTE (PORTAL DEL ATLETA) -->
+      <section id="tab-dashboard-cliente" class="tab-content hidden">
+        <div class="clx-portal">
+
+          <!-- HERO: identidad del atleta -->
+          <div class="clx-hero">
+            <div class="clx-hero-id">
+              <div class="clx-avatar" id="clxAvatar">?</div>
+              <div class="clx-hero-info">
+                <div class="clx-hero-name-row">
+                  <h2 class="clx-hero-name" id="clxNombre">Atleta GalloLeTe</h2>
+                  <span class="clx-plan-badge" id="clxPlanBadge">—</span>
+                </div>
+                <p class="clx-hero-line" id="clxHeroLine"></p>
+                <p class="clx-hero-mono" id="clxHeroMono"></p>
+              </div>
+            </div>
+            <div class="clx-hero-side">
+              <div class="clx-streak">
+                <div class="clx-streak-num" id="clxDiasRestantes">—</div>
+                <div class="clx-streak-label" id="clxDiasRestantesLabel">días restantes</div>
+              </div>
+              <div class="clx-next">
+                <div class="clx-next-label">Próximo vencimiento</div>
+                <div class="clx-next-val" id="clxVencimiento">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TARJETA DEL ENTRENADOR ASIGNADO -->
+          <div class="clx-card clx-trainer" id="clxTrainerCard">
+            <div class="clx-card-kicker">Entrenador asignado</div>
+            <div class="clx-trainer-row hidden" id="clxTrainerOk">
+              <div class="clx-trainer-id">
+                <div class="clx-avatar sm" id="clxTrainerAvatar">?</div>
+                <div>
+                  <div class="clx-trainer-name" id="clxTrainerNombre">—</div>
+                  <div class="clx-trainer-spec" id="clxTrainerEspecialidad">Sin entrenador asignado</div>
+                  <div class="clx-trainer-meta" id="clxTrainerMeta"></div>
+                </div>
+              </div>
+              <div class="clx-trainer-stats">
+                <div class="clx-trainer-stat">
+                  <div class="clx-trainer-stat-v" id="clxRutinaNombre">—</div>
+                  <div class="clx-trainer-stat-l">Rutina activa</div>
+                </div>
+                <div class="clx-trainer-stat">
+                  <div class="clx-trainer-stat-v" id="clxRutinaNivel">—</div>
+                  <div class="clx-trainer-stat-l">Nivel</div>
+                </div>
+                <a class="clx-btn-ghost hidden" id="clxContactar" href="#">Contactar →</a>
+              </div>
+            </div>
+            <div class="clx-trainer-row" id="clxTrainerVacio">
+              <div class="clx-trainer-id">
+                <div class="clx-avatar sm ghost">?</div>
+                <div>
+                  <div class="clx-trainer-name">Aún no tienes entrenador asignado</div>
+                  <p class="clx-trainer-note">El entrenador se asigna junto con tu rutina. Pide en recepción que te evalúen y te asignen uno para ver aquí su especialidad, horario y correo de contacto.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FILA DE ESTADÍSTICAS REALES -->
+          <div class="clx-stats">
+            <div class="clx-stat">
+              <div class="clx-stat-v" id="clxStatRutinas">0</div>
+              <div class="clx-stat-l">Rutinas asignadas</div>
+              <div class="clx-stat-n">por tu entrenador</div>
+            </div>
+            <div class="clx-stat">
+              <div class="clx-stat-v" id="clxStatPagos">0</div>
+              <div class="clx-stat-l">Pagos registrados</div>
+              <div class="clx-stat-n">en recepción</div>
+            </div>
+            <div class="clx-stat">
+              <div class="clx-stat-v" id="clxStatDias">0</div>
+              <div class="clx-stat-l">Días como miembro</div>
+              <div class="clx-stat-n" id="clxStatDiasNota">desde tu primer plan</div>
+            </div>
+          </div>
+
+          <!-- PESTAÑAS INTERNAS DEL PORTAL -->
+          <div class="clx-tabs">
+            <button type="button" class="clx-tab active" data-clxtab="resumen" onclick="cambiarTabPortalCliente('resumen')">Resumen</button>
+            <button type="button" class="clx-tab" data-clxtab="entrenamiento" onclick="cambiarTabPortalCliente('entrenamiento')">Entrenamiento</button>
+            <button type="button" class="clx-tab" data-clxtab="miplan" onclick="cambiarTabPortalCliente('miplan')">Mi Plan</button>
+          </div>
+
+          <!-- RESUMEN -->
+          <div class="clx-panel" id="clxPanelResumen">
+            <div class="clx-grid-2">
+              <div class="clx-card">
+                <h3 class="clx-card-title">Mi membresía</h3>
+                <div id="clxResumenMembresia"></div>
+              </div>
+              <div class="clx-card">
+                <h3 class="clx-card-title">Últimos pagos</h3>
+                <div id="clxResumenPagos"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENTRENAMIENTO -->
+          <div class="clx-panel hidden" id="clxPanelEntrenamiento">
+            <div class="clx-card">
+              <h3 class="clx-card-title" id="clxRutinaTitulo">Mi rutina</h3>
+              <p class="clx-rutina-obj" id="clxRutinaObjetivo"></p>
+              <div id="clxEjercicios"></div>
+            </div>
+          </div>
+
+          <!-- MI PLAN -->
+          <div class="clx-panel hidden" id="clxPanelMiPlan">
+            <div id="clxPlanActivo"></div>
+            <h3 class="clx-section-title">Membresías adaptadas a tus metas</h3>
+            <div class="clx-plans" id="clxPlanesGrid"></div>
+            <div class="clx-card" style="margin-top: 1.5rem;">
+              <h3 class="clx-card-title">Historial de pagos</h3>
+              <div id="clxHistorialPagos"></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VISTAS GENERALES CRUD -->
+
+      <!-- VISTA CLIENTES -->
+      <section id="tab-clientes" class="tab-content hidden">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+          <input type="text" id="searchCliente" class="form-control" placeholder="Buscar cliente por nombre..." style="max-width: 300px;">
+          <button class="btn btn-primary" onclick="abrirModalCliente()">+ Nuevo Cliente</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableClientes"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA MEMBRESIAS -->
+      <section id="tab-membresias" class="tab-content hidden">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+          <div>
+            <button class="btn btn-secondary btn-sm" onclick="filtrarMembresias('todas')">Todas</button>
+            <button class="btn btn-secondary btn-sm" onclick="filtrarMembresias('activa')">Activas</button>
+            <button class="btn btn-secondary btn-sm" onclick="filtrarMembresias('vencida')">Vencidas</button>
+          </div>
+          <button class="btn btn-primary" onclick="abrirModalMembresia()">+ Nueva Membresía</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Cliente</th>
+                <th>Tipo</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableMembresias"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA ENTRENADORES -->
+      <section id="tab-entrenadores" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalEntrenador()">+ Nuevo Entrenador</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+                <th>Horario</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableEntrenadores"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA RUTINAS -->
+      <section id="tab-rutinas" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalRutina()">+ Nueva Rutina</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Rutina</th>
+                <th>Cliente</th>
+                <th>Entrenador</th>
+                <th>Nivel</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableRutinas"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA EJERCICIOS -->
+      <section id="tab-ejercicios" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalEjercicio()">+ Nuevo Ejercicio</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Ejercicio</th>
+                <th>Grupo Muscular</th>
+                <th>Nivel</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableEjercicios"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA PAGOS -->
+      <section id="tab-pagos" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalPago()">+ Registrar Pago</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Membresía</th>
+                <th>Fecha</th>
+                <th>Valor</th>
+                <th>Método</th>
+                <th>Referencia</th>
+              </tr>
+            </thead>
+            <tbody id="tablePagos"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA RECEPCIONISTAS -->
+      <section id="tab-recepcionistas" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalRecepcionista()">+ Nuevo Recepcionista</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableRecepcionistas"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VISTA USUARIOS -->
+      <section id="tab-usuarios" class="tab-content hidden">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+          <button class="btn btn-primary" onclick="abrirModalUsuario()">+ Nuevo Usuario</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Vínculo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tableUsuarios"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- BOTÓN FLOTANTE DE ACCESIBILIDAD: MODO ELÉCTRICO (arrastrable; presionar para cambiar) -->
+  <button type="button" id="themeFab" class="theme-fab" title="Modo Eléctrico — presiona para cambiar, arrastra para mover" aria-label="Cambiar modo eléctrico"><svg class="icon-svg" viewBox="0 0 24 24" width="20" height="20"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg></button>
+
+  <!-- CONTENEDOR DE MODALES -->
+  <div id="modalOverlay" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Título Modal</h3>
+        <button class="close-btn" onclick="cerrarModal()">&times;</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS JS DE LA APLICACIÓN -->
+  <script src="js/auth.js"></script>
+  <script src="js/clientes.js"></script>
+  <script src="js/membresias.js"></script>
+  <script src="js/entrenadores.js"></script>
+  <script src="js/recepcionistas.js"></script>
+  <script src="js/ejercicios.js"></script>
+  <script src="js/rutinas.js"></script>
+  <script src="js/pagos.js"></script>
+  <script src="js/usuarios.js"></script>
+  <script src="js/pasarela_asistencia.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
