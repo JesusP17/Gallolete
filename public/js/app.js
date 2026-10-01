@@ -330,7 +330,13 @@ function irARegistroCliente() {
   mostrarAuthTab('registro');
 }
 
-
+function accesoGoogleProximamente() {
+  mostrarModalNotificacion({
+    titulo: '🌐 Inicio de sesión con Google',
+    mensaje: 'Por ahora el inicio de sesión con Google no está disponible. Por favor, inicia sesión con tu correo electrónico y contraseña o crea una nueva cuenta.',
+    tipo: 'info'
+  });
+}
 
 function solicitarRecuperarPassword() {
   mostrarModalNotificacion({
