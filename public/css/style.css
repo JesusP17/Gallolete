@@ -1551,13 +1551,14 @@ html {
 #landingView.glx-landing {
   --glx-lime: #c8ff00;
   --glx-lime-ink: #5f7a00;
-  --glx-ink: #111111;
-  --glx-paper: #f2f4f7;
-  --glx-alt: #e4e8ee;
-  --glx-line: rgba(17, 17, 17, 0.14);
-  --glx-muted: #6b7280;
-  --glx-body-text: #444444;
-  --glx-header-bg: rgba(242, 244, 247, 0.96);
+  --glx-ink: #0f172a;
+  --glx-paper: #ffffff;
+  --glx-alt: #f1f5f9;
+  --glx-card-bg: #ffffff;
+  --glx-line: rgba(15, 23, 42, 0.12);
+  --glx-muted: #64748b;
+  --glx-body-text: #334155;
+  --glx-header-bg: rgba(255, 255, 255, 0.96);
   font-family: 'Barlow', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--glx-paper);
   color: var(--glx-ink);
@@ -1566,12 +1567,13 @@ html {
 [data-theme="electric"] #landingView.glx-landing {
   --glx-lime-ink: #c8ff00;
   --glx-ink: #f8fafc;
-  --glx-paper: #060b19;
-  --glx-alt: #0a1428;
+  --glx-paper: #070c18;
+  --glx-alt: #11192e;
+  --glx-card-bg: #0e1832;
   --glx-line: rgba(0, 210, 255, 0.22);
   --glx-muted: #94a3b8;
   --glx-body-text: #cbd5e1;
-  --glx-header-bg: rgba(10, 18, 42, 0.95);
+  --glx-header-bg: rgba(7, 12, 24, 0.95);
 }
 
 /* Encabezado fijo con navegación */
@@ -1878,6 +1880,7 @@ html {
 #landingView .glx-section {
   padding: 4rem 1.25rem;
   scroll-margin-top: 72px;
+  background: var(--glx-paper);
 }
 
 #landingView .glx-section-alt {
@@ -1941,7 +1944,8 @@ html {
   display: flex;
   flex-direction: column;
   padding: 2rem;
-  background: #ffffff;
+  background: var(--glx-card-bg);
+  transition: transform 0.25s ease, background-color 0.25s ease;
 }
 
 #landingView .glx-plan.accent {
@@ -2045,6 +2049,53 @@ html {
   background: #111111;
   color: var(--glx-lime);
   transform: scale(1.03);
+}
+
+/* Reglas específicas para Modo Oscuro (Eléctrico) en Landing */
+[data-theme="electric"] #landingView .glx-plan:not(.accent) {
+  background: #0d172e;
+}
+
+[data-theme="electric"] #landingView .glx-plan:not(.accent) .glx-plan-tag {
+  color: #00d2ff;
+}
+
+[data-theme="electric"] #landingView .glx-plan:not(.accent) .glx-plan-name,
+[data-theme="electric"] #landingView .glx-plan:not(.accent) .glx-plan-price {
+  color: #ffffff;
+}
+
+[data-theme="electric"] #landingView .glx-plan:not(.accent) .glx-plan-period {
+  color: #94a3b8;
+}
+
+[data-theme="electric"] #landingView .glx-plan:not(.accent) .glx-plan-features li {
+  color: #cbd5e1;
+}
+
+[data-theme="electric"] #landingView .glx-plan:not(.accent) .glx-plan-features .tick {
+  color: #00d2ff;
+}
+
+[data-theme="electric"] #landingView .glx-plan:not(.accent) .glx-btn {
+  border-color: #00d2ff;
+  color: #00d2ff;
+  background: transparent;
+}
+
+[data-theme="electric"] #landingView .glx-plan:not(.accent) .glx-btn:hover {
+  background: #00d2ff;
+  color: #060b19;
+  border-color: #00d2ff;
+}
+
+[data-theme="electric"] #landingView .glx-stats,
+[data-theme="electric"] #landingView .glx-stat {
+  background: #040814;
+}
+
+[data-theme="electric"] #landingView .glx-footer {
+  background: #03060f;
 }
 
 /* Instalaciones (grilla asimétrica) */
