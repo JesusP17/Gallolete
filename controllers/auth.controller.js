@@ -196,6 +196,71 @@ const registro = async (req, res, next) => {
   }
 };
 
+const googleAuth = async (req, res, next) => {
+  try {
+    const { correo, nombre } = req.body;
+
+    if (!correo) {
+      return res.status(400).json({ ok: false, mensaje: 'No se recibió el correo electrónico de Google.' });
+    }
+
+    const emailTrim = correo.trim().toLowerCase();
+    let userObj = await UsuarioModel.obtenerPorCorreoONombre(emailTrim);
+
+    if (!userObj) {
+      const partes = (nombre || emailTrim.split('@')[0]).trim().split(/\s+/);
+      const nom = (partes[0] || 'Cliente').substring(0, 30);
+      const ape = (partes.slice(1).join(' ') || 'Google').substring(0, 30);
+      const doc = 'DOC-G-' + Math.floor(10000000 + Math.random() * 90000000);
+      const nombre_usuario = await generarNombreUsuario(`${nom} ${ape}`);
+
+      let cliente = await ClienteModel.obtenerPorDocumento(doc);
+      if (!cliente) {
+        cliente = await ClienteModel.crear({
+          documento: doc,
+          nombre: nom,
+          apellido: ape,
+          correo: emailTrim,
+          estado: 'activo'
+        });
+      }
+
+      userObj = await UsuarioModel.crear({
+        nombre_usuario,
+        correo: emailTrim,
+        password: 'GoogleOAuth2026Password!',
+        rol: 'Cliente',
+        id_cliente: cliente.id_cliente,
+        estado: 'activo'
+      });
+    }
+
+    if (userObj.estado !== 'activo') {
+      return res.status(403).json({ ok: false, mensaje: 'Esta cuenta se encuentra deshabilitada. Contacte al administrador.' });
+    }
+
+    const payload = {
+      id_usuario: userObj.id_usuario,
+      id_cliente: userObj.id_cliente,
+      id_entrenador: userObj.id_entrenador,
+      nombre_usuario: userObj.nombre_usuario,
+      correo: userObj.correo,
+      rol: userObj.rol || 'Cliente'
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '8h' });
+
+    res.json({
+      ok: true,
+      mensaje: '¡Autenticación con Google exitosa!',
+      token,
+      usuario: payload
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const perfil = async (req, res) => {
   res.json({
     ok: true,
@@ -206,5 +271,6 @@ const perfil = async (req, res) => {
 module.exports = {
   login,
   registro,
+  googleAuth,
   perfil
 };

@@ -8,28 +8,76 @@ let registroAsistenciaHoyData = [];
 /* ============================================================
    1. ANALÍTICA Y GRÁFICOS INTERACTIVOS (DASHBOARD ADMINISTRADOR)
    ============================================================ */
-function cargarGraficosDashboardAdmin() {
+async function cargarGraficosDashboardAdmin() {
   if (typeof Chart === 'undefined') return;
 
-  // Gráfico 1: Días Pico de Afluencia y Pagos (Inicia en 0)
+  let pagos = [];
+  let membresias = [];
+  let clientes = [];
+
+  try {
+    const resPagos = await Auth.fetchApi('/pagos');
+    if (resPagos && resPagos.ok) pagos = resPagos.pagos || [];
+
+    const resMem = await Auth.fetchApi('/membresias');
+    if (resMem && resMem.ok) membresias = resMem.membresias || [];
+
+    const resCli = await Auth.fetchApi('/clientes');
+    if (resCli && resCli.ok) clientes = resCli.clientes || [];
+  } catch (err) {
+    console.error('Error al cargar datos para analítica:', err);
+  }
+
+  // 1. Actualizar Tarjetas de Estadísticas Globales
+  const totalClientes = clientes.length;
+  const activas = membresias.filter(m => m.estado === 'activa').length;
+  const vencidas = membresias.filter(m => m.estado === 'vencida' || m.estado === 'inactiva').length;
+  const totalRecaudado = pagos.reduce((sum, p) => sum + parseFloat(p.valor || 0), 0);
+
+  const elCli = document.getElementById('statAdminClientes');
+  const elAct = document.getElementById('statAdminMembresiasActivas');
+  const elVen = document.getElementById('statAdminMembresiasVencidas');
+  const elPag = document.getElementById('statAdminTotalPagos');
+
+  if (elCli) elCli.innerText = totalClientes;
+  if (elAct) elAct.innerText = activas;
+  if (elVen) elVen.innerText = vencidas;
+  if (elPag) elPag.innerText = `$${totalRecaudado.toLocaleString('es-CO')}`;
+
+  // 2. Procesar Datos de Recaudación y Asistencia por Día de la Semana
+  const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const recaudacionPorDia = [0, 0, 0, 0, 0, 0, 0]; // Lunes a Domingo (índices 0..6)
+  const transaccionesPorDia = [0, 0, 0, 0, 0, 0, 0];
+
+  pagos.forEach(p => {
+    if (p.fecha_pago) {
+      const fecha = new Date(p.fecha_pago);
+      let dayIdx = fecha.getDay(); // 0: Dom, 1: Lun ... 6: Sáb
+      let targetIdx = dayIdx === 0 ? 6 : dayIdx - 1; // mapear a Lunes (0) .. Domingo (6)
+      recaudacionPorDia[targetIdx] += parseFloat(p.valor || 0);
+      transaccionesPorDia[targetIdx] += 1;
+    }
+  });
+
+  // Gráfico 1: Días Pico de Afluencia y Recaudación (Datos Reales)
   const ctxAfluencia = document.getElementById('chartAfluenciaPagos');
   if (ctxAfluencia) {
     if (chartAfluenciaInstancia) chartAfluenciaInstancia.destroy();
-    
+
     chartAfluenciaInstancia = new Chart(ctxAfluencia, {
       type: 'bar',
       data: {
         labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
         datasets: [
           {
-            label: 'Recaudación ($)',
-            data: [0, 0, 0, 0, 0, 0, 0],
+            label: 'Recaudación ($ COP)',
+            data: recaudacionPorDia,
             backgroundColor: '#0066ff',
             borderRadius: 6
           },
           {
-            label: 'Atletas Asistentes',
-            data: [0, 0, 0, 0, 0, 0, 0],
+            label: 'Transacciones / Asistentes',
+            data: transaccionesPorDia,
             backgroundColor: '#00d2ff',
             borderRadius: 6
           }
@@ -45,7 +93,17 @@ function cargarGraficosDashboardAdmin() {
     });
   }
 
-  // Gráfico 2: Ventas por Tipo de Membresía (Inicia en 0)
+  // 3. Procesar Distribución de Tipos de Membresía
+  let contGen = 0, contVip = 0, contTri = 0, contAnu = 0;
+  membresias.forEach(m => {
+    const t = (m.tipo || '').toLowerCase();
+    if (t.includes('vip')) contVip++;
+    else if (t.includes('trimestral')) contTri++;
+    else if (t.includes('anual') || t.includes('black')) contAnu++;
+    else contGen++;
+  });
+
+  // Gráfico 2: Ventas por Tipo de Membresía (Datos Reales)
   const ctxTipos = document.getElementById('chartTiposMembresia');
   if (ctxTipos) {
     if (chartTiposInstancia) chartTiposInstancia.destroy();
@@ -53,9 +111,9 @@ function cargarGraficosDashboardAdmin() {
     chartTiposInstancia = new Chart(ctxTipos, {
       type: 'doughnut',
       data: {
-        labels: ['Mensual General ($100k)', 'Mensual VIP ($120k)', 'Trimestral ($300k)', 'Anual Black ($950k)'],
+        labels: ['Mensual General', 'Mensual VIP', 'Trimestral Ahorro', 'Anual Black'],
         datasets: [{
-          data: [0, 0, 0, 0],
+          data: [contGen, contVip, contTri, contAnu],
           backgroundColor: ['#0066ff', '#00d2ff', '#2e7d32', '#ed6c02'],
           borderWidth: 2
         }]
@@ -70,23 +128,39 @@ function cargarGraficosDashboardAdmin() {
     });
   }
 
-  // Tabla Analítica de Días Pico
-  renderizarTablaDiasPicoAdmin();
+  // 4. Tabla Analítica de Días Pico (Datos Reales)
+  renderizarTablaDiasPicoAdmin(recaudacionPorDia, transaccionesPorDia);
 }
 
-function renderizarTablaDiasPicoAdmin() {
+function renderizarTablaDiasPicoAdmin(recaudacion = [], transacciones = []) {
   const tbody = document.getElementById('tableAdminDiasPico');
   if (!tbody) return;
 
-  const dias = [
-    { dia: 'Lunes', recaudado: '$0', transacciones: 0, promedio: '0 Atletas', carga: 'SIN REGISTROS', badge: 'badge-pendiente' },
-    { dia: 'Martes', recaudado: '$0', transacciones: 0, promedio: '0 Atletas', carga: 'SIN REGISTROS', badge: 'badge-pendiente' },
-    { dia: 'Miércoles', recaudado: '$0', transacciones: 0, promedio: '0 Atletas', carga: 'SIN REGISTROS', badge: 'badge-pendiente' },
-    { dia: 'Jueves', recaudado: '$0', transacciones: 0, promedio: '0 Atletas', carga: 'SIN REGISTROS', badge: 'badge-pendiente' },
-    { dia: 'Viernes', recaudado: '$0', transacciones: 0, promedio: '0 Atletas', carga: 'SIN REGISTROS', badge: 'badge-pendiente' },
-    { dia: 'Sábado', recaudado: '$0', transacciones: 0, promedio: '0 Atletas', carga: 'SIN REGISTROS', badge: 'badge-pendiente' },
-    { dia: 'Domingo', recaudado: '$0', transacciones: 0, promedio: '0 Atletas', carga: 'SIN REGISTROS', badge: 'badge-pendiente' }
-  ];
+  const nombresDias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+  const dias = nombresDias.map((d, i) => {
+    const rec = recaudacion[i] || 0;
+    const tra = transacciones[i] || 0;
+    let carga = 'SIN REGISTROS';
+    let badge = 'badge-pendiente';
+
+    if (rec > 200000 || tra >= 3) {
+      carga = 'ALTA AFLUENCIA';
+      badge = 'badge-activa';
+    } else if (rec > 0 || tra > 0) {
+      carga = 'MODERADA';
+      badge = 'badge-activa';
+    }
+
+    return {
+      dia: d,
+      recaudado: `$${rec.toLocaleString('es-CO')}`,
+      transacciones: tra,
+      promedio: `${tra} Atletas`,
+      carga,
+      badge
+    };
+  });
 
   tbody.innerHTML = dias.map(d => `
     <tr>
